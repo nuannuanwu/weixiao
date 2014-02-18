@@ -1,0 +1,142 @@
+{% load i18n kinger_tags oa_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    {% get_moudle_name as moudle_name %}
+    <title>{{moudle_name}}幼儿园教育管理系统</title>
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon-weixiao.ico">
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/base.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}oa/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}oa/css/supply.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}oa/js/jui/css/base/jquery-ui.css"/>
+    {% block extra_css %}{% endblock %} 
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+    <!--<script src="{{ STATIC_URL }}oa/js/jquery-1.9.1.js"></script>-->
+    <!--script src="{{ STATIC_URL }}oa/js/jquery-migrate-1.2.1.js"></script--> 
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery.hope12580.plugins.min.js"></script> 
+    <script src="{{ STATIC_URL }}kinger/js/base.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}oa/js/jui/js/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL }}oa/js/placeholders.jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script src="{{ STATIC_URL }}oa/js/oa_main.js"></script>
+    <script src="{{ STATIC_URL }}oa/js/spritetimer.js"></script>
+    <script src="{{ STATIC_URL }}oa/js/Validform_v5.3.2_min.js" type="text/javascript" charset="UTF-8"></script>
+    <script src="{{ STATIC_URL }}oa/js/dateTmie.js" type="text/javascript" charset="UTF-8"></script>
+    {% block extra_js %}{% endblock %}
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="placeholder-example" id="{% block body_id %}body{% endblock %}">
+    {% if request.user.is_authenticated %}
+    <script>
+        var remind = "0",
+        uid = '{{request.user.id}}';
+        function getCookie(objName){//获取指定名称的cookie的值
+            var arrStr = document.cookie.split("; ");
+            for(var i = 0;i < arrStr.length;i ++){
+                var temp = arrStr[i].split("=");
+                if(temp[0] == objName) return unescape(temp[1]);
+            }
+        }
+        unread_url = '{% url oa_unread_list %}';
+        function unread_list(){
+            $.get(unread_url,function(result){
+                var con = result.con; 
+                //console.log(con); 
+                if (result.type == 'ok'){
+                    if(con.messages){
+                        // msg_num = getCookie("messages_count_" + uid);
+                        // if(con.messages!=msg_num){
+                            $("#unread_messages [rel=unread_count]").text(con.messages);
+                            $("#unread_messages").show();
+                        // }
+                    }else{
+                        $("#unread_messages").hide();
+                    }
+                    if(con.docouments){
+                        // num = getCookie("supply_document_count_" + uid);
+                        // if(con.docouments!=num){
+                            $("#unread_documents [rel=unread_count]").text(con.docouments);
+                            $("#unread_documents").show();
+                        // }
+                    }else{
+                        $("#unread_documents").hide();
+                    }
+                    if(con.approves){
+                        // num = getCookie("supply_document_approves_" + uid);
+                        // if(con.approves!=num){
+                            $("#unread_approves [rel=unread_count]").text(con.approves);
+                            $("#unread_approves").show();
+                        // }
+                    }else{
+                        $("#unread_approves").hide();
+                    }
+                    if(con.docs){
+                        // num = getCookie("supply_document_approves_" + uid);
+                        // if(con.approves!=num){
+                            $("#unread_docs [rel=unread_count]").text(con.docs);
+                            $("#unread_docs").show();
+                        // }
+                    }else{
+                        $("#unread_docs").hide();
+                    }
+                    if(con.apps){
+                        // num = getCookie("supply_document_approves_" + uid);
+                        // if(con.approves!=num){
+                            $("#unread_apps [rel=unread_count]").text(con.apps);
+                            $("#unread_apps").show();
+                        // }
+                    }else{
+                        $("#unread_apps").hide();
+                    }
+                    total = con.messages + con.docouments + con.approves + con.docs + con.apps;
+                    if($("#message_menu").is(":hidden")){ 
+                        if(parseInt(total)>=parseInt(remind)){
+                            remind = total;
+                            $("#unread_count_total").text(remind);
+                            if(parseInt(remind)>0){
+                                if(parseInt(remind)>99){
+                                    $(".message_num").text(remind+'+').show();
+                                }else { 
+                                    $(".message_num").text(remind).show();
+                                }
+                                //$("#dropdown_message").click();  
+                            }else{  
+                                $("#unead_no_text").show();
+                            } 
+                        }
+                    }else{
+                        remind = total;
+                        if(parseInt(remind)>0){
+                            if(parseInt(remind)>99){
+                                $(".message_num").text(remind+'+');
+                            }else { 
+                                $(".message_num").text(remind);
+                            }
+                        }else{ 
+                            $("#unead_no").show();
+                        }  
+                    } 
+                }
+            },"json");
+        };
+        unread_list();
+        setInterval("unread_list()",240000);
+    </script>
+    {% endif %}
+    {% for message in messages %}
+        <script>jNotify("{{ message }}");</script>
+    {% endfor %}
+    {% include "oa_header.html" %} 
+    <div id="centont" class="layout_main">
+        {% include "oa_right_sidebar.html" %}
+        {% block content %} {% endblock %} 
+        {% include "oa_footer.html" %}
+    </div> 
+</body>
+</html>

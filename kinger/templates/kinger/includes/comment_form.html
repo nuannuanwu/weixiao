@@ -1,0 +1,77 @@
+{% load kinger_tags i18n comments %}
+{% if request.user.is_authenticated %}
+<div class="kAddCom">
+    <a class="kAddCom-ava">
+        {# <img src="{{ STATIC_URL }}kinger/img/test/ava.jpg" /> #}
+        <img alt="{{comment.user_name}}" src="{% media_path user.get_profile.get_avatar "avatar" %}">
+    </a>
+    <div class="kAddCom-control cf">
+        {% get_comment_form for tile as form %}
+        <form id="comment-form"  action="{% comment_form_target %}" method="post">{% csrf_token %}
+        	<div><input id="target_comment" type="hidden" name="cid" value="" /></div>
+            {% if next %}
+                <div><input type="hidden" name="next" value="{{ next }}" /></div>
+            {% else %}
+                <div><input type="hidden" name="next" value="{% url tile_view tile.id %}?channel={{channel|default:"baby"}}" /></div>
+            {% endif %}
+
+            {% if request.user.email %}
+
+            {% else %}
+                <div><input type="hidden" name="email" value="kinger_{{request.user.id}}@lifedu.cn" /></div>
+            {% endif %}
+            
+            {% for field in form %}
+                {% if field.is_hidden %}
+                    <div>{{ field }}</div>
+                {% endif %}
+            {% endfor %}
+            <div class="control-group {% if field.errors %} error {% endif %}">
+                <div class="controls">
+                	<span class="kArrow_out" style="left:-13px;"></span>
+	    			<span class="kArrow_in" style="left:-10px;"></span>
+                    <textarea id="id-comment" name="comment" placeholder="添加评论"></textarea>
+                    <input type="submit" name="post" class="btn btn-success submit-post " value="{% trans "Comment" %}"/>
+                    
+                       <div id="faceBG">
+                       <div class="facebox">
+                       <div class="facej"></div>
+                          <ul>
+                          	{% for key, value in emo_config.items %}
+                             <li rel="emo" title="{{value.title}}"><img src="{{value.url}}" width="28" height="28"/></li> 
+                            {% endfor %}
+                          </ul>
+                       </div>
+                    </div>
+                    <div id="facew" class="face-ico rpico"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+  $(function(){
+	//$("#faceBG").hide();    
+	$(document).click(function(e){
+            if($(e.target).eq(0).is($("#facew"))){
+                    $("#faceBG").show();
+            }else{
+                    $("#faceBG").hide();
+            }
+	})
+  	$("[rel='emo']").click(function(){
+  		$("#id-comment").val($("#id-comment").val() + '[' + $(this).attr("title") + ']');
+  		$("#faceBG").hide();
+  	})	
+	   
+    $("[name='post']").click(function(){
+      var com = $("#id-comment").val()
+      if(com){
+        $(this).attr("disabled","true");
+        $("#comment-form").submit();
+      }
+    })
+  })
+</script>
+
+{% endif %}

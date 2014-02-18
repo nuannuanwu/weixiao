@@ -1,0 +1,214 @@
+{% load i18n kinger_tags comments pagination_tags %}
+<style type="text/css">
+ 
+</style>
+
+<div class="container" id="tileView"> 
+    <div class="main" style=" background-color: #efefef; max-height: 1000px; overflow-x: hidden; overflow-y: auto; " >
+         <div class="kDetail-bar" style="position:relative;">
+                {% if ty == 'events' %}
+                    <h1 class="pull-left">学习活动</h1>
+                {% else %}
+                    <h1 class="pull-left">食谱预告</h1>
+                {% endif %}
+                <span class="kDetail-bar-info">
+                    {% if tile or today_book %}
+                      来自 <a rel="namecard" data-uid="{% if ty == 'events' %}{{tile.creator_id}}{% else %}{{today_book.creator_id}}{% endif %}" href="javascript:;"> {% if ty == 'events' %}{{tile.creator.get_profile.chinese_name_or_username}}{% else %}{{today_book.creator.get_profile.chinese_name_or_username}}{% endif %}</a>
+                    {% endif %}
+                </span>
+                <div class="datepickebox" id="datepicker">
+                    <span id="" class="datepickerBox">{{today|date:"Y年m月d日"}}</span>
+                    <!--<i class="datepicker_xico"></i>-->
+                </div>
+        </div> 
+        <div id="content_box" class="kDetail cf" >
+             <!-- 头部信息展示 -->
+           
+        <!-- /头部信息展示 --> 
+            <!-- 翻页工具条 -->
+            <div id="peg_btn" class="kToolbar" style=" display: none;">
+                <div class="kToolbar-turn">
+                    {% if yesterday %}
+                        <a class="kToolbar-turn-left btn" href="{% if ty == 'events' %}{% url kinger_daily_activity yesterday.id %}{% else %}{% url kinger_daily_cookbook yesterday.id %}{% endif %}" rel="tooltip" data-title="{% trans "Previous" %}"><i class="icon-arrow-left icon-large"></i></a>
+                    {% else %}
+                        <a class="kToolbar-turn-left btn disabled"><i class="icon-arrow-left icon-large"></i></a>
+                    {% endif %}
+                    {% if next_day %}
+                        <a class="kToolbar-turn-right btn" href="{% if ty == 'events' %}{% url kinger_daily_activity next_day.id %}{% else %}{% url kinger_daily_cookbook next_day.id %}{% endif %}" rel="tooltip" data-title="{% trans "Next" %}">&nbsp;<i class="icon-arrow-right icon-large"></i>&nbsp;&nbsp;&nbsp;</a>
+                    {% else %}
+                        <a class="kToolbar-turn-right btn disabled">&nbsp;<i class="icon-arrow-right icon-large"></i>&nbsp;&nbsp;&nbsp;</a>
+                    {% endif %}
+                </div>
+                <input type="hidden" id="current_date" value="{{current_date}}">
+                <!--<a class="btn" href="{% url home %}?channel={{channel|default:"baby"}}">{% trans "Back" %}</a>-->
+            </div> 
+        <!-- /翻页工具条 -->
+<script language="JavaScript" >
+$(function(){
+        //日历选择
+        dates = {{effective_date|safe}};
+        if(!dates){dates=false}
+        $('#datepicker').live("click",function(){
+                WdatePicker(
+                        {
+                        opposite:true,
+                        disabledDates:dates,
+                        maxDate:'%y-%M-%d',
+                        isShowClear:false,
+                        isShowOthers:false,
+                        autoPickDate:true,
+                        isShowOK:true,
+                        errDealMode:true,
+                        highLineWeekDay:false,
+                        dateFmt:'yyyy年MM月dd日',
+                        onpicked:function(dp){
+                                date = dp.cal.getDateStr();
+                                date_fmt = dp.cal.getP('y') + '-' + dp.cal.getP('M') + '-' + dp.cal.getP('d') 
+                                if(date){
+                                    pre_url = window.location.href;
+                                        url = '{% url get_daily_by_date %}?date=' + date_fmt + '&ty={{ty}}&next=' + pre_url;
+                                        javascript:location.href = url;
+                                }else{
+                                        return false;
+                                }	
+                        }
+                });
+        });
+
+    左右按键翻页效果
+    key()
+    $('#id-comment').focus(function(){
+        $(document).unbind('keydown')
+    })
+    $('#id-comment').blur(function(){
+        key()
+    })
+    function key(){
+        $(document).keydown(function(){
+            switch(event.keyCode){
+               {% if yesterday %}
+                case 37:javascript:location.href = '{% url tile_view yesterday.id %}?channel={{channel|default:"baby"}}';break;
+                {% else %} 
+                {% endif %}
+                {% if next_day %}
+                case 39:javascript:location.href = '{% url tile_view next_day.id %}?channel={{channel|default:"baby"}}';break;
+                {% else %} 
+                {% endif %}
+            }
+        });
+    }
+});
+</script>
+<script type="text/javascript">
+
+  $(function(){
+          $("#datepicker").hover(function(){
+                  $(this).addClass("datepickebox_border").removeClass("datepickebox")
+                  },function(){
+                           $(this).addClass("datepickebox").removeClass("datepickebox_border")
+                  });  
+          })
+</script> 
+        <div class="kDetail-picInfo">
+            <!-- 每日安排 -->   
+            <div class="kDetail-plan">
+                <!--每日活动内容-->
+                {% if ty == 'events' %}
+                    <!--当天有数据-->
+                {% if tile %}
+                    {% daily_setting tile.description as settings %}                            
+                    <div class="kDailyItems cf">
+                        {% if settings.events %}
+                            <span class="kDailyItem-date">{{tile.pub_time|date:"d"}}</span>
+                        {% else %}
+                            <div class="kDailyItem cf"><h2>暂无活动</h2></div>
+                        {% endif %}
+                        {% for e in settings.events %}
+                            {% if e.content %}   
+                                <div class="kDailyItem cf">
+                                    <span class="kDailyItem-icon kDailyPlan-icon">
+                                        <img src="{% media_path e.type.img %}">
+                                    </span>
+                                    <div class="kDailyItem-con"> 
+                                        <p>{{e.content|escape|replace_n|safe}}</p>
+                                        <h2>标签：{{e.type.name}}</h2>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <!--当天无数据-->
+                {% else %}
+                    <div class="kDailyItems cf">
+                        <div class="kDailyItem cf">
+                            <span class="kDailyItem-date">{{current_date.day|zfill}}</span>
+                            <h2 class="no_activity">今日内容暂未更新</h2>
+                        </div>
+                    </div>
+                {% endif %}
+                {% else %}
+                <!--明日食谱内容-->
+                <!--当天有数据-->
+                {% if today_book %}
+                    <div class="kDailyItems cf">
+                        <span class="kDailyItem-date">{{today_book.date|date:"d"}}</span>
+                        {% for c in book_item %}
+                            {% if c.content %}
+                                <div class="kDailyItem cf">
+                                <span class="kDailyItem-icon kDailyPlan-icon">
+                                <img src="{% media_path c.img %}">
+                                </span>
+                                <div class="kDailyItem-con">
+                                <h2>{{c.cname}}</h2>                                
+                                <p>{{c.content|escape|replace_n|safe}}</p></div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>  
+                {% else %}
+                <!--当天有数据-->
+                    <div class="kDailyItems cf">
+                        <div class="kDailyItem cf">
+                            <span class="kDailyItem-date">{{tommorrow.day|zfill}}</span>
+                            <h2 class="no_activity">今日内容暂未更新</h2>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {# <div id="comment-anchor"></div> #}
+        </div>
+    </div> 
+    </div>
+</div>
+    <div class="sidebar">
+        <div class="kmonthPic">
+            <h3>专家导师</h3>
+            <div class="kmonthPic-list cf">
+                {% for m in mentors %}                
+                    <a href="javascript:" class="" rel="namecard" data-uid="{{ m.user.pk }}"><img src="{% media_path m.user.get_profile.get_avatar "avatar" %}" alt="" style="width:64px;height:64px;"> </a>                 
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<script src="{{ STATIC_URL }}kinger/js/tile.js" type="text/javascript"></script>
+{% if request.GET.for_comment %}
+<script type="text/javascript">
+    $(function(){
+        //自动定位到评论
+        var $body=(window.opera)? (document.compatMode=="CSS1Compat"? $('html') : $('body')) : $('html,body');
+        $body.animate({scrollTop: $('#comment').offset().top - 300}, 0);
+        setTimeout(function(){
+            $('#id-comment').focus();
+            $body.animate({scrollTop: $('#comment').offset().top - 300}, 0);
+        },50);
+        
+    });
+    
+</script>
+
+
+{% endif %}

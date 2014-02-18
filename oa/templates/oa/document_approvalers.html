@@ -1,0 +1,106 @@
+{% load i18n kinger_tags oa_tags umessages_tags pagination_tags %}
+<div class="group-wrap"> 
+      <ul class="nav nav-tabs" id="myTab" style="margin:0;" > 
+        <li class="dropdown active">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{school.name}}<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                {% for s in schools %}
+                  <li rel="{{s.id}}" alt="school_item">
+                    <a href="#home" data-toggle="tab">{{s.name}}
+                    </a>
+                  </li> 
+                {% endfor %}
+             </ul>
+        </li> 
+        <li><a href="#messages" data-toggle="tab">全局虚拟组</a></li> 
+     </ul>    
+     <div class="tab-content" style=" border:1px solid #ddd; border-top:none; padding:0px 0px 20px 5px;"> 
+          <div class="tab-pane active" id="home" style="max-height:200px; overflow-x: hidden; overflow-y: auto;">  
+                <div class="datas" style="padding:10px 0;"> 
+                    <div class="class-items">
+                        <div class="select-basis" style="margin-bottom:0;">
+                            <label><input class="members" name="judgment" type="radio" checked="checked" />&nbsp;&nbsp;依据职务</label>
+                            <label><input class="word" name="judgment" type="radio" />&nbsp;&nbsp;依据姓名</label>
+                        </div>
+                    </div>
+                </div> 
+                <div class="basis-list list_2" >  
+                    <div class="box_members box">
+                        {% if  not teacher_position_list|is_empty_list %}
+                            <h4 class="no_date">暂无数据</h4>
+                        {% else %} 
+                          {% for s in teacher_position_list %} <!-- 职务 -->
+                          <div class="cn-item">
+                              <div class="cni"> 
+                                 <a href="javascript:;" class="stretch-btn">展开</a>
+                                 <div style="margin-right:60px;">  
+                                      <label for="c_members_{{s.id}}">{{s.name}}</label> 
+                                 </div> 
+                              </div>
+                              <ul id="list_members_{{s.id}}" class="p-list"> 
+                                  {% for m in s.members %}
+                                    <li>
+                                       <input id="all_members_{{m.id}}" class="radio_name" type="radio" userid="{{m.id}}" username="type" name="radio_user" rel="members_{{s.id}}" value="{{m|get_name}}"/>
+                                       <label for="all_members_{{m.id}}">{{m|get_name}}</label>
+                                    </li>
+                                  {% endfor %} 
+                              </ul>
+                          </div>
+                          {% endfor %}  
+                        {% endif %}
+                     </div> 
+                     
+                     <div class="box_word box" style="display:none;">
+                        {% if  not teacher_word_list|is_empty_list %}
+                            <h4 class="no_date">暂无数据</h4>
+                        {% else %}  
+                          {% for s in teacher_word_list %} <!--name -->
+                          <div class="cn-item">
+                              <div class="cni">
+                                 <a href="javascript:;" class="stretch-btn">展开</a>
+                                 <div style="margin-right:60px;"> 
+                                     <label for="c_words_{{s.id}}">{{s.name}}</label>
+                                 </div>
+                              </div>
+                              <ul id="list_words_{{s.id}}" class="p-list">
+                                  {% for m in s.members %}
+                                  <li>
+                                      <input id="all_words_{{m.id}}" class="radio_name" type="radio" userid="{{m.id}}" username="type" name="radio_user" rel="words_{{s.id}}" value="{{m|get_name}}"/>
+                                      <label for="all_words_{{m.id}}">{{m|get_name}}</label>
+                                  </li>
+                                  {% endfor %}
+                              </ul>
+                          </div>
+                          {% endfor %}
+                        {% endif %}
+                    </div> 
+              </div> 
+        </div>
+        <div class="tab-pane" id="messages" style="max-height:180px;"> 
+                <div class=" "><!--集团--> 
+                  {% if  not global_workgroup_list|is_empty_list %}
+                    <h4 class="no_date">暂无数据</h4>
+                  {% else %}  
+                          {% for s in global_workgroup_list %} <!--name -->
+                          <div class="cn-item">
+                              <div class="cni">
+                                 <a href="javascript:;" class="stretch-btn">展开</a>
+                                 <div style="margin-right:60px;"> 
+                                     <label for="c_word_{{s.id}}">{{s.name}}</label>
+                                 </div>
+                              </div>
+                              <ul id="list_word_{{s.id}}" class="p-list">
+                                  {% for m in s.members %}
+                                  <li>
+                                      <input id="all_word_{{m.id}}" class="radio_name" type="radio" userid="{{m.id}}" username="type" name="radio_user" rel="word_{{s.id}}" value="{{m|get_name}}"/>
+                                      <label for="all_word_{{m.id}}">{{m|get_name}}</label>
+                                  </li>
+                                  {% endfor %}
+                              </ul>
+                          </div>
+                          {% endfor %}
+                        {% endif %}
+                    </div> 
+           </div>     
+     </div> 
+</div> 

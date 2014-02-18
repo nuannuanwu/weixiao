@@ -1,0 +1,102 @@
+{% extends 'aq_base.html'%}
+{% load kinger_tags %}
+
+{% block extra_js %}
+	<script src="{{ STATIC_URL }}aq/js/aq-page.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="krow">	
+	{% include 'aq/includes/ktab.html' %}
+	<div class="kmsgInfo">
+		<span class="pull-left">未回消息数<b>{{ mes_count }}</b></span>
+		<span class="pull-right">提问总人数<b>{{ askers_count }}</b></span>
+	</div>
+
+	<div class="kmsgList">
+		{% for m in mes %}
+			{% with username=m.user.get_profile.chinese_name_or_username %}
+			<div class="kmsgBar {% if forloop.counter0|divisibleby:2 %}gray{% endif %}" id="msg-area-{{m.last_message.id}}">
+				<a href="" class="kmsgHead pull-left" title="{{ username }}"><img src="{% media_path m.user.get_profile.get_avatar "small" %}" /></a>
+				<span class="kmsgCon _updateUnread pull-left" data-unreadNum="{{ m.unread_num }}" data-userid="{{ m.user.pk }}"  data-recipientid="{{ m.to_user.id }}" onclick="dialog({{m.last_message.id}},0)">{{ m.last_message.body }}&nbsp;</span>
+				<span class="kmsgDate pull-right">{{ m.last_message.sent_at|date:"n-j H:i" }}</span>
+				<span class="kmsgDate pull-right" id="msg-reply-{{m.last_message.id}}" style="display: none">已回复</span>
+			</div>
+			
+			<!-- 对话框 -->
+			<div class="kmsgDialog" id="msg-dialog-{{m.last_message.id}}">
+				<div class="kdialogDashed"></div>
+				<a onclick="dialog({{m.last_message.id}},1)" class="kdialogClose" href="javascript:void(0);"></a>
+				<div class="kdialogHeader">
+					<a class="kmsgHead pull-left" href="">
+						<img src="{% media_path m.user.get_profile.get_avatar "small" %}">
+					</a>
+					<span class="pull-left">{{ username }} 家长({% if m.user.teacher %}{{m.user.teacher.school}}{% else %}{{m.user.student.school}}{% endif %})</span>
+					<a id="morerecord_{{m.last_message.id}}" class="kmore pull-left" target="_blank" href="{% url aq_history user_id=m.user.id to_user_id=m.to_user.id %}">更多记录</a>					
+					<div class="pull-right" id="track_{{m.last_message.id}}">
+					{% if m.is_track %}
+						<a class="btn btn-success pull-right" href="javascript:void(0)" data-contact="{{m.contact_id}}" id="track_cancle_{{m.last_message.id}}" onclick="track('cancle',{{m.last_message.id}})">取消跟踪</a>
+						<span class="kset pull-right">已设跟踪</span>
+					{% else %}
+						<a class="btn btn-success pull-right" href="javascript:void(0)" data-contact="{{m.contact_id}}" id="track_add_{{m.last_message.id}}" onclick="track('add',{{m.last_message.id}})">跟踪</a>
+					{% endif %}
+					</div>
+				</div>
+				{% for c in m.conversation reversed %}
+					{% if c.sender == m.user %}
+					<div class="kDialog clearfix" id="">
+				 		<a title="{{m.user.get_profile.chinese_name_or_username}}" class="kmsgHead pull-left" href="">
+				 			<img src="{% media_path m.user.get_profile.get_avatar "small" %}">
+				 		</a>
+				    	<div class="thumbnail kChat_left pull-left">
+				      		<p>{{ c.body }}</p>
+				      		<br>
+				      		<small data-title="" rel="tooltip" class="date">{{ c.sent_at|date:"Y-m-d H:i" }}</small>
+				      		<span class="ktrian_out"></span>
+	    					<span class="ktrian_in"></span>
+				      	</div>
+				  	</div>
+				  	{% elif c.sender == m.to_user %}
+				  	<div class="kDialog clearfix">
+				  		<a title="{{ m.to_user.mentor.name }}" class="kmsgHead pull-right" href=""><img src="{% media_path m.to_user.get_profile.get_avatar "small" %}"></a>
+				    	<div class="thumbnail kChat_right pull-right">
+				      		<p>{{ c.body }}</p>
+				      		<br>
+				      		<small data-title="" rel="tooltip" class="date">{{ c.sent_at|date:"Y-m-d H:i" }}</small>
+				      		<span class="ktrian_out"></span>
+	    					<span class="ktrian_in"></span>
+				      	</div>
+				  	</div>
+				  	{% endif%}
+				{% endfor %}	
+			  	
+			  	<div class="kDialog clearfix" id="dialog-area-{{m.last_message.id}}">
+			    	<form id="" method="post" action="" class="kchat_trian">
+			    		{% csrf_token %}
+			    		<span class="ktrian_out"></span>
+	    				<span class="ktrian_in"></span>
+			    		<input type="hidden" name="parent_id" value="{{ m.user.id }}" />
+			    		<input type="hidden" name="mentor_id" value="{{ m.to_user.id }}" />
+			      		<textarea class="kmessage" name="body" onfocus="word_num({{m.last_message.id}})" id="id_body_{{m.last_message.id}}" data-parent="{{ m.user.id }}" data-mentor="{{ m.to_user.id }}"></textarea>
+			      		<div class="kSend"><span class="pull-left">{{ m.to_user.mentor.name }} 专家回复</span>
+			        	<a href="javascript:void(0);" onclick="dialog_pub({{m.last_message.id}})" style="margin-left: 7px" class="btn btn-info pull-right disabled" id="send_button_{{m.last_message.id}}">发布</a>
+			        	</div>
+			    	</form>
+			    	<a class="kmsgHead pull-right" href="" title="{{ m.to_user.mentor.name }}" id="msg_user_{{m.last_message.id}}">
+			    		<img src = "{% media_path m.to_user.get_profile.get_avatar "small" %}" id="msg_head_{{m.last_message.id}}"/>
+			    	</a>
+				</div>
+			</div>
+			{% endwith %}
+			<!-- /对话框 -->
+		{% empty %}
+			<div class="knoList">
+				<div class="knorec">暂无记录</div>
+			</div>
+		{% endfor %}
+	</div>
+</div>
+{% include 'aq/includes/ktoolbar.html' with query=query num=mes_count%}
+{% endblock %}
+
+

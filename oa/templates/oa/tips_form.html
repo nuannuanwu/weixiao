@@ -1,0 +1,49 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<style>
+#item-tab li { float: left; width:60px; }
+#item-tab li a {line-height: 19px;}
+.main .tab li a { float:left; }
+</style>
+<div class="main">
+    <div class="tab"> 
+        <ul class="nav nav-tabs" id="item-tab" style="margin-rigth:100px; ">
+            <li><a href="{% url oa_part_con_anc_list site.id %}">公告</a></li>
+            <li><a href="{% url oa_part_con_news_list site.id %}">新闻</a></li>
+            <li style="width:90px;" class="active"><a href="{% url oa_part_con_tips_create site.id %}" >温馨提示</a></li>
+            <li style="width:90px;" ><a href="{% url oa_part_con_video_list site.id %}" >精彩视频</a></li>
+        </ul> 
+    </div> 
+    <div class="column" >
+        <form id="post_form" action="" method="post" enctype="multipart/form-data">
+        	{% csrf_token %}
+            <div class="tip-content" style="display:inline;">
+            	<label class="pull-left">内容*</label>
+            	<div  class="t-con">
+                     <textarea id="Memo" class="m-content-ta" value='' name="content" placeholder="请输入内容" onKeyDown="rbcount(this.form.Memo);" onKeyUp="rbcount(this.form.Memo);"></textarea>
+                     <p class="set-msg">
+                       <input type="hidden" maxLength="4" id="totals" size="3" value="140" class="inputtext" /> 
+                       <input type="hidden" maxLength="4" id="useds" size="3" value="0" class="inputtext" /> 
+<!--                       您还可以输入<input readonly type="text" maxLength="4" id="remains" value="140" />字-->
+                     </p>
+                </div> 
+                <p><span id="id_contentTip" class="erro-tips mar-l-60">{{form.content.errors|striptags}}</span></p>
+            </div> 
+            {{form.type|attr:"class:hide"}}{{form.video_type|attr:"class:hide"}}
+           
+            <input id="saveBnt" disabled="disabled" class="btn btn-success mar-l-60" type="submit" name="" value="{% trans "Save" %}" >
+         </form>    
+    </div>
+</div>
+<script>
+function rbcount(messages) { 
+    if (messages.value.length > 0) { 
+        $("#saveBnt").removeAttr("disabled");
+    } else {
+        $("#saveBnt").attr("disabled","disabled");
+   }
+} 
+   
+</script>
+{% endblock %}

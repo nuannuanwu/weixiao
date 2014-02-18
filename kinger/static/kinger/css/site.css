@@ -1,0 +1,158 @@
+ /************************************************************************
+*
+*    description         : site 公用样式文件，为避免跟其它css框架冲突，采用k为前缀
+*    use                 : 用途:为web家长版，站点的样式文件   
+*    dependents          : 关联模块    [kinger index]
+*    create              : 2012-7-12  saint
+*
+*
+*************************************************************************/
+
+/* `bootstrap - 扩展
+----------------------------------------------------------------------------------------------------*/
+body{background: url(../img/paper.jpg) repeat scroll 0 0 #F7F5F5;padding-top: 60px;}
+.thumbnail{background-color: #FFF;}
+#countNew{display:none;position:fixed;left:-5px;top:110px;padding:10px;width: 145px;}
+#countNew span{display: block;line-height: 15px;vertical-align: bottom;white-space: nowrap;font-size:14px;font-weight: 700;}
+/* `kTileBar
+   ============================================================ */
+.kTileBar{ padding: 15px 0 20px 0;overflow: hidden;}
+.kTileBar .btn-group{ float: left;}
+.kTileBar .btn-group .btn{ width: 90px}
+.kTileBar .btn.active,.kTileBar .btn:active{color:#B88500;}
+
+.kPtab{ display: inline-block; padding-left: 40px; vertical-align: text-top;}
+.kPtab a{ display: inline-block; width: 21px; height: 24px; margin-right: 20px; background: url('../img/site.png') no-repeat;}
+.kPtab .kPtab-dis{ background-position: -10px -150px}
+.kPtab .kPtab-dis_ac{ background-position: -10px -110px}
+.kPtab .kPtab-dis:hover{ background-position: -10px -110px}
+
+.kPtab .kPtab-focus{ background-position: -53px -110px }
+.kPtab .kPtab-focus:hover{ background-position: -53px -150px}
+.kPtab .kPtab-focus_ac{ background-position: -53px -150px ;}
+
+/* `kTiles
+----------------------------------------------------------------------------------------------------*/
+
+.kTiles .tile .thumbnail{ padding: 15px 15px 5px 15px;-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);box-shadow:  0 1px 3px rgba(0, 0, 0, 0.3); border: none;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px; }
+.kTiles .tile .caption{ padding: 9px 0 5px;}
+.kTiles .tile .caption p{ margin: 0}
+.kTiles .tile .caption-date{ font-size: 13px; color: #444;}
+.kTiles .tile .caption-title{ font-size: 12px; color: #444;line-height:1.6em; word-wrap:break-word;text-overflow: ellipsis; word-break:break-all;}
+.kTiles .kTile-img{display:block;text-align:center;cursor:pointer; }
+.thumbnail a.kTile-img{ max-height:800px; _height:expression((document.documentElement.clientHeight||document.body.clientHeight)<800?"800px":""); overflow:hidden; position:relative;}
+.thumbnail a.kTile-img span.stop{ float: left; display:block; position:absolute; width:190px; height:20px; left:0; bottom:-5px; background:url(../img/long_image_shadow.png) bottom left no-repeat; _background:none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src="../img/long_image_shadow.png"); overflow:hidden; margin:0px; padding:0px;}
+.kTiles .thbalink{ max-height:800px; overflow:hidden;}
+.kTiles .kTile-img:hover{ opacity: 0.9 !important;}
+
+.kNoContent{position:absolute;z-index:999;overflow:hidden;color:#B98600;background:url(../img/noContentBg.png) repeat; width:480px; height:120px;line-height:24px;text-align:center;
+-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);box-shadow:  0 1px 3px rgba(0, 0, 0, 0.3);}
+/* `kComment
+----------------------------------------------------------------------------------------------------*/
+.kComments{ margin-bottom: -3px;}
+.kComment{ font-size: 12px; line-height: 1.35em; padding: 10px 15px; margin: 0 -15px;}
+.kComment:last-child{ border-bottom: none;}
+.kComment-con{ color:#524D4D;line-height:1.6em;}
+.kComment-con a{ cursor:default; text-decoration:none; color: #B88500;}
+.kComment-ava{ width: 30px; height: 30px;}
+
+/* `kBabyState
+   ============================================================ */
+.kBabyState{padding:10px;width: 168px;height: 100px;}
+.kSt_Img{float:left;margin: 8px 0 0 8px;width: 72px;height: 80px;}
+.kState{float:left;width: 80px;height: 100px;}
+.kState .state{float:right;width:80px;margin-top: 10px;color: #FFF;font-size: 28px;line-height:normal;text-align:right;}
+.kState .info{float:right;color: #FFF;font-size: 18px;}
+.kSt_3{background-color: #EA7124;}
+.kSt_3 .kSt_Img{background: url(../img/babystate3.png) no-repeat;}
+.kSt_3 .state{margin-top:20px;}
+.kSt_3 .info{display:none;}
+.kSt_4{background-color: #7F9076;}
+.kSt_4 .kSt_Img{background: url(../img/babystate4.png) no-repeat;}
+.kSt_5{background-color: #C82343;}
+.kSt_5 .kSt_Img{background: url(../img/babystate5.png) no-repeat;}
+.kSt_6{background-color: #DCC000;}
+.kSt_6 .kSt_Img{background: url(../img/babystate6.png) no-repeat;}
+.kSt_7{background-color: #264762;}
+.kSt_7 .kSt_Img{background: url(../img/babystate7.png) no-repeat;}
+.kSt_8{background-color: #404040;}
+.kSt_8 .kSt_Img{background: url(../img/babystate8.png) no-repeat;}
+.kSt_9{background-color: #00BCE2;}
+.kSt_9 .kSt_Img{margin-top:15px;background: url(../img/babystate9.png) no-repeat;}
+.kSt_9 .state{margin: 15px 0 0 0;line-height: 30px;}
+.kSt_9 .info{display:none;}
+  
+/* `tile_view
+   ============================================================ */
+#tileView{ padding-top: 10px; margin-left: 20px;}
+.kmonthPic{ background: #FFF; width: 192px; padding: 0 15px 5px 15px;}
+.kmonthPic h3{ font-size: 14px; line-height: 35px}
+.kmonthPic-list{ margin-right: -10px}
+.kmonthPic-list a{width: 61px; height: 61px;line-height:61px;font-size:0;float: left; margin: 0 4px 4px 0;overflow: hidden;text-align:center;vertical-align:middle;}
+.kmonthPic-list a img{opacity: 0.8;vertical-align:middle;}
+.kmonthPic-list a:hover img{ opacity: 1}
+.kmonthPic-cur{position: relative;}
+.kmonthPic-cur-icon{display: none; position: absolute; width: 18px; height: 18px; right: 2px; bottom: 2px; background-color: #D93600; border: 2px solid #FFF; border-radius:14px;-moz-border-radius:14px;-webkit-border-radius:14px;}
+.kmonthPic-cur img{ display: inline-block;}
+.kmonthPic-cur .kmonthPic-cur-icon{ display: inline-block; }
+.kDetail{ background-color: #FFF; width: 555px; padding: 25px 30px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);}
+.kDetail-bar{ margin-bottom: 28px;overflow: hidden;}
+.kDetail-bar .buttons{float:left;margin:10px 0 0 10px;}
+.kDetail-bar-info{ float: right; font-size: 14px; color: #666; margin-top:4px;}
+
+/* 图片详情 */
+.kDetail-picInfo{ margin-bottom: 50px; }
+.kpicInfo-pic{ margin-bottom: 28px; padding-top:10px; word-wrap:break-word; }
+.kpicInfo-pic p{ font-size:13px; line-height:1.8em; margin:12px 0px;}
+.kpicInfo-info p{ font-size: 14px;}
+.kpicInfo-info p span{ font-size:14px !important;} 
+
+/* 每日记录 */
+.kDetail-record{}
+.kDailyItems{ border: 2px dashed #CCCBCA; padding: 24px; background: url(../img/site/daily_bg.png); margin-bottom: 20px;}
+.kDailyItem{ margin-bottom: 20px;  *zoom:1;}
+.kDailyItem-icon{ width: 80px; height: 80px; float: left;}
+.kDailyItem-con{ margin-left: 125px; }
+.kDailyItem-con h2{ font-size: 24px; line-height: 1; margin-bottom: 10px; }
+.kDailyItem-con p{ font-size: 16px; word-wrap: break-word; word-break: normal;}
+.kDailyItem-date{ float: right; color: #E0BD6E; font-size: 50px; font-weight: bold; line-height: 1}
+
+/* 每日安排 */
+.kDetail-plan h3{ font-size: 16px; color: #999;}
+.kDailyPlan-icon img{ width: 80px; height: 80px;}
+
+.kComList-com{ padding:0 30px; width: 100%; margin-left: -30px;}
+.kComList-com:hover .kClose-wrap{display:block;}
+.kComList-com-ava{ width: 50px; height: 50px;float: left;}
+.kComList-com-ava img{ width: 50px; height: 50px;}
+.kComList-com-con{ margin-left: 60px; }
+.kComList-com-con .kHead-name{ font-size: 14px; color: #666; }
+.kComList-com-con .kHead-date{ float: right; font-size: 14px; color: #999 }
+.kComList-com-con .kCon{ padding-top: 5px; font-size: 13px; line-height:1.6em; color: #333; word-wrap:break-word ;}
+.kComList-com-con .kClose-wrap{display:none; float: right; line-height:20px; position:relative; top:-1px; *width:11px;}
+.kComList-com-con .close{ margin: 0px 0px 0px 5px;}
+/*.kComList-com-con .close:hover{ opacity: 0.9; filter: alpha(opacity=90);}*/
+.kAddCom-ava{ width: 50px; height: 50px;float: left;}
+.kAddCom-ava img{ width: 50px; height: 50px;}
+.kAddCom-control{ margin-left: 60px;position:relative;}
+.kAddCom-control textarea{ display: block; font-size: 13px; height: 32px; width: 95%; padding: 8px; line-height: 1.3; border: 1px solid #A4A2A2; border-radius:6px;-moz-border-radius:6px;-webkit-border-radius:6px; margin-left:5px; resize:none;
+}
+.kAddCom-control .btn{ float: right;}
+.kDetail-box{ position:relative; margin:0; padding:0;}
+.kArrow_out,.kArrow_in{position: absolute;width: 0;height: 0;font-size: 0;overflow: hidden;border-width: 6px 9px 2px;}
+.kArrow_out{border-color: transparent #A4A2A2 transparent transparent;border-style: dashed solid dashed dashed;left: -18px;top: 14px;}
+.kArrow_in{border-color: transparent #FFF transparent transparent;border-style: dashed solid dashed dashed;left: -16px;top: 14px;}
+.kToolbar{ 
+   position: fixed;
+   left:50%; 
+   top:189px;
+   z-index:1;
+   margin-left: 440px;
+ }
+.kToolbar ul{ padding:0; margin:0; list-style:none;} 
+.kToolbar-turn{ margin-bottom: 20px;}
+.kToolbar-turn .kt{ position:relative; height:34px; width:109px; overflow:hidden;}
+.kToolbar-turn .kt .kToolbar-turn-left{ display:block; position:absolute; top:0px; left:0px; height:18px; width:28px;}
+.kToolbar-turn .kt .kToolbar-turn-right{ display:block;position:absolute; top:0px; right:5px; height:18px; width:35px;}
+.kToolbar-turn .btn{ padding: 6px 8px;}
+.kToolbar-turn .btn i{vertical-align:middle;}

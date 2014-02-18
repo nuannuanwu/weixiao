@@ -1,0 +1,100 @@
+{% extends "admin/change_form.html" %}  
+  
+{% block extrahead %}  
+<script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/plugins/jquery.hope12580.plugins.min.js"></script>
+<script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/js/base.js"></script>
+<script type="text/javascript">  
+$(function(){
+    function tips_item(){
+        tips = $("#id_is_tips").val();
+        cid = $("#id_new_category").val();
+        url = '{% url rev_admin_tile_change_form %}';
+        if(tips == 0){
+        $("#lookup_id_user").parent().find("p").text("瓦片所属用户（跟班级必选其一，不可两者同时存在，适用于教师发布瓦片范围控制）")
+        }else{
+            $("#lookup_id_user").parent().find("p").text("瓦片所属用户（跟班级一起为空表示所有用户，适用于后台推广的瓦片范围控制）")
+        }
+
+        $.post(url,{is_tips:tips},function(result){
+            date = $.parseJSON(result); 
+            $("#id_new_category").empty()
+                for(var i=0;i<date.length;i++){
+                    style = '';
+                    if(date[i].type == 0){
+                        style  = "font-size:16px;margin-left:0px";
+                    }
+                    if(date[i].type == 1){
+                        style  = "font-size:14px;margin-left:10px";
+                    }
+                    if(date[i].type == 2){
+                        style  = "font-size:12px;margin-left:20px";
+                    }
+                    if(date[i].type == 3){
+                        style  = "font-size:10px;margin-left:30px";
+                    }
+                    if(cid == date[i].id){
+                        sel = 'selected="selected"';
+                    }else{
+                        sel = '';
+                    }
+                    $("#id_new_category").append('<option '+ sel + ' style="' + style + '" value="' + date[i].id + '">' + date[i].name + '</option>')
+                }  
+        });     
+        return false;
+    }
+
+	// function tips_item(){
+	// 	tips = $("#id_is_tips").val();
+ //        url = '{% url admin_tile_change_form %}';
+ //        if(tips == 0){
+	// 	$("#lookup_id_user").parent().find("p").text("瓦片所属用户（跟班级必选其一，不可两者同时存在，适用于教师发布瓦片范围控制）")
+	// 	}else{
+	// 		$("#lookup_id_user").parent().find("p").text("瓦片所属用户（跟班级一起为空表示所有用户，适用于后台推广的瓦片范围控制）")
+	// 	}
+
+ //        $.post(url,{is_tips:tips},function(result){
+ //        	date = $.parseJSON(result); 
+        	
+	// 	    $("#id_category").empty()
+	// 	    for(var i=0;i<date.length;i++){
+	// 	    	if(date[i].parent_id == 0){
+	// 	    		$("#id_category").append('<optgroup rel="'+ i +'" label="'+ date[i].name +'">')
+	// 	    		for(var j=0;j<date.length;j++){
+	// 	    			if(date[j].parent_id == date[i].id)
+	// 	    			$("#id_category").find('optgroup[rel='+i+']').append('<option value="' + date[j].id + '">' + date[j].name + '</option>')	
+	// 	    		}	
+	// 	    	}
+	// 	    }  
+	// 	});		
+ //        return false;
+	// }
+
+	//tips_item();
+
+    $("#id_is_tips").change(function(){
+    	tips_item();
+    })
+
+    
+    $("#id_is_tips").change();
+    
+
+    $("#tile_form").submit(function(e){
+    	is_tips = $("#id_is_tips").val();
+    	if(is_tips == 0){
+    		group = $("#id_group").val();
+    		user = $("#id_user").val();
+    		if((group && !user) || (!group && user) ){
+    			return true;
+    		}else{
+    			$("#tile_form fieldset").eq(0).before('<p class="errornote">请修正下面的错误。</p>')
+    			$("#id_group, #id_user").parent().parent().parent().addClass("grp-errors")
+    			e.preventDefault();
+    		}
+    	}
+  	});
+})
+</script>  
+{% endblock %}  

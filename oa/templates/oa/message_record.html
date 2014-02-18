@@ -1,0 +1,68 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags umessages_tags pagination_tags %}
+{% block content %}
+{% autopaginate message_list 10 %}
+<div class="main">
+      <div class="tab"><span>发送记录</span></div> 
+      <div class="column">
+           <form method="post" action="{% url oa_delete_message %}" >
+           {% csrf_token %}
+               <p>
+                    <select id="msg_type" class="classSelect span2" value="{{ty}}">
+                        <option value="-1">所有消息</option>
+                        <option value="0" {% if ty == 0 %} selected="selected" {% endif %}>普通</option>
+                        <option value="1" {% if ty == 1 %} selected="selected" {% endif %}>紧急</option>
+                    </select>
+                </p>
+                <div class="list">
+                     <table>
+		             	<tr>
+                            <th>类型</th>
+                            <th>内容</th>
+                            <!--<th>发信者</th>-->
+                            <th>收信者</th>
+                            <th>发送时间</th>
+                        </tr>
+                        {% if not message_list|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                        {% else %}
+                        {% for m in message_list %}    	
+                        <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                            <td width="40">{% if m.type == 1 %}紧急{% else %}普通{% endif %}</td>
+                            <td width="200"><div class="info-td w_195" style="float: left;" ><a title="{{ m.body }}"  href="{% url oa_message_record_view m.id %}">{{ m.body }}</a></div></td>
+                            <!--<td width="80"><div class="info-td ">{{ m.sender|get_name }}</div></td>--> 
+                            <td width="180"><div class="info-td" title="{{ m.recipients.all|cut_users}}">{{ m.recipients.all|cut_users:3}}</div></td> 
+                            <td width="135"><div class="info-td " >{% if m.is_send %}{{ m.sent_at|date:"Y-m-d G:i" }}{% else %}{{m.timing|date:"Y-m-d G:i"}}&nbsp;<i class="icon-time"></i>{% endif %}</div></td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+		     </table>
+                 </form> 
+                 <div class="pagination pagination-centered">{% paginate %}</div>
+             </div> 
+       </div>                
+</div>         
+ 
+
+<script>
+$(document).ready(function(){
+    $(".list tr:even").addClass("bg_color");
+    $(".list tr").hover(
+            function(){ 
+                $(this).addClass("atr");
+            },
+            function(){ 
+                $(this).removeClass("atr");
+            }); 
+});
+$("#msg_type").change(function(){
+    var msg_type = $(this).val();
+    javascript:location.href = '{% url oa_message_record %}?ty=' + msg_type;
+});
+	//form.submit();
+</script>
+{% endblock %}

@@ -1,0 +1,14 @@
+<style type="text/css">
+ #nav_tab  { float: right; list-style: none; margin-right: 0px; margin-top: 4px; }
+ #nav_tab li { float: left; color: #404040; height: 35px; }
+ #nav_tab li a { float: left; text-decoration: none; border:1px solid #ceccce; padding: 3px 10px; 
+ 	background-color:#ffffff; color: #404040; }
+ #nav_tab li a:hover { background-color:#ededed; color: #d2ae62; }
+ #nav_tab li a.on {background-color:#ededed; color: #d2ae62; }
+ #nav_tab li a.r_border { border-right: none; }
+</style>
+<ul id="nav_tab">
+    <li><a rel="link_tab" class="r_border kPtab-dis {% if is_date %} on {% endif %}" href="{% url kinger_rev_time_axis %}" data-href="axis" title="按天浏览">时光轴</a></li>
+    <li><a rel="link_tab" class="r_border kPtab-dis {% if not is_cal and not is_date %} on {% endif %}" href="{% url kinger_baby_index %}" data-href="baby" title="随意浏览">瀑布流</a></li>
+    <li><a rel="link_tab" class="kPtab-focus  {% if is_cal %} on {% endif %}" href="{% url kinger_rev_cal %}" data-href="cal" title="宝宝成长展示">日历图</a></li>
+</ul>

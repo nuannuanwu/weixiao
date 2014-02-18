@@ -1,0 +1,313 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate photos 10 %}
+<style>
+#item-tab li { float: left; width:90px; }
+#item-tab li a {line-height: 19px;}
+.main .tab li a { float:left; }
+.flielistbox { margin-top: 5px; }
+</style>
+<div class="main">
+    <div class="tab">
+        <a class="btn pull_right" href="{% url oa_album_school_list site.id %}?cid={{album.category_id}}" >返回</a>
+        <a id="upphotobtn" class="btn upphotobtn pull_right" href="javascript:;"  >上传照片</a>
+        <ul class="nav nav-tabs" id="item-tab"  > 
+            <li {% if album.category_id == 17 %}class="active"{% endif %}><a href="{% url oa_album_school_list site.id %}?cid=17">学园活动</a></li>
+            <li {% if album.category_id == 18 %}class="active"{% endif %}><a href="{% url oa_album_school_list site.id %}?cid=18">幼儿作品</a></li>
+        </ul> 
+        
+    </div>
+    <div class="column">
+        <div class="form-div">
+            <form name="form2" class="form-inline" action="{% url oa_album_update album.id %}" method="POST">{% csrf_token %}
+                <span style="font-size:14px;">相册名: &nbsp;</span>{{form1.name}}
+                <input class="btn btn-success" type="submit" name="" value="修改" >
+            </form>
+        </div>
+        <div class="form-div">
+            <select id="part_type" class="span2">
+                <option value="-1" {% if type == -1 %}selected="selected"{% endif %}>--所有照片--</option>
+                <option value="1" {% if type == 1 %}selected="selected"{% endif %}>已设首页显示</option>
+                <option value="0" {% if type == 0 %}selected="selected"{% endif %}>未设首页显示</option>
+            </select>
+        </div>
+        <div class="list">
+            <form name="form" onsubmit="return check()" class="form-inline" id="form_post" action="{% url oa_album_show_photo album.id %}" method="POST">{% csrf_token %}
+                <table>
+                    <tr align="center">
+                        <th scope="col"><input type="checkbox" rel="checkall"></th>
+                        <th scope="col">相片描述</th>
+                        <th scope="col">创建者</th>
+                        <th scope="col">创建日期</th>
+                        <th scope="col">状态</th>
+                    </tr> 
+                    {% for p in photos %}
+                    <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td width="30"><input type="checkbox" value="{{p.id}}" rel="role" name="photo_pks"></td>
+                        <td width="250">
+                            <div class="td-words w_250">
+                                <a href="javascript:;" class="viewPhoto" rel="{{p.id}}">
+                                    <img src="{% media_path p.img "mini" %}">&nbsp;&nbsp;{{p.description}}
+                                </a>
+                            </div>
+                        </td>
+                        <td width="90"><div class="td-words w_90">{{p.creator.profile.realname}}</div></td>
+                        <td width="110"><div class="td-words w_110">{{p.ctime|date:"Y-m-d G:i"}}</div></td>
+                        <td width="50">{% if p.is_show %}首页显示{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr><td><input type="checkbox" rel="checkall"></td>
+                        <td colspan="4">
+                            <select id="commit_type" name="attr" class="span2">
+                                <option value="-1">-- 批量操作 --</option>
+                                <option value="1">首页显示</option>
+                                <option value="0">取消首页显示</option>
+                                <option value="2">删除所选</option>
+                            </select>
+                            <input disabled="disabled" class="btn btn-success" id="sub_form" type="submit" name="" value="执行" >
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="sid" value="{{site.id}}">
+            </form>
+            <div class="pagination pagination-centered">{% paginate %}</div>
+        </div>
+        <div class="modal add-modal" id="upPhotoModal" style="display:none; top:40%; left:60%;">
+            <form name="form1" action="{% url oa_album_upload_photo album.id %}" id="uploadphoto_form" method="post"  enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>上传照片</h3>
+                </div>
+                <div class="modal-body" id="content" style="padding:10px 15px;;" > 
+                    <div id="container">
+                        <div id="filelistbox"></div>
+                        <!--<a href="javascript:;" id="my-uploadphotos" class="btn">选择照片</a>-->
+                        <input type="button" id="pickfiles" value="选择照片" class="btn" />
+                        <span id="onload_tp" style=" margin: 0 10px;" ></span>
+                        <span id="onLoad_inport" style="display: none; color:#616161; margin-left: 30px;"><img src="{{ STATIC_URL }}oa/images/import.gif" />正在上传请稍等...</span>
+                        <div id="quoteRequests" style=" margin: 10px 10px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"> 
+                    <p style="text-align:center; padding:0; margin:0;" > 
+                        <input type="hidden" id="user_id" value="1"> 
+                        <input id="uploadphotos" disabled="disabled" class="btn btn-success" type="button" name="submit" value="{% trans "Save" %}" />
+                        <!--a href="javascript:;" id="uploadphotos" class="btn btn-success" data-dismiss="modal" type="submit" name="" style="color:#fff;">{% trans "Save" %}</a-->
+                        <a class="btn" data-dismiss="modal" href="javascript:;">取消</a> 
+                    </p> 
+                </div>
+            </form>
+        </div>       
+    </div>
+</div>
+<!--flash 上传 -->
+<script src="{{ STATIC_URL }}kinger/plupload/js/plupload.js"></script>
+<script src="{{ STATIC_URL }}kinger/plupload/js/plupload.flash.js"></script>  
+<!--<script src="{{ STATIC_URL }}kinger/html5dropbox/md5.js"></script>-->
+<!--/flash 上传 -->
+<script type="text/javascript">
+ function pr(o){if(window.console) console.log(o)}
+$(document).ready(function() {
+    $(".inpitid").live('change',function(){
+            var url = $(this).val();
+            url=url.split("\\");
+            var fileName = url[url.length-1];
+            $(this).siblings("span").html(fileName);
+            if(url){
+                    $(this).parent(".addinput").show(); 
+                    $("#uploadphotos").removeAttr('disabled');  
+            }else{
+                    $(this).parent(".addinput").remove();
+                    $("#uploadphotos").attr('disabled','disabled'); 
+            }
+    }); 
+   var url ="{% url oa_album_upload_photo album.id %}"; 
+   UploaderFlash.init({'swf':'{{ STATIC_URL }}kinger/plupload/js/plupload.flash.swf','container':'container','buttonId':'pickfiles', 'url':url});
+    
+});    
+$(".viewPhoto").click(function() {
+    url = "{% url oa_album_photo_detail %}"
+    pid = $(this).attr('rel');
+    $.post(url, {photo_id: pid}, function(result) {
+        data = $.parseJSON(result);
+        $("body").append('<div id="viewPhotoBox"></div>');
+        $("#viewPhotoBox").html(data.con);
+        $("#viewPhotoBox").modal({
+            backdrop: false
+        });
+    });
+})
+$("#part_type").change(function() {
+    var ty = $(this).val();
+    javascript:location.href = '{% url oa_album_detail album.id %}?ty=' + ty;
+});
+var flagType = "-1";
+$("#commit_type").click(function() {
+    flagType = $(this).val();
+});
+function check() {
+    var rimndText = "";
+    if (flagType == "-1") {
+        rimndText = "你还没选择操作类型";
+    } else  {
+        rimndText = "是否执行当前操作";
+    } 
+    var r = confirm(rimndText);
+    if (r == true) {
+        if (flagType == "-1") {
+            return false;
+        } //alert("删除成功");
+    } else {
+        return false;//false:阻止提交表单  
+    }
+}
+</script>
+
+<script type="text/javascript"> 
+  var UploaderFlash = {  
+    init: function (settings) { 
+        var url = settings.url; 
+        var file_size_limit = '5mb'; // 5 MB
+        var flash_swf_url = settings.swf;
+        var button = settings.buttonId;
+        var container =settings.container;  
+        var formtoken = $('#uploadphoto_form input[name=csrfmiddlewaretoken]').val();  
+        var uploadify_settings = {
+            runtimes : 'flash',
+            file_data_name: 'img',
+            browse_button : button,
+            container: container,
+            max_file_size : file_size_limit,
+            max_file_count: 16, // user can add no more then 16 files at a time
+            url : url,
+            chunk_size : '1mb',
+            //resize : {width : , height : , quality : 90},
+            flash_swf_url :flash_swf_url ,
+            //unique_names :true,
+            multipart_params : {
+            "csrfmiddlewaretoken" : formtoken,
+            "file_id" : ''
+            }, 
+            filters : [
+                {title : "Image files", extensions : "jpg,gif,png,bmp"}
+            ] 
+    	}; 
+	var uploader = new plupload.Uploader(uploadify_settings);
+        
+	uploader.bind('Init', function(up, params) { 
+            //$('#filelistbox').html("<div>Current runtime: " + params.runtime + "</div>")
+	}); 
+	uploader.init(); 
+	uploader.bind('FilesAdded', function(up, files) { 
+            var fileItme = '';
+            if(up.files.length > 16){
+                alert("一次只能上传16张照片");
+             }
+            for (var i in files) {
+                if(up.files.length > 16){
+                    up.files.splice(i,1); 
+                }else{
+                    var file = files[i];
+                    if(file.size <= 5*1024*1024){
+                       fileItme += '<div class="flielistbox" id="file_'+file.id+'"><span class="filesname">'+ file.name +'</span>'+'(' + plupload.formatSize(file.size) + ')<span class="types" style="margin:0 10px; " id="typeid_'+file.id+'"></span><a data-id="'+file.id+'" href="javascript:;" class="delectfile1">删除</a></div>'; 
+                    }else{
+                       up.files.splice(i,1); 
+                    } 
+                }
+            }
+            $("#quoteRequests").append(fileItme);
+            $("#uploadphotos").removeAttr("disabled");
+	});
+        uploader.bind('BeforeUpload',function(up,file){ 
+             up.refresh();
+             up.settings.multipart_params.file_id = file.id; 
+        });
+	uploader.bind('UploadProgress', function(up, file) { 
+        var speed =up.total.bytesPerSec ;
+        var speed2 = parseInt(up.total.bytesPerSec/1024) ;
+        var rapportdownloaded = uploader.total.loaded/uploader.total.size*100 ;
+        var percentdownloaded = ((Math.round(rapportdownloaded*100))/100) ;
+        var bytelefttoupload = uploader.total.size-uploader.total.loaded;
+        var eta = secondeenminute(Math.round(bytelefttoupload/speed)); 
+             $("#onload_tp").html( speed2 +'Kb/s,' + percentdownloaded +'% '+ eta);
+            //$(".type").html(percent);
+            $("#typeid_"+file.id).html(file.percent + "% ");
+	}); 
+         uploader.bind('Error', function(up, err) {  
+            if(err.code == -600){
+                  alert("您选着的图片:" + err.file.name + "超过了5mb")
+                  $("#typeid_"+err.file.id).html('<font style="color:red;">太大了</font>');
+            } else if(err.code == -601){
+                 alert("您选着的图片"+ err.file.name+"格式不对");
+            } else if(err.code == -700) { 
+                 alert("您选着的图片"+ err.file.name+"有问题");
+                  $("#typeid_"+err.file.id).html('<font style="color:red;">文件有问题</font>');
+            } 
+            up.refresh(); 
+        });
+
+	uploader.bind('UploadComplete',function(up,file){
+            window.location.reload(); 
+        }) 
+	uploader.bind('FileUploaded', function(up, file, response){
+               var data 
+               try{
+                    data = response.response;
+                    var datas = $.parseJSON(data); 
+                }catch(err){
+                    alert("上传出错!");
+                    $(".type").html("上传出错");
+                    return false;
+                } 
+                if(datas.desc == "ok"){  
+                     
+                }else{ 
+                    return false; 
+                } 
+               
+                 //  
+                 
+               
+	});
+        $('#uploadphotos').click(function() {
+                $("#uploadphotos").attr("disabled","disabled");
+                $("#onLoad_inport").show();
+                $(".types").html("正在上传..."); 
+                uploader.start(); 
+         }); 
+         $(".delectfile1").live('click',function(e){
+             var id =$(this).data("id");
+             $.each(uploader.files, function(i, file){
+                if(id == file.id){
+                    //alert(uploader.files.length); 
+                    uploader.removeFile(file); 
+                    $("#file_"+file.id).remove(); 
+                }  
+            }); 
+            if(uploader.files.length == 0){
+                $("#uploadphotos").attr("disabled","disabled"); 
+            }
+         });
+         function secondeenminute(sec) {
+        if ((sec/60)<1) {
+            return  sec+'sec.' ;
+        } else if ((sec/60)>1 && (sec/3600)<1) {
+            var min = sec/60;
+            sec = sec % 60;
+            return  Math.floor(min)+'min. '+Math.floor(sec)+'sec.' ;
+        } else {
+            var hou = sec/3600;
+            var rmin = sec % 3600;
+            var min = rmin/60;
+            sec = rmin % 60;
+            return  Math.floor(hou)+'h. '+Math.floor(min)+'min. '+Math.floor(sec)+'sec.' ;
+        }
+    }
+         
+    }   
+}
+</script>
+{% endblock %}

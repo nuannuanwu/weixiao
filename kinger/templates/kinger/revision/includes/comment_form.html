@@ -1,0 +1,284 @@
+{% load kinger_tags i18n comments %}
+{% if request.user.is_authenticated %}
+<style>
+    .comment { background-color: #fcfcfc; } 
+    .comment_list { background-color: #fcfcfc; }
+    .info { color: #333333; font-size: 12px; }
+    .comment_time { color: #9c9c9c; }
+    .centent { font-size: 12px; color:#333333; }
+    .centent a { margin-right: 5px; }
+    .centent_btn { margin-bottom: 0; height: 23px; border: none; padding:0 25px; background: url('{{ STATIC_URL }}kinger/img/comment_btn_bg.jpg') no-repeat; }
+    .centent_btn:hover{ filter: alpha(opacity=80);-moz-opacity: 0.8; opacity: 0.8; }
+</style>
+<div class="comment" style="height:500px; margin:10px 10px 0 0; background: #fff;">
+      <div>
+        <!--评论表单-->
+        {% get_comment_form for tile as form %}
+        <form id="comment_form"  action="{% comment_form_target %}" method="post">{% csrf_token %}
+          {{ form.object_pk }}{{ form.content_type }}{{ form.timestamp }}{{ form.site }}{{ form.submit_date }}{{ form.security_hash }}
+          <div>
+            <input id="target_comment" type="hidden" name="cid" value="" /></div>
+            <input type='hidden' name='next' value='{% url kinger_rev_showcomment tile.id %}'/>
+            <input type='hidden' name='notify' value='{% url axis_tile_view tile.id %}?tpage={{tpage}}&channel={{tile|get_channel}}'/>
+            <textarea  name="comment" id="id-comment" style=" -moz-resize: vertical;-webkit-resize: vertical;resize: vertical; display:none" ></textarea>
+            {% if request.user.email %} 
+            
+            {% else %}
+                <div><input type="hidden" name="email" value="kinger_{{request.user.id}}@lifedu.cn" /></div>
+            {% endif %} 
+            
+            {% for field in form %}
+                {% if field.is_hidden %}
+                    <div>{{ field }}</div>
+                {% endif %}
+            {% endfor %}
+            <div class="control-group {% if field.errors %} error {% endif %}">
+                <div class="controls"> 
+                    <div style=" width: 240px; border: 1px solid #44a6cd; margin: 5px 0;">
+                        <!--<span style=" position: absolute; top:-5px; right: 10px;"><img scr="{{ STATIC_URL }}kinger/img/nav_input.jpg" /></span>-->
+                        <textarea style=" -moz-resize: vertical;-webkit-resize: vertical;resize: vertical; min-height: 50px; border: none;  width: 94%; margin-bottom: 0; box-shadow: none;" id="id-comments" name="comments" placeholder="我也说一句"></textarea> 
+                    </div>
+                    <div style=" float: left; width: 188px;">
+                        <div  id="facewY" rel="facewC" class="facew face-ico rpico" style=" margin-left: 0;" alt="0"> 
+                        </div>
+                    </div>  
+                    <input id="comment_for_tile" type="button" class="centent_btn submit-post " value=" "/>
+                    <input id="comment_form_submit" type="button" name="post" class="hide" value=" "/>
+                </div>
+            </div>
+        </form>
+      </div>
+      <!--评论表单-->
+      <!--评论列表-->
+      <input type="hidden" id="rep_comment_id" value="">
+      <input type="hidden" id="rep_comment_ty" value="">
+      <input type="hidden" id="rep_comment_s_id" value="">
+      <div id="comment_list" style=" position:relative; zoom:1;">
+      {% include "kinger/revision/includes/comments_show.html" %}
+    </div> 
+</div> 
+<script type="text/javascript">
+  var Comment_Form = {
+    init: function(e){
+      // document click
+      $("#box_theme_view,#box_tile_view,body").click(function (e) {
+          if ($(e.target).eq(0).is($("[rel=facewC]"))) { 
+              var scrolltop = $(document).scrollTop(), 
+                  wih = $(e.target).eq(0).offset().left,
+                  het = $(e.target).eq(0).offset().top; 
+              het = het - scrolltop; 
+              $("#rep_comment_id").val($(e.target).eq(0).attr("alt"));
+              $(".faceBG_W").css({
+                  left: wih-240 + 'px',
+                  top: het+35+ 'px' 
+              }); 
+             $("#rep_comment_id").val($(e.target).eq(0).attr("alt"));
+             $("#rep_comment_ty").val($(e.target).eq(0).attr("ty"));
+              $(".faceBG_W").show(); 
+          } else {
+              $(".faceBG_W").hide();
+          }
+      });
+      // end document click
+      // 笑脸点击事件
+      $("[rel='emo']").live('click', function () {
+          cid = $("#rep_comment_id").val(); 
+          ty = $("#rep_comment_ty").val();
+          minid =$("#rep_comment_s_id").val(); 
+          if (cid == 0) {
+              $("#id-comments").val($("#id-comments").val() + '[' + $(this).attr("title") + ']');
+          } else {
+              if (ty == 1) {
+                  $("#sub_comment_"+minid+'_'+cid).val($("#sub_comment_"+minid+'_'+ cid).val() + '[' + $(this).attr("title") + ']');
+              } else {
+                  $("#ext_comment_" + cid).val($("#ext_comment_" + cid).val() + '[' + $(this).attr("title") + ']');
+              }
+          }
+          $(".faceBG_W").hide();
+      })
+      //笑脸变黄
+      $(".facew").live("mouseover",function(){ 
+        $(this).removeClass("face-ico").addClass("Qface-ico");
+    }).live("mouseout", function(){
+           $(this).removeClass("Qface-ico").addClass("face-ico");
+    });
+      //显示删除
+      $(".list_itme").live("mouseover", function () {
+          $(this).find(".delete").show();
+      }).live("mouseout", function () {
+          $(this).find(".delete").hide();
+      });
+
+      // 显示回复按钮
+      $(".hf-contentbox").live("mouseover", function () {
+          $(this).find("a.hf-butG").show();
+      }).live("mouseout", function () {
+          $(this).find("a.hf-butG").hide();
+      });
+
+      //显示评论输入框
+      $(".add_comment").live("click", function () { 
+          uid = $(this).attr('alt');
+          var inputtext= $("[rel=comments_" + uid + "]"); 
+          if(inputtext.is(":visible")){ 
+                inputtext.hide(); 
+          }else{ 
+               $(".comment_input").hide();
+                inputtext.show(); 
+          }
+      });
+ 
+      $("[name= reply]").live("click", function () {
+          comment_userid = $(this).attr("rel");
+          comment_id = $(this).attr("alt");
+          var replyinput = $("[rel = reply_" + comment_id + "_" + comment_userid + "]"); 
+          $("#rep_comment_s_id").val($(this).attr("minid"));
+          //$("#target_comment").attr("value",comment_userid);
+          // $("#comment_reply_uname").text($(this).attr("uname"));
+          //$("#comment_reply_content").html($(this).attr("content"));
+          //$("#comment_reply").show();
+          //console.log('rel=reply_'+comment_id +'_'+comment_userid);
+          //$(".comment_input").hide();
+          if(replyinput.is(":visible")){
+                replyinput.hide();
+          }else{ 
+              $(".comment_input").hide();
+               replyinput.show();
+          }
+      });
+      // $(".add_comment").live("click",function(){
+      //  //var srt = '<input name="commet_text" type="text" value="" />';
+      //  $(this).parents('.info').siblings(".comment_input").show();
+      //  //$(this).parents('.info').siblings(".comment_input").append(srt);
+      //})
+
+//      (function bindPostCommentHandler() {
+//         // console.log('bindPostCommentHandler')
+//          $('#comment_form input.submit-preview').remove(); 
+//          
+//      })()
+      //表单提交方法
+      $('#comment_form_submit').live('click',function () {  
+             var str = $("#id-comments").val(),
+                 str1 = $("#id-comment").val(); 
+                var strtext = str + str1;
+                $("#id-comment").val(strtext);
+              if(strtext==""){
+                   alert("请输入内容");
+                   return false;
+              }
+              $.ajax({
+                  type: "POST",
+                  data: $('#comment_form').serialize(),
+                  url: "{% comment_form_target %}",
+                  cache: false,
+                  dataType: "html",
+                  success: function (html, textStatus) {
+                      //alert(html)
+                      $('#comment_list').html('');
+                      $('#comment_list').html(html);
+                      //console.log($('[name=comment]'))
+                      $('[name=comment]').val("");
+
+                      tid = $("#id_object_pk").val();
+                      url_ext = "{% url axis_get_tile_n_comments %}";
+                      $.post(url_ext, {
+                          "tid": tid
+                      }, function (result) {
+                          d = $.parseJSON(result);
+                          $("#tile_comments_" + tid).text(d.num);
+                      });
+                  },
+                  error: function (XMLHttpRequest, textStatus, errorThrown) {
+                      //console.log(XMLHttpRequest)
+                      //console.log(textStatus)
+                      //console.log(errorThrown)
+                  } 
+              });
+              $("#id-comments").val("");
+              $("#id-comment").val("")
+              return false;
+          }); 
+
+      //删除评论
+      $("[rel=delete_tile_comment]").live('click', function () {
+          url = $(this).data("href");
+          $.post(url, {}, function (result) {
+              data = $.parseJSON(result);
+              //console.log(data)
+              if (data.type == "ok") {
+                  $("#comment_list").html('');
+                  $("#comment_list").html(data.con);
+                  tid = $("#id_object_pk").val();
+                  url_ext = "{% url axis_get_tile_n_comments %}";
+                  $.post(url_ext, {
+                      "tid": tid
+                  }, function (result) {
+                      d = $.parseJSON(result);
+                      $("#tile_comments_" + tid).text(d.num);
+                  })
+              } else {
+                  alert("删除失败");
+              }
+          });
+      })
+      //显示更多评论
+      $("#more_comment").live('click', function () {
+          url = $(this).data("href");
+          $.post(url, {}, function (result) {
+              data = $.parseJSON(result);
+              //console.log(data)
+              if (data.type == "ok") {
+                  $("#more_comment").remove();
+                  // $("#comment_list").html('');
+                  // $("#comment_list").html(data.con);
+                  $("#comment_list").append(data.con);
+              } else {
+
+              }
+          });
+      })
+      //输入框获取焦点事件
+      $("#id-comments").focus(function(){
+         $(".comment_input").hide(); 
+      });
+      //提交表单
+      $("#comment_for_tile").live('click',function(){ 
+          $("#target_comment").val('');
+          $('#comment_form_submit').click();
+      })
+      //提交回复1
+      $(".ext_comment_btn").live('click', function () { 
+          //console.log('.ext_comment_btn') 
+          var commentid = $(this).attr('alt');
+          $("#target_comment").val(commentid);
+          var commenttext = $("#ext_comment_" + commentid).val();
+          $('[name=comment]').val(commenttext); 
+          //pr($('#comment_form').serialize())  
+          $('#comment_form_submit').click(); 
+      })
+
+      //提交回复（2）
+      $(".sub_comment_btn").live('click', function () {
+          var commentid = $(this).attr('alt')
+          var minid =$("#rep_comment_s_id").val();
+          $("#target_comment").val(commentid);
+          var commenttext = $("#sub_comment_"+minid+"_"+ commentid).val(); 
+          $('[name=comment]').val(commenttext);
+          //alert(commenttext);
+          $('#comment_form_submit').click(); 
+      })
+    }
+  }
+  
+  $(function () {
+    //表单提交方法
+      if (typeof(_Comment_Form_Init_) == 'undefined' || _Comment_Form_Init_ != true) {
+        Comment_Form.init();
+        _Comment_Form_Init_ = true;
+      }
+      
+  })
+</script>
+     
+{% endif %}

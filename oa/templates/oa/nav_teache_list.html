@@ -1,0 +1,97 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate parts 10 %}
+<div class="main">
+    <div class="tab">
+    	<span>教学教研</span>
+    	<a class="btn" href="{% url oa_part_nav_teache site.id %}?cid=4" style="color:#353535;"><i class="add_btn">&nbsp;</i>添加</a>
+    </div>
+    <div class="column">
+    	<form class="form-inline" id="form_post" onsubmit="return check();" action="{% url oa_part_teache site.id %}?ty={{ty}}" method="POST">{% csrf_token %}
+            	<select class="span2" style="margin-bottom:10px;" id="part_type">
+                	<option value="-1">全部</option>
+                  <option value="0" {% if ty == 0 %}selected="selected"{% endif %}>草稿</option>
+                  <option value="1" {% if ty == 1 %}selected="selected"{% endif %}>发布</option>
+                  <option value="2" {% if ty == 2 %}selected="selected"{% endif %}>置顶</option>
+                </select>
+    	<div class="list">
+            
+              <table id="n-t-l-table">
+                   <thead>
+                        <tr align="center">
+                          <th scope="col"><input type="checkbox" rel="checkall"></th>
+                           <th scope="col">类型</th>
+                           <th scope="col">标题</th>
+                           <!--th scope="col">内容</th-->
+                           <th scope="col">发布者</th>
+                           <th scope="col">发送时间</th>
+                           <th scope="col">操作</th>
+                       </tr>
+                   </thead>    
+                   <tbody>     
+                      {% for p in parts %}
+                      <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                          <td width="30"><input type="checkbox" rel="role" value="{{p.id}}" name="part_pks"></td>
+                          <td width="40">{{p.type|part_type}}</td>
+                          <td width="250"><div class="td-words w_250">{% if p.type == 2%}<span class="no_book">[置顶]&nbsp;</span>{% endif %}{{p.title}}</div></td>
+                          <!--td>{{p.content|safe}}</td-->
+                          <td width="110"><div class="td-words w_110">{{p.creator|default:''}}</div></td>
+                          <td width="110"><div class="td-words w_110">{{p.ctime|date:"Y-m-d G:i"}}</div></td>
+                          <td><a href="{% if p.category.id == 2 or p.category.id == 3 or p.category.id == 4 %}{% if p.category.id == 2 %}{% url oa_part_nav_feature_update p.id %}{% endif %}{% if p.category.id == 3 %}{% url oa_part_nav_recruit_update p.id %}{% endif %}{% if p.category.id == 4 %}{% url oa_part_nav_teache_update p.id %}{% endif %}{% else %}{% url oa_part_nav_grove_update p.id %}{% endif %}">编辑</a></td>
+                      </tr>
+                      {% endfor %}
+                      <tr>
+                      	<td><input type="checkbox" rel="checkall" id="sel-all"></td>
+                        <td colspan="6">
+                        <select id="select_val" class="span2" name="operate">
+                            <option value="-1">-- 批量操作 --</option>
+                            <option value="0">删除</option>
+                            <option value="2">置顶</option>
+                            <option value="1">取消置顶</option>
+                        </select>
+                        <input disabled="disabled" class="btn btn-success delectr" id="sub_form" type="submit" name="" value="执行" style="top:0px; margin-left:0px;" >
+                        </td>
+                      </tr>
+                   </tbody>
+              </table>
+               <div class="pagination" style="text-align:center;">
+               		{% paginate %}
+               </div>
+              <input type="hidden" name="sid" value="{{site.id}}">
+            
+        </div>
+        </form> 
+    </div>  
+ </div>
+
+<script type="text/javascript">
+    $("#n-t-l-table > tbody > tr:odd").addClass("bg_color");
+    $("#part_type").change(function(){
+      var ty = $(this).val();
+      javascript:location.href = '{% url oa_part_teache site.id %}?ty=' + ty;
+    });
+  
+var flagType="-1";
+$("#select_val").click(function(){
+    flagType=$(this).find('option:selected').val();
+});
+function check(){  
+   var rimndText="";
+   if(flagType == -1){
+       rimndText="你还没有选择操类型";
+   }else{
+       rimndText="是否执行当前操作";
+   } 
+   var r=confirm(rimndText);
+	if (r) {
+      if(flagType==-1){
+        return false;
+      }  
+	} else { 
+		  return false;//false:阻止提交表单  
+	}  
+} 
+</script>
+
+{% endblock %}

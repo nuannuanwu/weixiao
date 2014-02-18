@@ -1,0 +1,17 @@
+{% extends "admin/change_form.html" %}  
+  
+{% block extrahead %}  
+<script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/plugins/jquery.hope12580.plugins.min.js"></script>
+<script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/js/base.js"></script>
+<script type="text/javascript">  
+$(function(){
+	uid = $("#id_user").attr("value");
+	if(uid){
+		html = '<a id="modify_user" target="_blank" href="/admin/auth/user/' + uid + '/">修改</a>'
+    	$("#lookup_id_user").after(html)
+	}	
+})
+</script>  
+{% endblock %}  

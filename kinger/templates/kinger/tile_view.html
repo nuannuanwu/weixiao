@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load i18n kinger_tags comments pagination_tags %} 
+
+{% block content %}
+
+<div class="container" id="tileView">
+    <div class="sidebar">
+        <div class="kmonthPic">
+            <h3> {{tile.pub_time.month}} 月 {{tile.pub_time.day}} 日的记录</h3>
+            <div class="kmonthPic-list cf">
+                {# {% latest_tiles_by_date tile.pub_time.year tile.pub_time.month tile.pub_time.day None as day_tiles%} #}
+                {% for day_tile in today_tiles %}                
+                    {% if day_tile.is_report %}
+                        {% if day_tile.is_daily %}
+
+                        {% endif%}
+                        <a class="kSt_{{ day_tile.type_id }}{% if day_tile.id == tile.id %} kmonthPic-cur {% endif %}" href="{% url tile_view day_tile.id %}?channel={{channel|default:"baby"}}" rel="popover" title="{{day_tile.title}}" data-content=
+                        "
+                        {% if day_tile.is_daily %}
+                            {{day_tile.title}}
+                        {% else %}
+                            {{ day_tile.description }}
+                        {% endif %}
+                        " 
+                        data-trigger="hover">
+                            <img src="{{ STATIC_URL }}kinger/img/babystate{{ day_tile.type_id }}.png">
+                            <span class="kmonthPic-cur-icon"></span>
+                        </a>
+                    {% else %}
+                        <a style="background: #EEEEEE;" href="{% url tile_view day_tile.id %}?channel={{channel|default:"baby"}}" class="{% if day_tile.id == tile.id %} kmonthPic-cur {% endif %}" rel="popover" title="{{day_tile.title}}" data-content="{{day_tile.description|default:"暂无描述"|cut_str:50}}" data-trigger="hover">
+                            <img src="{% media_path day_tile.img "img_small"%}">
+                            <span class="kmonthPic-cur-icon"></span>
+                        </a>
+                    {% endif %}                
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="main">
+      <div class="kDetail-box">
+        <div class="kDetail cf">
+              
+                <script language="JavaScript" type="text/javascript" >
+                $(function(){
+                    //左右按键翻页效果
+                    key()
+                    $('#id-comment').focus(function(){
+                        $(document).unbind('keydown')
+                    })
+                    $('#id-comment').blur(function(){
+                        key()
+                    })
+                    function key(){
+                        $(document).keydown(function(){
+                            switch(event.keyCode){
+                                {% if yesterday %}
+                                case 37:javascript:location.href = '{% url tile_view yesterday.id %}?channel={{channel|default:"baby"}}';break;
+                                {% else %}
+                                {% endif %}
+                                {% if next_day %}
+                                case 39:javascript:location.href = '{% url tile_view next_day.id %}?channel={{channel|default:"baby"}}';break;
+                                {% else %}
+                                {% endif %}
+                            }
+                        })
+                    }
+					$(".reversion .rpico").hover(function(){
+						  if($(this).hasClass("gb-rpa")){
+							   $(this).removeClass("gb-rpa").addClass("gb-rpb")
+							  }
+						},function(){
+							 $(this).removeClass("gb-rpb").addClass("gb-rpa")
+							})
+						.click(function(){
+							 $(this).parent(".reversion").hide();
+							 $(".controls > input[type='submit']").attr("value","评论");
+							})
+					$(".controls > #facew").hover(function(){
+						 $(this).removeClass("face-ico").addClass("Qface-ico")
+						},function(){
+							$(this).removeClass("Qface-ico").addClass("face-ico")
+							})
+					$("#hide_comment_reply").click(function(){
+                  		$("#comment_reply").hide();
+                  		$("#target_comment").attr("value","");
+                  	})
+    				$("[name='reply']").click(function(){
+    					comment_id = $(this).attr("rel");
+    					$("#target_comment").attr("value",comment_id);
+    					$("#comment_reply_uname").text($(this).attr("uname"));
+    					$("#comment_reply_content").html($(this).attr("content"));
+    					$("#comment_reply").show();
+    					$('#id-comment').focus();
+						$(".controls > input[type='submit']").attr("value","回复");
+    				})
+					$(".kComList > .kComList-com").hover(function(){
+						$(this).children("a.hf-but").show();
+						},function(){
+							$(this).children("a.hf-but").hide();
+							})
+					$(".hf-contentbox").hover(function(){
+		                   $(this).find("a.hf-butG").show();
+		            },function(){
+			               $(this).find("a.hf-butG").hide();
+			         })
+				    $(".facebox > ul > li").hover(function(){
+						 $(this).css("cursor","pointer");
+					})
+                  })
+                </script>
+            <!-- 头部信息展示 -->
+            <div class="kDetail-bar">
+                {% if tile.is_daily %}
+                    <h1 class="pull-left">学习活动</h1>
+                {% elif tile.is_report %}
+                    <h1 class="pull-left">生活记录</h1>
+                {% else %}
+                <span class="buttons">
+                    <button class="comment btn"><i class="icon-comment"></i> {% trans "Comment" %}<i class="icon-external-link"></i></button>
+                    <button class="btn likeable" data-id="{{tile.id}}" data-href="{% url api_web_tiles_like %}">
+                        {% if tile|liked_by_user:request.user %}
+                            <i class="like icon-heart"></i>&nbsp;<span>{% trans "unlike" %}</span>
+                        {% else %}
+                            <i class="icon-heart"></i>&nbsp;<span>{% trans "Like" %}</span>
+                        {% endif %}
+                    </button>
+                </span>
+                {% endif %}
+                <span class="kDetail-bar-info">
+                    {{ tile.pub_time|date:"Y年m月d日 G:i" }}
+                     来自 <a rel="namecard" data-uid="{{tile.creator_id}}" href="javascript:;"> {{tile.creator.get_profile.chinese_name_or_username}}</a>
+                </span>
+            </div>
+
+            <!-- /头部信息展示 -->
+            
+            <div class="kDetail-picInfo">
+                <!-- 每日安排 -->               
+                {% if tile.is_daily %}
+                <div class="kDetail-plan">
+                    {% daily_setting tile.description as settings %}                            
+                    {% for name, setting in settings.items reversed %}
+                    {% if setting %}
+                    <h3>{% if name == 'cookbooks' %} 食谱预告 {% elif name == 'events' %} 今日活动 {% else %} {% endif %}</h3>
+                    <div class="kDailyItems cf">                        
+                        <span class="kDailyItem-date">
+                            {% if forloop.first %}
+                                {{tile.pub_time|date:"d"}}
+                            {% else %}
+                                {{tile.pub_time|date_forward:1|date:"d"}}
+                            {% endif %}
+                        </span>                        
+                        {% for item in setting %}
+                        <div class="kDailyItem cf">
+                            <span class="kDailyItem-icon kDailyPlan-icon">
+                                <img src="{% media_path item.type.img %}">
+                            </span>
+                            <div class="kDailyItem-con">
+                                <h2>{{item.type.name}}</h2>                                
+                                <p>{{item.content|escape|replace_n|safe}}</p>                            
+                            </div>
+                        </div>
+                        {% endfor%}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <!-- /每日安排 -->
+                <!-- 每日记录展示 -->
+                {% elif tile.is_report %}
+                <div class="kDetail-record">
+                    <div class="kDailyItems cf">
+                        <span class="kDailyItem-date">
+                                {{tile.pub_time.day}}
+                        </span>
+                        <div class="kDailyItem cf">
+                            <div class="kDailyItem-icon kSt_{{tile.type_id}}">
+                                <span class="kSt_Img"></span>
+                            </div>
+
+                            <div class="kDailyItem-con">
+                                <h2>{{tile.title}}</h2>
+                                <p>{{tile.description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /每日记录展示 -->
+                {% else %}
+                <!-- 图片展示 -->
+                
+                <div class="kpicInfo-pic" style="text-align: center">
+                    <img src="{% media_path tile.img "img_large" %}" alt="">
+                </div>
+                <h3>{%if tile.category and tile.category_id != 17 %}<strong class="title_wz">[{{tile.category}}]</strong>{% endif %}{{tile.title}}</h3>
+                {% if tile.description %}
+                <pre>{{tile.description|safe}}</pre>
+                {% endif %}
+                {% if tile.is_content %}
+                <div class="kpicInfo-pic">
+                  {{tile.content|code_to_video|safe}}
+                </div>
+                {% endif %}
+                <!-- /图片展示 -->
+                {% endif %}
+                {# <div id="comment-anchor"></div> #}
+            </div>
+            {% if tile.is_daily %}
+            {% elif tile.is_report %}
+            <!-- 翻页工具条 -->
+                <div class="kToolbar">
+                    <ul>
+                    <li class="kToolbar-turn">
+                       <div class="kt"> 
+                        {% if yesterday %}
+                            <a class="kToolbar-turn-left btn" href="{% url tile_view yesterday.id %}?channel={{channel|default:"baby"}}" rel="tooltip" data-title="{% trans "Previous" %}"><i class="icon-arrow-left icon-large"></i></a>
+                        {% else %}
+                            <a class="kToolbar-turn-left btn disabled"><i class="icon-arrow-left icon-large"></i></a>
+                        {% endif %}
+                        {% if next_day %}
+                            <a class="kToolbar-turn-right btn" href="{% url tile_view next_day.id %}?channel={{channel|default:"baby"}}" rel="tooltip" data-title="{% trans "Next" %}">&nbsp;<i class="icon-arrow-right icon-large"></i>&nbsp;&nbsp;</a>
+                        {% else %}
+                            <a class="kToolbar-turn-right btn disabled"><i class="icon-arrow-right icon-large"></i>&nbsp;&nbsp;</a>
+                        {% endif %}
+                       </div> 
+                    </li>
+                    <li><a class="btn" href="{% if ty %}{% url kinger_cal %}?month={{month}}{% else %}{% url home %}?channel={{channel|default:"baby"}}{% endif %}">{% trans "Back" %}</a></li>
+                    </ul>
+               </div>
+            <!-- /翻页工具条 -->
+            {% else %}
+            <div class="kComment" id="comment">
+            	<div class="reversion hide" id="comment_reply">
+			       <div class="rename">回复<span id="comment_reply_uname"></span>:</div>
+			       {% autoescape off %}
+			       <p class="reversion-content" id="comment_reply_content"></p>
+			       {% endautoescape %}
+			       <div class="gb-rpa rpico" id="hide_comment_reply"></div>
+			    </div>
+                {% include "kinger/includes/comment_form.html" with comment=comment %}
+                <hr/>
+                <div class="kComList">
+                {% if comments %}{% autopaginate comments 8 %}{% endif %}                
+                    {% for comment in comments %}
+                        {% if not comment.is_removed and comment.is_public %}
+                        <div class="kComList-com cf" id="comment_div_{{comment.id}}" style=" padding-bottom: 20px;padding-top: 20px;position: relative;">
+                            <a class="kComList-com-ava" href="javascript:void(0)" rel="namecard" data-uid="{{ comment.user.pk }}">
+                                <img alt="{{comment.user}}" src="{% media_path comment.user.get_profile.get_avatar "avatar" %}">
+                            </a>
+                            <div class="kComList-com-con">
+                                <div class="kHead">
+                                    {% ifequal comment.user request.user %}
+                                        <span class="kClose-wrap">
+                                            <a rel="tooltip" class="a_confirm_link close" data-title="{% trans "Delete this comment?" %}" href="{% url tile_delete_comment comment.id %}" >×</a>
+                                        </span>
+                                    {% endifequal %}
+                                    <span class="kHead-date">
+                                        <small rel="tooltip" data-title="{{ comment.submit_date|date:"具体时间: Y-m-d G:i"}}">{{comment.submit_date|natural_time}}</small>
+                                    </span>
+                                    <a class="kHead-name" href="{% url userena_profile_detail comment.user.username %}">
+                                        {{comment.user.get_profile.chinese_name_or_username}}
+                                    </a>
+                             </div>
+                                <div class="kCon">
+                                    {{comment.comment|code_to_img|safe}}
+                                </div>
+                            </div>
+                            {% get_comment_reply comment as reply %}
+                            {% if reply %}{% include "kinger/reply.html" with reply=reply %}{% endif %}
+                        	<a href="javascript:;" class="hf-but" name="reply" rel="{{comment.id}}" uname="{{comment.user.get_profile.chinese_name_or_username}}" content="{{comment.comment|code_to_img|safe}}"><span>回复</span></a>
+                        </div>
+                        <hr>
+                        {% endif %}
+                    {% endfor %}
+                {% paginate %}
+                </div>
+            </div>
+            </div>
+<!-- 翻页工具条 -->
+            <div class="kToolbar">
+                <ul>
+                <li class="kToolbar-turn">
+                   <div class="kt"> 
+                    {% if yesterday %}
+                        <a class="kToolbar-turn-left btn" href="{% url tile_view yesterday.id %}?channel={{channel|default:"baby"}}" rel="tooltip" data-title="{% trans "Previous" %}"><i class="icon-arrow-left icon-large"></i></a>
+                    {% else %}
+                        <a class="kToolbar-turn-left btn disabled"><i class="icon-arrow-left icon-large"></i></a>
+                    {% endif %}
+                    {% if next_day %}
+                        <a class="kToolbar-turn-right btn" href="{% url tile_view next_day.id %}?channel={{channel|default:"baby"}}" rel="tooltip" data-title="{% trans "Next" %}">&nbsp;<i class="icon-arrow-right icon-large"></i>&nbsp;&nbsp;</a>
+                    {% else %}
+                        <a class="kToolbar-turn-right btn disabled"><i class="icon-arrow-right icon-large"></i>&nbsp;&nbsp;</a>
+                    {% endif %}
+                   </div> 
+                </li>
+                <li><a class="btn" href="{% if ty %}{% url kinger_cal %}?month={{month}}{% else %}{% url home %}?channel={{channel|default:"baby"}}{% endif %}">{% trans "Back" %}</a></li>
+                </ul>
+           </div>
+<!-- /翻页工具条 -->
+            </div>
+             {% endif %}
+        </div>
+    </div>
+</div> 
+<script type="text/javascript">html5video();</script>
+{% endblock %}
+
+{% block extra_css %}
+<style type="text/css">
+.container{ width: 852px !important; width:852px; }
+#tileView,.row{ margin-left:0px;}
+.sidebar{float: left; width: 222px;background:#FFF; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);}
+.main{ width: 615px; float: right;}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/js/tile.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}oa/site/js/videoplay/flowplayer-3.2.12.js"></script>
+{% if request.GET.for_comment %}
+<script type="text/javascript">
+$(function(){
+    //自动定位到评论
+    var $body=(window.opera)? (document.compatMode=="CSS1Compat"? $('html') : $('body')) : $('html,body');
+    $body.animate({scrollTop: $('#comment').offset().top - 300}, 0);
+    setTimeout(function(){
+        $('#id-comment').focus();
+        $body.animate({scrollTop: $('#comment').offset().top - 300}, 0);
+    },50) 
+})
+</script>
+{% endif %}
+<script>
+    $(function(){
+        flowplayer("a.video-player", "{{ STATIC_URL }}oa/site/js/videoplay/flowplayer-3.2.16.swf",{ 
+              clip: {
+                autoPlay: false,  
+                autoBuffering: true  
+              } 
+            }
+        );
+    })
+</script>
+{% endblock %}

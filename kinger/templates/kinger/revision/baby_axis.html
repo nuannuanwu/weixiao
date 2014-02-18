@@ -1,0 +1,277 @@
+{% extends 'kinger/base.html' %}
+{% load i18n kinger_tags comments pagination_tags %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/dateTime.css"> 
+{% endblock %}
+{% block tile_bar %}
+<div class="kTileBar" style="padding: 10px 12px;"> 
+        {% include "kinger/revision/includes/pin_or_board.html" %}
+        <a class="down-btn" style="float:right" href="{% url manage_schedule_student %}" title="周课表下载">周课表下载</a>
+        <div style="margin-right:700px;; font-size:24px; font-weight: 100; color: #555;">成长档案</div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+<ul class="axis" rel="240" style=" padding-bottom: 20px; margin-left: 40px;" ty="axis"> 
+    {% if request.user.student and request.user.student.group %} 
+        {% include "kinger/revision/baby_axis_container.html" with data=data %}
+    {% else %}
+        <li class="tile" style="padding-left: 10px; border-left: 2px solid #dbdbdb;" >
+            <div>
+                <div class="dateTs" style="position: relative;">
+                    <span class="date_day" >{% now "m-d" %}</span>
+                </div>
+                <ul class="pic_itme record" style="overflow: hidden; margin-bottom: 0;">
+                <!--日常记录-->
+                <li class="no_date_bg" style="cursor: auto;"> 
+                    <div class="title">
+                        <img src="{{ STATIC_URL }}kinger/img/record.png"/>
+                    </div> 
+                    <div class="content"> </div> 
+                </li>
+                <!--日常活动-->
+                <li class="no_date_bg" style="cursor: auto;" > 
+                    <div class="title">
+                        <img src="{{ STATIC_URL }}kinger/img/study.png"/>
+                    </div>
+                    <div class="content"> </div> 
+                </li>
+                <!--明日食谱-->
+                <li class="no_date_bg" style="cursor: auto;"> 
+                    <div>
+                        <img src="{{ STATIC_URL }}kinger/img/dietary.png"/>
+                    </div>
+                    <div class="content"> </div> 
+                </li>
+            </div>
+        </li> 
+    {% endif %}
+</ul>
+
+<div id="pagination" style="display:none">
+    <div class="pagination">
+      <ul>
+        <li class="disabled"><a href="javascript:;">«</a></li> 
+        <li class="active"><a href="#">1</a></li>
+        <li><a href="?page=2&date={{date_sel}}">2</a></li>
+      </ul>
+  </div>
+</div>
+{% include "kinger/revision/includes/bomb_box.html" %}
+{% endblock %}
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/js/tile.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}kinger/js/rev_tile.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}datepicker/WdatePicker.js" type="text/javascript"></script>
+<script type="text/javascript">
+window.NOAUTOFOOT = 1;
+</script>
+<script type="text/javascript">
+    
+    $(function(){ 
+        var hasdiv=$(".walink > ul > li.hasdata");
+        var hidiv=$(".walink > ul > li.hasdata > .divhidden");
+        hidiv.hide();
+        hasdiv.hover(function(){
+            $(this).children(".divhidden").slideToggle(200);
+        },function(){
+            $(this).children(".divhidden").hide();
+        });
+                
+    });
+//    $("#box_tile_view").bind("scroll",function(){ 
+//        var boxTop= $("#box_tile_view").scrollTop(),
+//            setTop = $(".kToolbar").offset().top;
+//        var strTop =setTop -boxTop ;
+//        alert(strTop);
+//        if( strTop >600){
+//            //$(".kToolbar").hide();
+//        }
+//    });
+    //加载更多瓦片
+    $("[rel=more_tile]").live('click',function(){
+        obj = $(this).parent();
+        d = $(this).attr("alt");
+        page_count = $(this).find('input').val();
+        url = "{% url kinger_axis_daily_baby_tiles %}";
+        $.post(url,{date:d,num:page_count},function(result){
+            data = $.parseJSON(result); 
+            obj.before(data.con);
+            obj.remove();
+            //初始化瀑布流
+            var $container = $('.axis');
+            cwidth = $container.attr("rel");
+            if(cwidth){
+                column_width = Number(cwidth);
+            }else{
+                column_width = 234; 
+            } 
+            $container.imagesLoaded(function(){
+                $container.masonry({
+                    columnWidth: column_width
+                });
+            });
+
+        }); 
+    })
+
+    //时光轴日常记录
+    $("[rel=record_all],[rel=record_child]").live("click",function(){ 
+        d = $(this).attr("date");
+        t = $(this).attr("alt");
+        p = $(this).attr("page");
+        $("#box_record").html('');
+        $('#box_record_view').modal('toggle');
+        $("body").addClass("body_hide_scroll");
+        $("html").addClass("body_hide_scroll");//ie6/Ie7
+        $("#colse").show(); 
+        url = "{% url kinger_axis_daily_record %}";
+        $(".axis_loading").show()
+        $.post(url,{date:d,ty:t,page:p},function(result){
+            data = $.parseJSON(result); 
+            $("#box_record").html(data.con).show();
+            $(".axis_loading").hide();
+        }); 
+    })
+    //日常记录分类显示
+    //var show = 0;
+    $('[name=order_type]').live('click',function(){
+        show =$(this).attr('min')
+        typeid = $(this).attr('alt')
+         $(".lb-items ul li").removeClass("checked_on"); 
+        if(show ==0){
+            $('[name = order_type]').attr('min','0')
+            $(this).attr('min','1')
+            $('[name = order_type]').removeClass("checked_on");
+            $(this).addClass("checked_on")
+            $('[name = order]').removeClass("left-border");
+            $('[name = order]').addClass("transparent_class");
+            $('[order = order_'+typeid+']').removeClass("transparent_class");
+            $("[rel=record_pre],[rel=record_next],#datepicker").attr('alt',typeid);
+             $('[order = order_'+typeid+']').addClass("left-border");
+        }else {
+            $('[name = order]').removeClass("transparent_class");
+            $('[name = order_type]').removeClass("checked_on");
+            $('[name = order_type]').attr('min','0')
+            //$(this).attr('min','0')
+            $("[rel=record_pre],[rel=record_next],#datepicker").attr('alt',0);
+            $('[name = order]').removeClass("left-border");
+        } 
+    });
+    
+    //日常记录翻页
+    $("[rel=record_pre],[rel=record_next]").live("click",function(){ 
+        d = $(this).attr("date");
+        t = $(this).attr("alt");
+        p = $(this).attr("page");
+        url = "{% url kinger_axis_daily_record %}";
+        $(".axis_loading").show()
+        $.post(url,{date:d,ty:t,page:p},function(result){
+            data = $.parseJSON(result);
+            $("#box_record").html('');
+            $("#box_record").html(data.con).show();
+            $(".axis_loading").hide()
+        }); 
+    })
+
+    //日常活动
+    $("[rel=active_all]").live("click",function(){
+
+        d = $(this).attr("date");
+        url = "{% url kinger_axis_daily_activity %}";
+        $("#active_view_conent").empty();
+        $('#box_active').modal('toggle'); 
+        $("body").addClass("body_hide_scroll");
+        $("html").addClass("body_hide_scroll");//ie6/Ie7 
+        $("#colse").show(); 
+        $(".axis_loading").show()
+        $.post(url,{date:d},function(result){
+            data = $.parseJSON(result);  
+            $("#active_view_conent").html(data.con).show();
+            $(".axis_loading").hide()
+        });
+    })
+    //日常活动翻页
+    $("[rel=active_pre],[rel=active_next]").live("click",function(){
+        pk = $(this).attr("pk");
+        url = "{% url kinger_axis_daily_activity %}";
+        $(".axis_loading").show()
+        $.post(url,{id:pk},function(result){
+            data = $.parseJSON(result);  
+            $("#active_view_conent").empty();
+            $("#active_view_conent").html(data.con).show();
+            $(".axis_loading").hide()
+        });
+    })
+
+   //食谱
+    $("[rel=cookbook_all]").live("click",function(){ 
+        $("#box_cookbook").empty();
+        $('#box_cookbook_view').modal('toggle');
+        //$("#box_cookbook").show();
+        $("body").addClass("body_hide_scroll");
+        $("html").addClass("body_hide_scroll");//ie6/Ie7
+        $("#colse").show();
+        d = $(this).attr("date"); 
+        url = "{% url kinger_axis_daily_cookbook %}";
+        $(".axis_loading").show()
+        $.post(url,{date:d},function(result){
+            data = $.parseJSON(result); 
+            $("#box_cookbook").html(data.con).show();
+            $(".axis_loading").hide()
+        }); 
+    });
+    
+    // //食谱翻页
+    $("[rel=cookbook_pre],[rel=cookbook_next]").live("click",function(){
+        pk = $(this).attr("pk");
+        url = "{% url kinger_axis_daily_cookbook %}";
+        $(".axis_loading").show()
+        $.post(url,{id:pk},function(result){
+            data = $.parseJSON(result); 
+            $("#box_cookbook").empty();
+            $("#box_cookbook").html(data.con).show();
+            $(".axis_loading").hide()
+        }); 
+    })
+          
+
+    function cal_date(dates, obj){
+        WdatePicker({
+            el: obj,
+            opposite:true,
+            disabledDates:dates,
+            maxDate:'%y-%M-%d',
+            isShowClear:false,
+            isShowOthers:false,
+            autoPickDate:true,
+            isShowOK:true,
+            errDealMode:true,
+            highLineWeekDay:false,
+            dateFmt:'MM-dd',
+            onpicked:function(dp){
+                date = dp.cal.getDateStr();
+                date_fmt = dp.cal.getP('y') + '-' + dp.cal.getP('M') + '-' + dp.cal.getP('d') 
+                if(date){
+                    url = '{% url kinger_rev_time_axis %}?date=' + date_fmt +'&ty={{type}}';
+                    javascript:location.href = url;
+                }else{
+                    return false;
+                }   
+            }
+        })
+    }
+    
+    $(".date_day_select").live("click",function(){
+        dates_url = "{% url kinger_rev_axis_effective_date %}";
+        var obj = this;
+        $.post(dates_url,function(result){
+            data = $.parseJSON(result); 
+            dates = data.effective_date;
+            cal_date(dates, obj)
+        });   
+    })
+</script>
+{% endblock %}
+

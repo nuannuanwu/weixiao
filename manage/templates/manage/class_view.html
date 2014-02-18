@@ -1,0 +1,84 @@
+{% extends 'manage_base.html' %}
+{% load i18n kinger_tags %}
+
+{% block content %}
+
+<div class="page-header">
+    <span class="pull-right">
+        <a href="{% url manage_class_update class.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
+    </span>
+    <span class="pull-right" style="margin-right:5px;">
+        <a href="{% url manage_class_list %}" class="btn">{% trans "Back" %}</a>
+    </span>
+    <h1><a href="{% url manage %}">学校管理</a><i class="icon-chevron-right"></i><a href="{% url manage_class_list %}">班级管理</a><i class="icon-chevron-right"></i>班级详情</h1>
+</div>
+
+<div>
+    <div class="row">
+        <div class="thumbnail span3">
+            <img src="{% media_path class.logo "normal" %}" alt="">
+        </div>
+
+        <div class="span5">
+            <h3>{{class}}</h3>
+            <p> {{ class.description }} </p>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+
+<div class="tabbable">
+
+
+    <ul class="nav nav-tabs">
+        <li {% if role == 0 %}class="active pull-left" {% endif %}><a href="{% url manage_class_view class.id%}?role=0">{% trans "Student list" %}</a></li>
+        <li {% if role == 1 %}class="active pull-left" {% endif %}><a href="{% url manage_class_view class.id %}?role=1" >{% trans "Teacher list" %}</a></li>
+    	<li id="add_user">
+        <!-- single dropdown -->
+        {% if role == 1 %}
+            {% url manage_class_add_teacher as add_user_url %}
+        {% else %}
+            {% url manage_class_add_student as add_user_url %}
+        {% endif %}
+        	<form action="{{ add_user_url }}" method="POST"
+            	class="pull-right" style="margin: 0 3px 0 0;">
+            {% csrf_token %}
+            	<input type="hidden" name="class_id" value="{{ class.id }}" />
+           		<input type="hidden" name="role" value="{{ role }}" />
+            {% if role == 0 %}
+                <select name="student_id" class="chosen" style="width:200px;">
+                <option value="" >{% trans "Choose student" %}</option>
+            {% else %}
+                <select name="teacher_id" class="chosen" style="width:200px;">
+                <option value="" >{% trans "Choose teacher" %}</option>
+            {% endif %}
+                {% for u in users %}
+                <option value={{u.id}}>{{u}}</option>
+                {% endfor %}
+            	</select>
+            	<button type="submit" class="btn btn-success">
+                <i class="icon-plus-sign"></i>&nbsp;
+                {% trans "Add" %}
+            	</button>
+        	</form>
+    	</li>
+    </ul>
+
+
+    <div class="tab-content">
+        <div class="tab-pane {% if role == 0 %} active {% endif %}" id="tab1">
+            {% include 'manage/includes/class_view_users.html' with role=0 class=class users=students %}
+        </div>
+        <div class="tab-pane {% if role == 1 %} active {% endif %}" id="tab2">
+            {% include 'manage/includes/class_view_users.html' with role=1 class=class users=teachers %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
+

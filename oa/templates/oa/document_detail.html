@@ -1,0 +1,36 @@
+{% load i18n kinger_tags oa_tags %} 
+<div class="main" style=" font: 14px Microsoft YaHei, Arial, Helvetica, sans-serif; width: 980px; margin: 0 auto;">
+    <div class="column">
+        <div class="file_info" style=" margin: 0 auto; width: 905px; border: 1px solid #DDDDDD; background: #f2f2f2; padding:0 10px 10px 10px;">
+            <p style=" margin: 6px 0;">撰文人:<span style="margin-left: 25px;">{{doc.sender.profile.realname}}</span></p>
+            <p style=" margin: 6px 0;">公文类型:<span style="margin-left: 10px;">{{doc.category}}</span></p>
+            <p style=" margin: 6px 0;">公文级别:<span style="margin-left: 10px;">{{doc.level|document_level}}</span></p>
+            <div style="margin-bottom:10px;"> 
+                <div style="float:left;" >发送对象:</div> 
+                <div style="margin-left:70px;"> {% for r in receivers %}<span style="margin-right:20px;">{{r.user.teacher.name}}({{r.user.teacher.school}})</span>{% endfor %}</div>
+            </div>
+            
+            <p style=" margin: 6px 0;">发布时间：{{doc.ctime|date:"Y-m-d G:i"}}</p>
+            <div>公文附件：{% if files.count %}
+                <a style="color: #4eabe3; text-decoration: none;" href="{% url oa_download_zip_document doc.id %}">全部下载(共{{files.count}}附件)</a>
+            {% else %}<span style="color:#999; ">全部下载(共{{files.count}}附件)</span> {% endif %}
+                 <div class="file" style=" margin-left: 75px; color: #4eabe3;"> {% for f in files %} <a  style="color: #4eabe3;line-height:32px; text-decoration: none; padding: 0 15px; background: url('{{ STATIC_URL }}oa/images/add_files.gif') no-repeat;"class="pic_file" href="{% url oa_download_document f.id %}">{{f.name}}</a>{% endfor %} </div>
+             </div> 
+        </div> 
+  
+        <div style=" margin: 0 auto; min-height: 400px; width: 905px; border: 1px solid #DDDDDD; margin-bottom: 30px; margin-top: 30px;  padding:0 10px 10px 10px;">
+            <div>{{doc.content|safe}}</div>
+            <div style="overflow:hidden; text-align:center;">
+                <div style="width:280px; float:right;">{{doc.inscribed}}</div>
+                <div style="width:280px; clear:both; float:right; ">{{doc.send_time|date:"Y-m-d"}}</div>
+            </div>
+        </div> 
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+</script>
+
+ 

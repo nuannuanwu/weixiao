@@ -1,0 +1,636 @@
+{% load i18n kinger_tags umessages_tags notifications_tags %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/face.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/webHeader.css"> 
+<div class="nav-bar navbar-fixed-top">
+    <div class="">
+        <div class="menu">
+            <div  id="dropdown_menu" class="dropdown nav_bg1 pull-left" style=" display: block; position: relative; zoom: 1;">
+                <div class="boshover" style="cursor: pointer;"></div>
+                {% if request.user.is_authenticated %} 
+                    <div class="remind_first" name="browse">
+                        <div class="remind_box" style="width:150px">
+                            <div class="remind_content">
+                                <span class="remind_text">从这里开始浏览微校</span>
+                                <!--<a class="remind_colse">x</a>-->
+                            </div>
+                            <span class="remind_nav"></span>
+                        </div>
+                    </div>
+                 {% endif %}
+                <div id="allsort_list" class="allsort_list" role="menu" style="width: 150px; border-top: 2px solid #f49624; display: none;">
+                  <div class="title" style="">
+                        <a rel="" href="{% url kinger_edu_index %}">育儿频道</a>
+                    </div>
+                    <div class="item" rel="1" on="hover">
+                        <a class="hover" href="{% url kinger_edu_index %}?cid=2100">育儿百科</a>
+                        <div  class="subitem fore1 subitem_bg_1" style="display:none;">
+                            <div class="left_border_bg"></div>
+                            <h3>育儿百科</h3>
+                            <div class="sub_list">
+                                <dl>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2110">教育资讯</a>
+                                    </dt>
+                                    <dd>
+                                        <a href="{% url kinger_edu_index %}?cid=2111">幼升小指南</a><em></em>
+                                        <a href="{% url kinger_edu_index %}?cid=2112">新闻热点</a><em></em>
+                                        <a href="{% url kinger_edu_index %}?cid=2113">校园快报</a>
+                                    </dd>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2120">成长科普</a>
+                                    </dt>
+                                    <dd>
+                                        <a href="{% url kinger_edu_index %}?cid=2121">科普知识</a>
+                                        <em></em>
+                                        <a href="{% url kinger_edu_index %}?cid=2122">养育知识</a>
+                                    </dd>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2130">饮食保健</a>
+                                    </dt>
+                                    <dd>
+                                        <a href="{% url kinger_edu_index %}?cid=2131">饮食</a>
+                                        <em></em>
+                                        <a href="{% url kinger_edu_index %}?cid=2132">健康</a>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div rel="2" class="item " on="hover">
+                        <a href="{% url kinger_edu_index %}?cid=2200">亲子乐园</a>
+                        <div class="subitem fore2 subitem_bg_1" style="display: none;">
+                            <div class="left_border_bg"></div>
+                            <h3>亲子乐园</h3>
+                            <div id="" class="sub_list">
+                                <dl>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2210">故事</a>
+                                    </dt>
+                                    <dd>&nbsp;</dd>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2220">游戏</a>
+                                    </dt>
+                                    <dd>&nbsp;</dd>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2230">读物</a>
+                                    </dt>
+                                    <dd>&nbsp;</dd>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2240">课件</a>
+                                    </dt>
+                                    <dd>&nbsp;</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div rel="3" class="item" on="hover">
+                        <a href="{% url kinger_edu_index %}?cid=2300" class="hover">幸福家庭</a>
+                        <div class="subitem fore3 subitem_bg_1" style=" display:none;">
+                            <div class="left_border_bg"></div>
+                            <h3>幸福家庭</h3>
+                            <div id="" class="sub_list">
+                                <dl>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2310">家庭理财</a>
+                                    </dt>
+                                    <dd>&nbsp;</dd>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2320">家庭经营</a>
+                                    </dt>
+                                    <dd>&nbsp;</dd>
+                                    <dt>
+                                    <a href="{% url kinger_edu_index %}?cid=2330">家庭旅游</a>
+                                    </dt>
+                                    <dd>&nbsp;</dd> 
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div rel="4" class="item" on="hover" >
+                        <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?ty=theme" class="hover" data-cid="">主题内容</a>
+                        <div id="theme_activity" class="subitem fore4 subitem_bg_1" style=" display:none;">
+                            <div class="left_border_bg"></div>
+                            <h3>主题内容</h3>
+                            <!-- <ul class="theme_recommend" style=" width: 350px; display: inline-block; padding:0px;">  
+                            </ul>-->
+                            <div class="theme_list" style="display: block;">
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2401" data-cid="2401">诚实与善良</a>
+                                    <em></em>
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2402" data-cid="2402">理财智慧</a>
+                                    <em></em>
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2403" data-cid="2403">自信与乐观</a> 
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2404" data-cid="2404">爱与被爱</a>
+                                    <em></em>
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2405" data-cid="2405">母亲与感恩</a>
+                                    <em></em>
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2406" data-cid="2406">父亲与勇敢</a>
+                                    
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2407" data-cid="2407">自立与自律</a>
+                                    <em></em>
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2408" data-cid="2408">学习与创意</a>
+                                    <em></em>
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2409" data-cid="2409">自理与责任</a>
+                                     
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2410" data-cid="2410">沟通与情绪</a>
+                                    <em></em>
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2411" data-cid="2411">逆境与智慧</a>
+                                    <em></em>
+                                    <a rel="theme_view" href="javascript:;" data-href="{% url kinger_rev_theme_view %}?cid=2412" data-cid="2412">健康与休闲</a>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="title">
+                        <a href="{% url kinger_life_edu_index %}?cid=3000">生命学堂</a>
+                    </div>
+                    <div class="item">
+                        <a href="{% url kinger_life_edu_index %}?cid=3100" >情绪管理</a>
+                    </div>
+                    <div class="item">
+                        <a href="{% url kinger_life_edu_index %}?cid=3200">品格塑造</a>
+                    </div>
+                    <div class="item">
+                        <a href="{% url kinger_life_edu_index %}?cid=3300">亲子关系</a>
+                    </div>
+                    <div class="item">
+                        <a href="{% url kinger_life_edu_index %}?cid=3400">婚姻家庭</a>
+                    </div>
+                    <div class="item">
+                        <a href="{% url kinger_life_edu_index %}?cid=3500" >潜能开发</a>
+                    </div>
+                    <div class="item">
+                        <a href="{% url kinger_life_edu_index %}?cid=3600" >专家辅导</a>
+                    </div>
+                    <div class="title">
+                        <a rel="cookielink" href="{% url kinger_rev_time_axis %}" >成长档案</a>
+                    </div>
+                    <div rel="5" class="item" on="hover">
+                        <a href="{% url kinger_baby_index %}?cid=1100" class="hover">学园记录</a>
+                        <div class="subitem fore5 subitem_bg_1" style="display:none;">
+                            <div class="left_border_bg"></div>
+                            <h3>学园记录</h3>
+                            <div class="sub_list">
+                                <dl>
+                                    <dt>
+                                    <a href="{% url kinger_baby_index %}?cid=1110">发展阶段评估</a>
+                                    </dt>
+                                    <dd style="margin-left: 100px">
+                                        <a href="{% url kinger_baby_index %}?cid=1111">健康</a>
+                                        <em></em>
+                                        <a href="{% url kinger_baby_index %}?cid=1112">语言</a>
+                                        <em></em>
+                                        <a href="{% url kinger_baby_index %}?cid=1113">科学</a>
+                                        <em></em>
+                                        <a href="{% url kinger_baby_index %}?cid=1114">社会性发展</a>
+                                         <em></em>&nbsp;&nbsp;
+                                        <a href="{% url kinger_baby_index %}?cid=1115">艺术</a>
+                                        <em></em>
+                                        <a href="{% url kinger_baby_index %}?cid=1116">其它</a>
+                                    </dd>
+                                    <dt>
+                                    <a href="{% url kinger_baby_index %}?cid=1120">特殊活动</a>
+                                    </dt>
+                                    <dd style="margin-left: 100px">
+                                        <a href="{% url kinger_baby_index %}?cid=1121">生日活动</a>
+                                        <em></em>
+                                        <a href="{% url kinger_baby_index %}?cid=1122">节日活动</a>
+                                    </dd> 
+                                </dl>
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="item">
+                        <a href="{% url kinger_baby_index %}?cid=1200" >家庭记录</a>
+                    </div>
+                    <div style="border-top: 1px solid #f1f1f1; width: 140px; height: 1px; "></div>
+                    <div rel="6" class="title"  on="hover" >
+                        <span class="ioc mobile "></span>
+                        <a href="javascript:;">移动应用</a>
+                        <!--手机应用-->
+                        <div class="subitem fore6 subitem_bg_2" style=" display: none;">
+                            <div class="left_border_bg"></div>
+                            <h3>移动应用</h3>
+                            <div id="" class="sub_list">
+                                <div id="ioc_mobile_app" class="box_bg_2">
+                                    <ul class="mobile_app_dropdown">
+                                        <li>
+                                            <a class="ipad" target="_blank" href="http://app.hopejy.cn/jytn">&nbsp;</a>
+                                        </li>
+                                        <li>
+                                            <a class="android" target="_blank" href="http://app.hopejy.cn/jytn_android">&nbsp;</a>
+                                        </li>
+                                    </ul>
+                                    <div class="weixin" style="padding-left: 30px;">
+                                        <div style=" float: left; ">
+                                            <img src="{{ STATIC_URL }}kinger/img/saoyisao.jpg" />
+                                        </div>
+                                        <div style="float: left;" >
+                                            <div class="weixin_img" style="" >
+                                                <img src="{{ STATIC_URL }}kinger/img/android.png" /> 
+                                                <i>Android版下载</i>
+                                            </div>
+                                            <div  class="weixin_img" style="">
+                                                <img src="{{ STATIC_URL }}kinger/img/apad.png" />
+                                                <i>iPad版下载</i>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>   
+                            </div>
+                        </div> 
+                        <!--/手机应用-->
+                    </div>
+                    <div class="title">
+                        <span class="know"></span>
+                        <a href="{% url kinger_introduction %}">了解一下</a>
+                    </div>
+                </div> 
+            </div>
+            
+             <div class ="nav_new pull-right">
+                {% if user.is_authenticated %}
+                <ul class="nav">
+                    <!--老师-->
+                    {% if user.teacher.id %} 
+                    <li class="hover_on">
+                        <a class=" {% activer oa %}" href="{% url oa_home %}">
+                            <em class="nav-boder"></em>
+                            <span>办公</span>
+                            {% if not user.student.id %}
+                            <em class="nav-boder"></em>
+                            {% endif %}
+                        </a>
+                    </li>
+                    {% endif %}
+                     <!--/老师-->
+                    <!--学生-->
+                    {% if user.student.id %}
+                    <li class="hover_on" style="position: relative;">
+                        <a class="release" href="javascript:;" id="create_baby_tile">
+                            <em class="nav-boder"></em>
+                            <span>发布</span>
+                            <em class="nav-boder"></em>
+                        </a>
+                        <div class="remind_first" name="message" >
+                            <div class="remind_box" style="min-width: 190px; " >
+                                <div class="remind_content">
+                                    <span class="remind_text" style="min-width: 180px; ">
+                                        在这里发布文字和图片
+                                    </span>
+                                    <!--<a class="remind_colse">x</a>-->
+                                </div>
+                                <span class="remind_nav"></span>
+                            </div>
+                        </div>
+                    </li>
+                    {% endif %}
+                    <!--/学生-->
+                    <li class="hover_on" style=" position: relative">
+                        <a class=" {% activer talk %}"  href="{% url userena_umessages_quick_contact %}"> 
+                            <span>沟通</span> 
+                        </a>
+                        {% include 'notifications/nav_notice.html' %}
+                    </li> 
+                    {% get_unread_message_count_for user as unread_message_count %}
+                    <li id="uers_dropdown" class="dropdown nav_bg2 pull-right" style=" width: 130px; zoom: 1; text-align: center;"> 
+                        <a href="javascript:;" alt="" {% if user.get_profile.chinese_name_or_username %} title="{{ user.get_profile.chinese_name_or_username }}" {% else %} title="{{ user.username }}" {%endif%} style="width: 120px; height: 40px; padding: 0px 5px;" class="dropdown-toggle" > 
+                            <span style="text-align: center; display: inline-block; width: 30px; height: 30px; padding:0; margin: 5px;  background: #fff;">
+                                <img style=" width: 30px; height: 30px; margin-top: 0px; vertical-align: middle; float: left" src="{% media_path user.get_profile.get_avatar 'avatar' %}" alt="" {% if user.get_profile.chinese_name_or_username %} title="{{ user.get_profile.chinese_name_or_username }}" {% else %} title="{{ user.username }}" {%endif%} id="kA-img"/>
+
+                            </span> 
+                            <span style=" text-align: center; display:inline-block; padding: 0px; width:80px; height:40px; overflow: hidden;">
+                           {% if user.get_profile.chinese_name_or_username %}
+                               {{ user.get_profile.chinese_name_or_username|truncatestr:":3" }} 
+                            {% else %}
+                               {{ user.username|truncatestr:":6" }}
+                            {% endif %}
+                            </span>
+                        </a>
+                        <ul id="dropdown-menu" class="uers_dropdown" style=" display: none; position: absolute; top:40px; right: 0; ">
+                            <li><a href="{% url userena_account_setting %}"><span style="float: none;"><i class="ico_settings"></i> {% trans 'Account settings' %}</span></a></li>
+                            {% has_perm 'kinger.can_manage_school' as is_can %}
+                            {% if is_can %}
+                            <li  ><a href="{% url manage %}"><span style="float: none;"><i class="ico_user"></i> 学校管理 </span></a></li>
+                            {% endif %}
+                            <li><a href="{% url userena_umessages_list %}"><span style="float: none;"><i class="ico_envelope_alt"></i> {% trans 'Messages' %}({{unread_message_count}})</span></a></li>
+                            {% include 'notifications/notification.html' %}
+                            <li><a href="{% url userena_signout %}"><span style="float: none;"><i class="ico_signout"></i> {% trans 'Signout' %}</span></a></li>
+                         </ul>  
+                    </li> 
+                    <!--未登录-->
+                   {% else %}
+                    <ul>
+                      <li>
+                          <a class="{% activer login %}" href="{% url userena_signin %}?next={{next}}">
+                          <em class="nav-boder "></em>
+                          <span>登录</span>
+                          <em class="nav-boder"></em>
+                        </a>
+                      </li>
+                      <li>
+                          <a class="{% activer signup %}" href="{% url userena_signup %}">
+                          <span>注册</span>
+                          <em class="nav-boder "></em>
+                        </a>
+                      </li>
+                      {% endif %}
+                    </ul>
+                    <!--/未登录-->
+            </div>
+            <div class="logo"><a href="/"><img src="{{ STATIC_URL }}kinger/img/logo_weixiao.jpg" /></a> </div> 
+        </div>
+    </div>
+</div>    
+<div id="release_box_view">
+    <div id="release_box">
+        {% include "kinger/revision/create_baby_tile.html" %}
+    </div>
+</div>
+<div id="colsew" style="display: none; position: fixed; right: 5%; top: 0; float: left; z-index: 10002; float: left; width: 39px; height: 50px;">
+    <a href="javascript:;"></a>
+</div>
+<div style="">
+    {% get_announcement as announce %}
+    {% if announce %}
+    <div class="system_notice" style="display:none;">
+        <h2 style="margin-top:0; *top:-10px;">站点公告 - 通知 
+          <span class="countdown scommon" style="display:none">
+            <span style="display: block; float: left; height: 54px; width: 42px; background-image: url(http://www.hopejy.cn/img/numbers.png); background-position: 0px -486px; background-repeat: no-repeat no-repeat;"></span>
+            <span style="display: block; float: left; height: 54px; width: 42px; background-image: url(http://www.hopejy.cn/img/numbers.png); background-position: 0px -270px; background-repeat: no-repeat no-repeat;"></span>
+          </span> 
+        <span class="tips scommon"><em class="seconds">4</em></span>
+        <a href="javascript:void(0)" class="btn_close scommon" title=""></a></h2> 
+        <div class="txt cf"> 
+          {{announce.content|safe}} 
+        </div>
+        <div class="sico"></div>
+    </div>
+    <div class="handle scommon" style="display:none" >
+        <a href="javascript:void(0)" title="显示公告" class="showme">站点公告 - 通知  
+          <span>点击查看详细</span>
+        </a>
+    </div>
+   {% endif %} 
+</div>
+
+<script type="text/javascript">
+    (function($){
+        $.fn.hoverDelay = function(options){
+            var defaults = {
+                hoverDuring: 200,
+                outDuring: 200,
+                hoverEvent: function(){
+                    $.noop();
+                },
+                outEvent: function(){
+                    $.noop();    
+                }
+            };
+            var sets = $.extend(defaults,options || {});
+            var hoverTimer, outTimer;
+            return $(this).each(function(){
+                $(this).hover(function(){
+                    clearTimeout(outTimer);
+                    hoverTimer = setTimeout(sets.hoverEvent, sets.hoverDuring);
+                },function(){
+                    clearTimeout(hoverTimer);
+                    outTimer = setTimeout(sets.outEvent, sets.outDuring);
+                });    
+            });
+        }      
+    })(jQuery);
+</script>
+<script type="text/javascript">
+$(function() {  
+    var cookieName = getCookie('name_browse');//读取需要缓存的对象。
+    var cookieName1 = getCookie('name_message');
+    if (cookieName == "hide") {
+        $("[name = browse ]").hide();
+    } else {
+        $("[name = browse ]").show();
+    }
+    if (cookieName1 == "hide") {
+        $("[name = message ]").hide();
+    } else {
+        $("[name = message ]").show();
+    }
+    $("#create_baby_tile").click(function() {
+        if (!cookieName1) {
+            SetCookie("name_message", "hide", 30);
+            $("[name = message ]").hide();
+        }
+    });
+    $("[name = message]").click(function(){
+        $("[name = message ]").hide();
+    })
+     $("[name = browse]").click(function(){
+         $("[name = browse ]").hide();
+    })
+    //下拉菜单        
+    $("#dropdown_menu").each(function(){
+        var that = $(this); 
+        that.hoverDelay({
+            hoverDuring: 100,
+            outDuring: 1000,
+            hoverEvent: function(){
+                if (cookieName) {
+                } else {
+                    SetCookie("name_browse", "hide", 30);
+                    $("[name = browse ]").hide();
+                } 
+                that.addClass('on');
+                $("#dropdown-menu").hide();
+                $("#uers_dropdown").removeClass("ons");
+                $("#allsort_list").show(); 
+            },
+            outEvent: function(){
+                 that.removeClass('on');
+                 $("#allsort_list").hide();
+            }
+        }); 
+    });
+    $(".item ,.title").hover(function(){
+        var that = $(this); 
+        var relid = $(this).attr('rel');
+        if (relid) {
+            $(".fore" + relid).show();
+            that.hoverDelay({
+                hoverDuring: 0,
+                outDuring: 100,
+                hoverEvent: function(){
+                    if (that.is($(".title"))) {
+                        that.css("width", "165px");
+                    } else {
+                        that.css("width", "145px");
+                    }
+                    if (that.is($("[on=hover]"))) {
+                        that.addClass('no');
+                    }
+                    $(".fore" + relid).show();        
+                },
+                outEvent: function(){
+                    if (that.is($(".title"))) {
+                        that.css("width", "150px");
+                    } else {
+                        that.css("width", "145px");
+                    }
+                    that.removeClass('no'); 
+                    $(".fore" + relid).hide();
+                }
+            });
+        }
+    });
+    //用户个人菜单栏hover事件
+    $("#uers_dropdown").each(function(){
+        var that = $(this); 
+        that.hoverDelay({
+            hoverDuring: 100,
+            outDuring: 1000,
+            hoverEvent: function(){
+                 $("#allsort_list").hide();
+                 $("#dropdown_menu").removeClass("on");
+                 $("#dropdown-menu").show(); 
+                 that.addClass("ons");        
+            },
+            outEvent: function(){
+                  $("#dropdown-menu").hide();
+                  that.removeClass("ons");
+            }
+        }); 
+   });
+  $(document).click(function (e) {
+      if ($(e.target).eq(0).is($("body"))) { 
+          $("#allsort_list").hide();
+          $("#dropdown-menu").hide();
+          $("#uers_dropdown").removeClass("ons");
+          $("#dropdown_menu").removeClass("on"); 
+      }
+  });
+  $(".nav li.hover_on span").hover(function (e) { 
+      $("#allsort_list").hide();
+      $("#dropdown-menu").hide();
+      $("#uers_dropdown").removeClass("ons");
+      $("#dropdown_menu").removeClass("on");  
+  }); 
+   $('#create_baby_tile').click(function() {//发布框弹出
+        // url = "{% url kinger_rev_create_baby_tile %}";
+        // $.post(url,{},function(result){
+        //       data = $.parseJSON(result); 
+        //       $('#release_box').html('');
+        //       $('#release_box').html(data.con);
+        // })
+        $('#release_box_view').modal('toggle');
+        $("#colsew").show();
+        $("body").addClass("body_hide_scroll");
+        $("html").addClass("body_hide_scroll");//ie6/Ie7
+    });
+    $("#release_box_view").live('hide', function() { //弹框关闭监听事件
+        $("#colsew").hide();
+        $("body").removeClass("body_hide_scroll");
+        $("html").removeClass("body_hide_scroll");
+    });
+    $("#colsew").live('click', function() { //弹框关闭按钮
+        $("#release_box_view").modal('hide');
+        $("body").removeClass("body_hide_scroll");
+        $("html").removeClass("body_hide_scroll");
+        $(this).hide();
+    });
+    //设置浏览模式Cookie 
+    $("[rel=link_tab]").click(function(){ 
+        var link =$(this).attr("href"); 
+        SetCookie("typelink", link, 30); 
+        $('[rel = cookielink]').attr("href",link); 
+    });
+    var tplink = getCookie("typelink");  
+    if(tplink){// 
+        $('[rel = cookielink]').attr("href",tplink);
+        SetCookie("typelink", tplink, 30);
+    }
+
+    //提醒 table
+    var e_no_selector = '.system_notice';
+    var s_notice = {
+      hide: function(){
+        //$(e_no_selector).slideUp('fast');
+        $(e_no_selector).hide();
+        SetCookie('notice', 1, 1);
+        //$('.handle').fadeIn('fast');
+        $('.handle').show();
+      },
+      show: function(){
+        $(e_no_selector+' span.countdown').trigger('resetTimer');
+        //$(e_no_selector).slideDown(500);
+        $(e_no_selector).show();
+        //$('.handle').fadeOut('fast');
+        $('.handle').hide();
+
+      }
+    }
+
+    //提醒关闭
+    // event bind
+    $(e_no_selector+' a.btn_close').click(function(){
+      s_notice.hide();
+    });
+    $('.handle a.showme').click(function(){
+      $(this).parent().fadeOut('fast');
+      s_notice.show();
+    }); 
+
+    // count down
+    var e_cd = $(e_no_selector+' span.countdown');
+    e_cd.spriteTimer({
+      'seconds': 20,
+      everySecondCallback: function(sec) {
+        $(e_no_selector+' .seconds').text(sec);
+      },
+      callback: s_notice.hide
+    });
+
+    $(e_no_selector).bind('mouseover', function() {
+      e_cd.trigger('stopTimer');
+    });
+    $(e_no_selector).bind('mouseout', function() {
+      e_cd.trigger('startTimer');
+    });
+
+    // cookies check
+    var _ck = getCookie('notice'); 
+    if (_ck==null || _ck==""){
+      //setTimeout('s_notice.show()', 2000);
+      $(e_no_selector).show(); 
+      $('.handle').hide();
+    }else{
+      $(e_no_selector).hide(); 
+      $('.handle').show();
+      //s_notice.hide();
+    }
+ 
+    //cookie 函数
+    function SetCookie(name, value, day) {//两个参数，一个是cookie的名子，一个是值
+        var exp = new Date(); //new Date("December 31, 9998");
+        exp.setTime(exp.getTime() + day * 24 * 60 * 60 * 1000);
+        document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString()+ ";path=/";
+    }
+    function getCookie(name) { //取cookies函数 
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ')
+                c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0)
+                return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+    //删除cookies 
+    function delCookie(name) 
+    {   
+        var exp = new Date(); 
+        exp.setTime(exp.getTime() - 1); 
+        var cval=getCookie(name); 
+        if(cval!=null) 
+            document.cookie= name + "="+cval+";expires="+exp.toGMTString(); 
+    } 
+});
+</script> 

@@ -1,0 +1,1030 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.01\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-01-31 09:40+0800\n"
+"PO-Revision-Date: 2012-12-24 16:15+0800\n"
+"Last-Translator: biner <huanghuibin@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"Plural-Forms: nplurals=1; plural=0\n"
+
+#: .\admin.py:127 .\admin.py:225 .\admin.py:234 .\admin.py:239
+msgid "Other info"
+msgstr "其他信息"
+
+#: .\forms.py:32
+msgid "Username"
+msgstr "用户"
+
+#: .\forms.py:33
+msgid "Username must contain only letters, numbers and underscores."
+msgstr "用户名只允许字母，数字或者下划线"
+
+#: .\forms.py:38 .\forms.py:45 .\templates\userena\profile_detail.html.py:29
+msgid "Email"
+msgstr "邮箱"
+
+#: .\forms.py:81
+msgid ""
+"Please enter a correct username or email and password. Note that both fields "
+"are case-insensitive."
+msgstr "请输入正确的用户名（邮箱）和密码。请注意区分大小写。"
+
+#: .\forms.py:107 .\models.py:353 .\models.py:405
+msgid "tile type"
+msgstr "瓦片类型"
+
+msgid "sms type"
+msgstr "短信类型"
+
+msgid "sms types"
+msgstr "短信类型"
+
+msgid "Your email address has been changed."
+msgstr "您的邮箱已修改"
+
+#: .\helpers.py:91
+msgid "Out of range: 1800-07-05 ~ Today"
+msgstr "超出范围： 1800-07-05 ~ Today"
+
+#: .\mixins.py:15
+msgid "is_active"
+msgstr "是否启用"
+
+#: .\mixins.py:32
+msgid "is_delete"
+msgstr "是否删除"
+
+#: .\models.py:53 .\models.py:127 .\models.py:168 .\models.py:235
+#: .\models.py:401 .\models.py:633 .\models.py:647 .\models.py:690
+#: .\models.py:744 .\models.py:797 .\models.py:990
+msgid "creator"
+msgstr "创建者"
+
+#: .\models.py:54 .\models.py:236 .\models.py:402 .\models.py:648
+#: .\models.py:691 .\models.py:730 .\models.py:778 .\models.py:872
+#: .\models.py:924 .\models.py:942 .\models.py:966 .\models.py:991
+msgid "user"
+msgstr "用户"
+
+#: .\models.py:55 .\models.py:128 .\models.py:190 .\models.py:237
+#: .\models.py:604 .\models.py:812 .\models.py:896
+msgid "school"
+msgstr "学校"
+
+#: .\models.py:57 .\models.py:650
+msgid "Teacher name"
+msgstr "教师名"
+
+#: .\models.py:58 .\models.py:652 .\models.py:694
+msgid "Appellation"
+msgstr "职务"
+
+#: .\models.py:59 .\models.py:139 .\models.py:179 .\models.py:249
+#: .\models.py:328 .\models.py:343 .\models.py:361 .\models.py:433
+#: .\models.py:619 .\models.py:653 .\models.py:695 .\models.py:994
+msgid "Description"
+msgstr "描述"
+
+#: .\models.py:61 .\models.py:251
+
+msgid "pinyin"
+msgstr "登录"
+
+#: .\models.py:117 .\models.py:129
+msgid "teacher"
+msgstr "教师"
+
+#: .\models.py:118
+msgid "teachers"
+msgstr "教师"
+
+#: .\models.py:131 .\models.py:171 .\models.py:240 .\models.py:327
+#: .\models.py:342 .\models.py:360 .\models.py:575 .\models.py:618
+#: .\models.py:783 .\models.py:852
+#: .\templates\userena\profile_detail.html.py:25
+msgid "Name"
+msgstr "名字"
+
+#: .\models.py:132
+msgid "Logo"
+msgstr "图标"
+
+#: .\models.py:136
+msgid "Year"
+msgstr "年"
+
+#: .\models.py:137
+msgid "Sn"
+msgstr "编号"
+
+msgid "is push"
+msgstr "已推送"
+
+msgid "no need send"
+msgstr "无需发送"
+
+msgid "is send"
+msgstr "已发送"
+
+#: .\models.py:138
+msgid "Announcement"
+msgstr "班级宣言"
+
+#: .\models.py:143 .\models.py:238 .\models.py:403
+msgid "school class"
+msgstr "班级"
+
+#: .\models.py:144
+msgid "school classes"
+msgstr "班级"
+
+#: .\models.py:169
+msgid "school admins"
+msgstr "学校管理员"
+
+#: .\models.py:173
+msgid "Area"
+msgstr "地区"
+
+#: .\models.py:174
+msgid "City"
+msgstr "城市"
+
+#: .\models.py:175
+msgid "Province"
+msgstr "省份"
+
+#: .\models.py:176
+msgid "Sys"
+msgstr "系统"
+
+#: .\models.py:178
+msgid "Type"
+msgstr "类型"
+
+#: .\models.py:191
+msgid "schools"
+msgstr "学校"
+
+#: .\models.py:202
+msgid "System"
+msgstr "系统"
+
+#: .\models.py:203
+msgid "Notice"
+msgstr "通知"
+
+#: .\models.py:207 .\models.py:925 .\profiles\models.py:38
+msgid "Mobile"
+msgstr "手机"
+
+#: .\models.py:224 .\models.py:225 .\models.py:922
+msgid "sms"
+msgstr "短信"
+
+#: .\models.py:231 .\profiles\models.py:20
+msgid "Male"
+msgstr "男"
+
+#: .\models.py:232 .\profiles\models.py:21
+msgid "Female"
+msgstr "女"
+
+#: .\models.py:241 .\profiles\models.py:27
+msgid "Gender"
+msgstr "性别"
+
+#: .\models.py:246 .\profiles\models.py:35
+msgid "Birth date"
+msgstr "生日"
+
+#: .\models.py:247
+msgid "Date format: YYYY-MM-DD"
+msgstr "时间格式为：2012-12-21"
+
+#: .\models.py:254
+msgid "student"
+msgstr "学生"
+
+#: .\models.py:255
+msgid "students"
+msgstr "学生"
+
+#: .\models.py:334 .\models.py:431
+msgid "tile tag"
+msgstr "瓦片标签"
+
+#: .\models.py:335
+msgid "tile tags"
+msgstr "瓦片标签"
+
+#: .\models.py:344
+msgid "tiletype.img"
+msgstr "图片"
+
+#: .\models.py:354
+msgid "tile types"
+msgstr "瓦片类型"
+
+#: .\models.py:362
+
+msgid "TileCategory.img"
+msgstr "瓦片分类"
+
+#: .\models.py:366
+
+msgid "tile category parent"
+msgstr "瓦片分类"
+
+#: .\models.py:372 .\models.py:425
+msgid "is_tips"
+msgstr "是否推广内容"
+
+#: .\models.py:373
+msgid "sort"
+msgstr ""
+
+#: .\models.py:393 .\models.py:406
+
+msgid "tile category"
+msgstr "瓦片分类"
+
+#: .\models.py:394
+
+msgid "tile categorys"
+msgstr "瓦片分类"
+
+#: .\models.py:408
+msgid "title"
+msgstr "标题"
+
+#: .\models.py:410
+msgid "tile.img"
+msgstr "图片"
+
+#: .\models.py:415
+msgid "n_comments"
+msgstr "评论数"
+
+#: .\models.py:416
+msgid "n_likers"
+msgstr "喜欢数"
+
+#: .\models.py:417
+msgid "view_count"
+msgstr ""
+
+#: .\models.py:418
+msgid "api_count"
+msgstr ""
+
+#: .\models.py:419
+msgid "is_public"
+msgstr "是否公开"
+
+#: .\models.py:429
+msgid "video"
+msgstr "视频"
+
+#: .\models.py:434 .\models.py:602
+msgid "Content"
+msgstr "内容"
+
+#: .\models.py:435 .\models.py:969
+msgid "Url"
+msgstr ""
+
+#: .\models.py:439 .\models.py:545 .\models.py:995 .\models.py:1034
+msgid "Microsecond"
+msgstr ""
+
+#: .\models.py:448 .\models.py:543 .\models.py:751 .\models.py:1017
+msgid "tile"
+msgstr "瓦片"
+
+#: .\models.py:449
+msgid "tiles"
+msgstr "瓦片"
+
+#: .\models.py:542 .\models.py:1029
+msgid "visitor"
+msgstr ""
+
+msgid "start time"
+msgstr "起始日期"
+
+msgid "schedule src"
+msgstr "课表"
+
+msgid "schedule"
+msgstr "周课表"
+
+msgid "schedules"
+msgstr "周课表"
+
+#: .\models.py:559
+
+msgid "tile visitor"
+msgstr "瓦片分类"
+
+#: .\models.py:560
+
+msgid "tile visitors"
+msgstr "瓦片分类"
+
+#: .\models.py:571
+msgid "Event"
+msgstr "活动"
+
+#: .\models.py:572
+msgid "Cookbook"
+msgstr "食谱"
+
+#: .\models.py:576
+msgid "event_setting.img"
+msgstr "图片"
+
+#: .\models.py:581 .\models.py:601
+msgid "type"
+msgstr "类型"
+
+#: .\models.py:596
+msgid "event type"
+msgstr "每日安排的类型"
+
+#: .\models.py:597
+msgid "event types"
+msgstr "每日安排的类型"
+
+#: .\models.py:610
+msgid "event setting"
+msgstr "每日安排的预设"
+
+#: .\models.py:611
+msgid "event settings"
+msgstr "每日安排的预设"
+
+#: .\models.py:625
+msgid "comment templater type"
+msgstr "评论模板类型"
+
+#: .\models.py:626
+msgid "comment templater types"
+msgstr "评论模板类型"
+
+#: .\models.py:639
+msgid "comment templater"
+msgstr "评论模板"
+
+#: .\models.py:640
+msgid "comment templaters"
+msgstr "评论模板"
+
+#: .\models.py:651
+msgid "Nationality"
+msgstr ""
+
+#: .\models.py:682
+msgid "mentor"
+msgstr "导师"
+
+#: .\models.py:683
+msgid "mentors"
+msgstr "导师"
+
+#: .\models.py:693
+
+msgid "Waiter name"
+msgstr "客服人员名字"
+
+#: .\models.py:724
+msgid "waiter"
+msgstr "客服人员"
+
+#: .\models.py:725
+msgid "waiters"
+msgstr "客服人员"
+
+#: .\models.py:737
+msgid "device"
+msgstr "设备"
+
+#: .\models.py:738
+msgid "devices"
+msgstr "设备"
+
+#: .\models.py:747
+msgid "alert"
+msgstr ""
+
+#: .\models.py:748
+msgid "badge"
+msgstr ""
+
+#: .\models.py:749
+msgid "sound"
+msgstr ""
+
+#: .\models.py:753
+msgid "is_send"
+msgstr ""
+
+#: .\models.py:754 .\models.py:967
+msgid "send time"
+msgstr ""
+
+#: .\models.py:760
+msgid "ApplePushNotification"
+msgstr ""
+
+#: .\models.py:761
+msgid "ApplePushNotifications"
+msgstr ""
+
+#: .\models.py:786
+
+msgid "ChangeUsername"
+msgstr "更改用户名"
+
+#: .\models.py:787
+
+msgid "ChangeUsernames"
+msgstr "更改用户名"
+
+#: .\models.py:800
+msgid "breakfast"
+msgstr ""
+
+#: .\models.py:801
+msgid "light breakfast"
+msgstr ""
+
+#: .\models.py:803
+msgid "lunch"
+msgstr ""
+
+#: .\models.py:804
+msgid "light lunch"
+msgstr ""
+
+#: .\models.py:806
+msgid "dinner"
+msgstr ""
+
+#: .\models.py:807
+msgid "light dinner"
+msgstr ""
+
+#: .\models.py:810 .\models.py:874
+
+msgid "cookbook date"
+msgstr "食谱日期"
+
+#: .\models.py:813 .\models.py:941 .\models.py:992
+msgid "group"
+msgstr "班级"
+
+#: .\models.py:843 .\models.py:844 .\models.py:873
+
+msgid "cookbook"
+msgstr "食谱"
+
+#: .\models.py:853
+
+msgid "Cname"
+msgstr "名字"
+
+msgid "sender"
+msgstr "发送者"
+
+msgid "receiver"
+msgstr "接收者"
+
+msgid "content"
+msgstr "内容"
+
+#: .\models.py:854
+
+msgid "CookbookType.img"
+msgstr "食谱类型"
+
+#: .\models.py:863
+
+msgid "cook book type"
+msgstr "食谱类型"
+
+#: .\models.py:864
+
+msgid "cook book types"
+msgstr "食谱"
+
+#: .\models.py:876
+msgid "read at"
+msgstr ""
+
+#: .\models.py:884
+
+msgid "cookbook read"
+msgstr "食谱已读"
+
+#: .\models.py:885
+
+msgid "cookbook reads"
+msgstr "食谱已读"
+
+#: .\models.py:911 .\models.py:912
+
+msgid "cookbook set"
+msgstr "食谱预设"
+
+#: .\models.py:928
+msgid "vcode"
+msgstr ""
+
+#: .\models.py:933 .\models.py:934
+msgid "verify sms"
+msgstr ""
+
+#: .\models.py:946
+msgid "message to calss"
+msgstr ""
+
+#: .\models.py:947
+msgid "message to calsses"
+msgstr ""
+
+#: .\models.py:961 .\models.py:962
+msgid "char"
+msgstr ""
+
+#: .\models.py:972
+msgid "access log"
+msgstr ""
+
+#: .\models.py:973
+msgid "access logs"
+msgstr ""
+
+#: .\models.py:979
+msgid "target object"
+msgstr ""
+
+#: .\models.py:980
+msgid "action object"
+msgstr ""
+
+#: .\models.py:983
+
+msgid "comment relation"
+msgstr "评论模板"
+
+#: .\models.py:984
+
+msgid "comment relations"
+msgstr "评论模板"
+
+#: .\models.py:1009
+msgid "activity"
+msgstr "日常活动"
+
+#: .\models.py:1010
+msgid "activities"
+msgstr "日常活动"
+
+#: .\models.py:1018
+
+msgid "active"
+msgstr "是否启用"
+
+#: .\models.py:1021
+msgid "tile to activity"
+msgstr ""
+
+#: .\models.py:1022
+msgid "tile to activities"
+msgstr ""
+
+#: .\models.py:1048
+msgid "daily record visitor"
+msgstr ""
+
+#: .\models.py:1049
+msgid "daily record visitors"
+msgstr ""
+
+#: .\validators.py:10
+msgid "Enter a valid mobile number."
+msgstr "请输入有效的有效号码"
+
+#: .\validators.py:22
+msgid "Enter a valid e-mail address."
+msgstr "修改电子邮箱地址"
+
+#: .\validators.py:30
+msgid "You must provide more than just whitespace."
+msgstr "不允许只输入空格。"
+
+#: .\validators.py:36
+msgid "具有 User 的 Teacher 已存在。"
+msgstr ""
+
+#: .\profiles\forms.py:13
+msgid "First name"
+msgstr "名"
+
+#: .\profiles\forms.py:17
+msgid "Last name"
+msgstr "姓"
+
+#: .\profiles\models.py:25
+msgid "User"
+msgstr "用户"
+
+#: .\profiles\models.py:36
+msgid "Please use the following format: YYYY-MM-DD"
+msgstr "请使用以下的格式：2012-12-21"
+
+#: .\profiles\models.py:37 .\templates\userena\profile_detail.html.py:45
+msgid "About me"
+msgstr "关于我"
+
+#: .\profiles\models.py:48
+
+msgid "realname"
+msgstr "用户"
+
+#: .\templates\nav_bar.html.py:56
+msgid "Account settings"
+msgstr "帐号设置"
+
+#: .\templates\nav_bar.html.py:61
+msgid "Messages"
+msgstr "消息"
+
+#: .\templates\nav_bar.html.py:63
+msgid "Signout"
+msgstr "退出"
+
+#: .\templates\nav_bar.html.py:71 .\templates\userena\signin_form.html.py:4
+#: .\templates\userena\signin_form.html.py:10
+#: .\templates\userena\signin_form.html.py:18
+msgid "Signin"
+msgstr "登录"
+
+#: .\templates\nav_bar.html.py:72 .\templates\userena\signup_form.html.py:4
+#: .\templates\userena\signup_form.html.py:10
+#: .\templates\userena\signup_form.html.py:18
+msgid "Signup"
+msgstr "注册"
+
+#: .\templates\comments\approve.html.py:4
+msgid "Approve a comment"
+msgstr "审核一条评论"
+
+#: .\templates\comments\approve.html.py:7
+msgid "Really make this comment public?"
+msgstr "确认将此评论公开吗？"
+
+#: .\templates\comments\approve.html.py:12
+msgid "Approve"
+msgstr "审核"
+
+#: .\templates\comments\approved.html.py:4
+msgid "Thanks for approving"
+msgstr "感谢您的审核"
+
+#: .\templates\comments\approved.html.py:7
+#: .\templates\comments\deleted.html.py:7
+#: .\templates\comments\flagged.html.py:7
+msgid ""
+"Thanks for taking the time to improve the quality of discussion on our site"
+msgstr "感谢您抽出宝贵的时间，来改善我们的网站质量"
+
+#: .\templates\comments\delete.html.py:4
+msgid "Remove a comment"
+msgstr "删除一条评论"
+
+#: .\templates\comments\delete.html.py:7
+msgid "Really remove this comment?"
+msgstr "确认删除此评论"
+
+#: .\templates\comments\delete.html.py:12
+msgid "Remove"
+msgstr "移除"
+
+#: .\templates\comments\deleted.html.py:4
+msgid "Thanks for removing"
+msgstr "删除成功，谢谢"
+
+#: .\templates\comments\flag.html.py:4
+msgid "Flag this comment"
+msgstr "标记评论"
+
+#: .\templates\comments\flag.html.py:7
+msgid "Really flag this comment?"
+msgstr "确认标记此评论？"
+
+#: .\templates\comments\flag.html.py:12
+msgid "Flag"
+msgstr "标记"
+
+#: .\templates\comments\flagged.html.py:4
+msgid "Thanks for flagging"
+msgstr "感谢您的标记"
+
+#: .\templates\comments\form.html.py:18
+#: .\templates\comments\preview.html.py:32
+msgid "Post"
+msgstr "提交"
+
+#: .\templates\comments\form.html.py:19
+#: .\templates\comments\preview.html.py:33
+msgid "Preview"
+msgstr "预览"
+
+#: .\templates\comments\posted.html.py:4
+msgid "Thanks for commenting"
+msgstr "谢谢评论"
+
+#: .\templates\comments\posted.html.py:7
+msgid "Thank you for your comment"
+msgstr "感谢您的评论"
+
+#: .\templates\comments\preview.html.py:4
+#: .\templates\comments\preview.html.py:13
+msgid "Preview your comment"
+msgstr "预览您的评论内容"
+
+#: .\templates\comments\preview.html.py:11
+msgid "Please correct the error below"
+msgid_plural "Please correct the errors below"
+msgstr[0] "请更正以下错误请更正以下错误"
+
+#: .\templates\comments\preview.html.py:16
+msgid "and"
+msgstr "和"
+
+#: .\templates\comments\preview.html.py:16
+msgid "Post your comment"
+msgstr "提交您的评论"
+
+#: .\templates\comments\preview.html.py:16
+msgid "or make changes"
+msgstr "或者更改"
+
+#: .\templates\kinger\daily_activity.html.py:25
+#: .\templates\kinger\tile_view.html.py:45
+msgid "Previous"
+msgstr "上一个"
+
+#: .\templates\kinger\daily_activity.html.py:30
+#: .\templates\kinger\tile_view.html.py:50
+msgid "Next"
+msgstr "下一个"
+
+#: .\templates\kinger\daily_activity.html.py:36
+#: .\templates\kinger\tile_view.html.py:55
+#: .\templates\umessages\base_message.html.py:8
+#: .\templates\umessages\message_history.html.py:7
+#: .\templates\umessages\message_history.html.py:9
+#: .\templates\userena\email_form.html.py:11
+#: .\templates\userena\password_form.html.py:12
+msgid "Back"
+msgstr "返回"
+
+#: .\templates\kinger\daily_record.html.py:35
+#: .\templates\kinger\tile_board.html.py:39
+#: .\templates\kinger\tile_index.html.py:33
+#: .\templates\kinger\tile_index_baby.html.py:8
+msgid "All"
+msgstr "全部"
+
+#: .\templates\kinger\tile_board.html.py:50
+msgid "This Month"
+msgstr "本月"
+
+#: .\templates\kinger\tile_index_container.html.py:12
+#: .\templates\kinger\tile_view.html.py:129
+#: .\templates\kinger\includes\comment_form.html.py:34
+msgid "Comment"
+msgstr "评论"
+
+#: .\templates\kinger\tile_index_container.html.py:15
+#: .\templates\kinger\tile_view.html.py:132
+msgid "unlike"
+msgstr "取消喜欢"
+
+#: .\templates\kinger\tile_index_container.html.py:17
+#: .\templates\kinger\tile_view.html.py:134
+msgid "Like"
+msgstr "喜欢"
+
+#: .\templates\kinger\tile_view.html.py:243
+msgid "Delete this comment?"
+msgstr "确认删除此评论"
+
+#: .\templates\kinger\pwd_back\password_reset_message.txt.py:2
+#, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset\n"
+"for your user account at %(site_name)s"
+msgstr ""
+
+#: .\templates\kinger\pwd_back\password_reset_message.txt.py:5
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+#: .\templates\kinger\pwd_back\password_reset_message.txt.py:10
+#, python-format
+msgid ""
+"\n"
+"Your username, in case you've forgotten: %(username)s\n"
+msgstr ""
+
+#: .\templates\kinger\pwd_back\password_reset_message.txt.py:14
+
+msgid "Thanks for using our site!"
+msgstr "删除成功，谢谢"
+
+#: .\templates\kinger\pwd_back\password_reset_message.txt.py:16
+msgid "Sincerely"
+msgstr ""
+
+#: .\templates\umessages\message_detail.html.py:4
+#, python-format
+msgid "Conversation with %(recipient)s"
+msgstr "与 %(recipient)s 的对话"
+
+#: .\templates\umessages\message_form.html.py:4
+msgid "Compose"
+msgstr "写信息"
+
+#: .\templates\umessages\message_form.html.py:14
+#: .\templates\umessages\message_history.html.py:37
+msgid "Send"
+msgstr "发送"
+
+#: .\templates\umessages\message_list.html.py:10
+msgid "My Messages"
+msgstr "消息"
+
+#: .\templates\umessages\message_list.html.py:10
+#, python-format
+msgid "%(unread_message_count)s new messages."
+msgstr "%(unread_message_count)s 条新消息"
+
+#: .\templates\umessages\message_quick_contact.html.py:4
+msgid " Contacts "
+msgstr "联系人"
+
+#: .\templates\userena\email_form.html.py:4
+#: .\templates\userena\password_form.html.py:6
+#: .\templates\userena\profile_form.html.py:6
+#: .\templates\userena\user_setting_form.html.py:6
+#, python-format
+msgid "Account &raquo; %(username)s"
+msgstr "%(username)s 的帐号"
+
+#: .\templates\userena\email_form.html.py:18
+#: .\templates\userena\inc_nav.html.py:11
+msgid "Change email"
+msgstr "修改电子邮箱"
+
+#: .\templates\userena\inc_nav.html.py:5
+msgid "View profile"
+msgstr "查看个人资料"
+
+#: .\templates\userena\inc_nav.html.py:7
+msgid "Edit profile"
+msgstr "修改个人资料"
+
+#: .\templates\userena\inc_nav.html.py:9
+#: .\templates\userena\password_form.html.py:4
+#: .\templates\userena\password_form.html.py:19
+msgid "Change password"
+msgstr "修改密码"
+
+#: .\templates\userena\inc_nav.html.py:13
+msgid "Change username"
+msgstr "更改用户名"
+
+#: .\templates\userena\profile_detail.html.py:4
+#, python-format
+msgid "%(username)s's profile."
+msgstr "%(username)s 的个人资料"
+
+#: .\templates\userena\profile_detail.html.py:21
+msgid "Your mugshot"
+msgstr "你的头像"
+
+#: .\templates\userena\profile_detail.html.py:33
+msgid "Age"
+msgstr "年龄"
+
+#: .\templates\userena\profile_detail.html.py:37
+msgid "Website"
+msgstr "网站"
+
+#: .\templates\userena\profile_detail.html.py:41
+msgid "Location"
+msgstr "地理位置"
+
+#: .\templates\userena\profile_form.html.py:4
+#: .\templates\userena\user_setting_form.html.py:4
+msgid "Account setup"
+msgstr "帐号流程"
+
+#: .\templates\userena\profile_form.html.py:17
+#: .\templates\userena\user_setting_form.html.py:128
+msgid "Save changes"
+msgstr "保存变更"
+
+#: .\templates\userena\signin_form.html.py:13
+msgid "Forgot your password?"
+msgstr "忘记密码？"
+
+#: .\templatetags\kinger_tags.py:67
+#, python-format
+msgctxt "naturaltime"
+msgid "%(delta)s ago"
+msgstr ""
+
+#: .\templatetags\kinger_tags.py:70
+msgid "now"
+msgstr ""
+
+#: .\templatetags\kinger_tags.py:73
+#, python-format
+msgid "a second ago"
+msgid_plural "%(count)s seconds ago"
+msgstr[0] ""
+
+#: .\templatetags\kinger_tags.py:78
+#, python-format
+msgid "a minute ago"
+msgid_plural "%(count)s minutes ago"
+msgstr[0] ""
+
+#: .\templatetags\kinger_tags.py:83
+#, python-format
+msgid "an hour ago"
+msgid_plural "%(count)s hours ago"
+msgstr[0] ""
+
+#: .\views\frontend.py:580
+msgid "Comment deleted success"
+msgstr "评论删除成功"
+
+#: .\views\frontend.py:582
+msgid "You can't delete this comment"
+msgstr "标记评论"
+
+#: .\views\frontend.py:615
+msgid "Thank you for your comment!"
+msgstr "感谢您的评论！"
+
+#: .\views\frontend.py:621
+msgid "Thank you for your comment! Your comment is awaiting moderation."
+msgstr "感谢您的评论！您的评论正在等待审核。"
+
+#: .\views\message.py:146 .\views\message.py:260
+msgid "Message is sent."
+msgstr "消息发送成功。"
+
+#: .\views\message.py:432
+msgid "Message is succesfully restored."
+msgid_plural "Messages are succesfully restored."
+msgstr[0] "成功回复消息。"
+
+#: .\views\message.py:436
+msgid "Message is successfully removed."
+msgid_plural "Messages are successfully removed."
+msgstr[0] "成功删除消息。"
+
+msgid "relevant staff"
+msgstr "后台职员"
+
+msgid "relevant staffs"
+msgstr "后台职员"
+
+msgid "send_waiter"
+msgstr "发送未读客服"
+
+msgid "send_mentor"
+msgstr "发送未读导师"
+
+#~ msgid "School info"
+#~ msgstr "学校信息"
+
+#~ msgid "Daily Arrangements"
+#~ msgstr "每日安排"

@@ -1,0 +1,30 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="main">
+      <div class="tab"><span>留言详情</span><a href="{% url oa_mailbox site.id %}">返回</a></div> 
+      <div class="column levamsg">
+          <p><label>标题文字:</label><span>{{mailbox.title}}</span></p>
+          <p><label>留言人:</label><span>{{mailbox.name}}</span></p>
+          <p><label>邮箱:</label><span>{{mailbox.email}}</span></p>
+          <p><label>手机:</label><span>{{mailbox.phone}}</span></p>
+          <p><label>留言时间:</label><span>{{mailbox.ctime}}</span></p>
+          <p class='type_read'><label>状态:</label>{% if mailbox.is_read %}<span class="add_book">已读</span><a href="javascript:;" data-ul=" " data-href="{% url oa_mailbox_set mailbox.id %}" id="set_mailbox" rel="{{mailbox.id}}">设为未读</a>{% else %}<span class="no_book">未读</span>{% endif %}</p>
+          <div class="der-words">{{mailbox.body}}</div>
+      </div>
+</div>
+<script>
+  $("#set_mailbox").click(function(){ 
+        var url = $(this).data("href");
+        var loc =$(this).data("ul");
+        $.post(url,{},function(result){
+            data = $.parseJSON(result); 
+            if(!data.status){
+                $(".type_read").find('span').text("未读");
+                $(".type_read").find('a').remove();
+            }
+        });
+       
+  })
+</script>
+{% endblock %}

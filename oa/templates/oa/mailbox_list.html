@@ -1,0 +1,100 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate message_list 10 %}
+<div class="main">
+      <div class="tab"><span>园长信箱</span></div> 
+      <div class="column">
+           <form method="post" id="form_post" action="{% url oa_mailbox_delete site.id %}" onsubmit="return check();" >
+           {% csrf_token %}
+                <p>
+                    <select id="msg_type" class="classSelect span2" value="{{ty}}">
+                        <option value="-1">所有</option>
+                        <option value="1" {% if ty == 1 %} selected="selected" {% endif %}>已读</option>
+                        <option value="0" {% if ty == 0 %} selected="selected" {% endif %}>未读</option>
+                    </select>
+                </p>
+           <div class="list">
+                <table>
+                    <tr>
+                        <th><input type="checkbox" rel="checkall"></th>
+                        <th>标题</th>
+                        <th>留言人</th>
+                        <th>邮箱</th>
+                        <th>手机</th>
+                        <th>加入时间</th>
+                        <th>状态</th>
+                     </tr>
+                    {% for m in message_list %}     
+                     <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td width="20"><input type="checkbox" rel="role" name="mailbox_pks" value="{{m.id}}"></td>
+                        <td width="130">
+                        	<div class="td-words w_130">
+                                    <a href="{% url oa_mailbox_detail m.id %}" title="{{ m.title }}">{% if m.title|cut_str:10 %}{{ m.title }}{% else %}{{m.body|cut_str:10}}{% endif %}</a>
+                            </div>
+                        </td>
+                        <td width="70"><div class="td-words w_70">{{ m.name|cut_str:5 }}</div></td>
+                        <td width="130"><div class="td-words w_130">{{m.email}}</div></td>
+                        <td width="80"><div class="td-words w_80">{{m.phone}}</div></td>
+                        <td width="90"><div class="td-words w_100">{{ m.ctime|date:"Y-m-d G:i" }}</div></td>
+                        <td  width="40" >{% if m.is_read %}<span class="add_book">已读</span>{% else %}<span class="no_book">未读</span>{% endif %}</td>
+                     </tr>
+                    {% endfor %}
+                     <tr>
+                        <td><input type="checkbox" rel="checkall"></td>
+                        <td colspan="6">
+                            <input class="btn btn-success" disabled="disabled" id="sub_form" type="submit" name="" value="删除所选" >
+                        </td> 
+                     </tr>
+                </table>
+                </div>
+              </form>
+              {% paginate %}
+           </div>      
+     </div>      
+<div>
+<script>
+$(document).ready(function(){
+
+$(':checkbox[rel=checkall]').change(function(){
+	$(':checkbox[rel=role]').attr('checked',this.checked);
+	$(':checkbox[rel=checkall]').attr('checked',this.checked);
+	chekck();
+})
+$(':checkbox[rel=role]').change(function(){
+	var flag = true;
+	$(':checkbox[rel=role]').each(function() {
+        if(!this.checked){
+			flag = false;
+		}
+    });
+	$(':checkbox[rel=checkall]').attr('checked',flag);
+	chekck();
+})
+
+function chekck(){
+	var formChek = $("#form_post"),
+	checkedlen = formChek.find('input[name=mailbox_pks]:checked').length;
+	if(checkedlen){
+		$("#sub_form").attr('disabled',false)
+	}else{
+		$("#sub_form").attr('disabled',true)
+	}
+}	
+
+function check(){  
+    var r=confirm("是否删除所选项？");
+	if (r==true) {
+		//alert("删除成功");
+	} else { 
+		return false;//false:阻止提交表单  
+	}  
+}	
+	
+$("#msg_type").change(function(){
+        var msg_type = $(this).val();
+        javascript:location.href = '{% url oa_mailbox site.id %}?ty=' + msg_type;
+    })
+})	
+</script>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% load i18n kinger_tags oa_tags %}
+	<div class="sidebar">
+		<ul>
+			{% is_select_tag "communicate" as msg_select %}
+			{% if msg_select %}
+				{% if request.user|can_visit_plate:"manage_message_list" %}
+					<li><a href="{% url oa_message_list %}" class="{% oa_activer message %}">对话列表</a></li> 		
+                                 {% endif %}
+                                 {% if request.user|can_visit_plate:"manage_message_record" %}
+					<li><a href="{% url oa_message_record %}" class="{% oa_activer message_record %}">发送记录</a></li> 
+                                 {% endif %}
+                                 {% if request.user|can_visit_plate:"manage_send_message" %}
+					<li><a href="{% url oa_send_message %}" class="{% oa_activer message_send %}">发消息</a></li>
+				{% endif %} 
+				
+			{% endif %}
+
+
+			{% is_select_tag "senate" as senate_select %}
+			{% if senate_select %}
+				{% if request.user|can_visit_plate:"manage_department" %}
+					<li><a href="{% url oa_department_list %}" class="{% oa_activer department %}">部门管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_position" %}
+					<li><a href="{% url oa_position_list %}" class="{% oa_activer position %}">职务管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_school" %}
+					<li><a href="{% url oa_school_list %}" class="{% oa_activer school %}">学园管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_teacher" %}
+					<li><a href="{% url oa_teacher_list %}" class="{% oa_activer teacher %}">职员管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_student" %}
+					<li><a href="{% url oa_student_list %}" class="{% oa_activer student %}">学籍管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_class" %}
+					<li><a href="{% url oa_class_list %}" class="{% oa_activer group %}">班级管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_document" %}
+					<li><a href="{% url oa_my_document %}" class="{% oa_activer document %}">公文管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_document_type" %}
+					<li><a href="{% url oa_document_category %}" class="{% oa_activer document_category %}">公文类别设置</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_send_student_account" %}
+					<li><a href="{% url oa_student_send_account %}" class="{% oa_activer student_account %}">家长帐号发送</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_send_teacher_account" %}
+					<li><a href="{% url oa_teacher_send_account %}" class="{% oa_activer teacher_account %}">职员帐号发送</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_cookbook" %}
+					<li><a target="_blank" href="{% url oa_cookbook %}" class="{% oa_activer cookbook %}">学园食谱</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_apply" %}
+					<li><a href="{% url oa_regist_apply_list %}" class="{% oa_activer regist_apply %}">在线报名</a></li>
+				{% endif %}
+				{% if request.user|can_visit_plate:"manage_shcedule" %}
+					<li><a href="{% url oa_schedule_teacher %}" class="{% oa_activer schedule %}">周课表管理</a></li>
+				{% endif %}
+				{% if request.user|can_visit_plate:"manage_disk" %}
+					<li><a href="{% url oa_disk_index %}" class="{% oa_activer disks %}">共享网盘</a></li>
+				{% endif %}
+			{% endif %}
+
+
+			{% is_select_tag "access" as access_select %}
+			{% if access_select %}
+
+				{% if request.user|can_visit_plate:"manage_role" %}
+					<li><a href="{% url oa_permission_role_list %}" class="{% oa_activer role_list %}">角色管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_role_set" %}
+					<li><a href="{% url oa_permission_designate_role %}" class="{% oa_activer role_design %}">指派角色</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_personal_group" %}
+					<li><a href="{% url oa_workgroup_personal %}" class="{% oa_activer personal_group %}">虚拟组管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_global_group" %}
+					<li><a href="{% url oa_workgroup_list %}" class="{% oa_activer global_group %}">集团虚拟组管理</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_communicate" %}
+					<li><a href="{% url oa_communicate %}" class="{% oa_activer communicate_access %}">互通信息设置</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_authorize" %}
+					<li><a href="{% url oa_permission_set_authorize %}" class="{% oa_activer teacher_authorize %}">全园家长群发控制</a></li>
+				{% endif %}
+
+			{% endif %}
+
+			{% is_select_tag "personal_password" as personal_password %}
+			{% is_select_tag "account" as account_select %}
+			{% if account_select and not personal_password %}
+
+				{% if request.user|can_visit_plate:"manage_personal_message" %}
+					<li><a href="{% url oa_account_setting %}" class="{% oa_activer account_setting %}">个人信息</a></li>
+				{% endif %}
+
+			{% endif %}
+
+
+			{% is_select_tag "log" as log_select %}
+			{% if log_select %}
+
+				{% if request.user|can_visit_plate:"manage_operate_log" %}
+					<li><a href="#" class="">操作日志</a></li>
+				{% endif %}
+
+				{% if request.user|can_visit_plate:"manage_login_log" %}
+					<li><a href="#" class="">登录日志</a></li>
+				{% endif %}
+
+			{% endif %}
+
+			{% is_select_tag "site_admin_home" as site_admin_home_select %}
+			{% if site_admin_home_select %}
+
+				{% if request.user|can_visit_plate:"manage_school_website_list" %}
+					<li><a class="{% oa_activer site_admin_home %}" href="{% url oa_website_list %}">网站列表</a></li>
+				{% endif %}
+
+			{% endif %}
+
+			{% is_select_tag "supply_admin_home" as supply_admin_home_select %}
+			{% if supply_admin_home_select %}
+				{% if request.user|can_visit_plate:"manage_supply_list" %}
+					<li><a class="{% oa_activer supply_list %}" href="{% url oa_supply_index %}">物资列表</a></li>
+				{% endif %}
+				{% if request.user|can_visit_plate:"manage_supply_record" %}
+					<li><a class="{% oa_activer supply_record %}" href="{% url oa_supply_record_index %}">物资出入记录</a></li>
+				{% endif %}
+				{% if request.user|can_visit_plate:"manage_supply_caregory" %}
+					<li><a class="{% oa_activer supply_category %}" href="{% url oa_supply_category %}">物资类别设置</a></li>
+				{% endif %}
+				{% if request.user|can_visit_plate:"manage_supply_provider" %}
+					<li><a class="{% oa_activer provider_list %}" href="{% url oa_provider_index %}">供应商管理</a></li>
+				{% endif %}
+				{% if request.user|can_visit_plate:"manage_supply_document" %}
+					<li><a class="{% oa_activer supply_document %}" href="{% url oa_supply_my_document %}">物资公文</a></li>
+				{% endif %}
+			{% endif %}
+		</ul>
+	</div>
+         
+ 

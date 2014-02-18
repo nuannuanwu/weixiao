@@ -1,0 +1,225 @@
+{% load i18n kinger_tags oa_tags %}
+<style type="text/css">
+.header_content { margin: 0 auto; padding: 0; width: 960px; position: relative; } 
+.handle{ position: absolute; left: 0; top:0; width:920px;margin: 2px auto;background:#FAE385;padding:4px 20px;font-size:14px;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px;}
+.handle a{color:#666;text-decoration:none;}
+.handle a:hover{color:#f30;text-decoration:none;}
+.handle a span{color:#5FA5D8;margin-left:50px;}
+.system_notice{ padding: 0;  background: url(/images/site/notice_bg.gif) no-repeat; background:#FFEDA6; width:960px;ooverflow:auto; margin: 0 auto; margin-top: 10px; }
+.system_notice h2{padding:36px 40px 6px 48px; margin:0; font-size:15px;position:relative; background:#FFD93F;}
+.system_notice h2 a.btn_close{background: url({{ STATIC_URL }}oa/images/notice_btn_close.gif) no-repeat;display:block;height:24px;position:absolute;right:40px;top:44px;width:112px;}
+.system_notice h2 span.tips{position:absolute;right:180px;top:36px;font-size:12px;font-weight:normal;color:#999;}
+.system_notice h2 em.seconds{font-family:arial;font-size:14px;font-style:normal;margin:0 4px;}
+.system_notice div.txt{color:#333333;font-size:13px;padding:14px 28px;width:660px;text-indent:2em;line-height:1.8em;float:left; width:auto;float:none;}
+.system_notice div.txt p{text-indent:2em;margin:16px 0;}
+.system_notice .sico{float:left;  width:222px;height:160px;margin:10px; display:none;}
+</style>
+	<div id="oa-top">
+        <div class="oa-top navbar" style="position: relative;"> 
+            {% if request.user.is_authenticated and not request.user|is_agency_user %} 
+            {% get_school_site request.user.teacher.school as websites %}
+            {% get_parent_domain_string as domain_string %}
+            	<div class="dropdown" style="float:left; width: 100px;text-align:left; ">
+                    {% if not websites|is_empty_list %} 
+                    {% else %}  
+                        {% if websites|length < 2 %}
+                        <a href="http://{{websites.0.domain}}{% if websites.0.type == 0 %}.{{domain_string}}{% endif %}" target="_blank" style="float:left;" class="dropdown-toggle" >{{websites.0.name}}</a>
+                        {% else %} 
+                            <a href="#"  style="float:left;" class="dropdown-toggle" data-toggle="dropdown">学园首页</a>
+                            <ul class="dropdown-menu" style="">	
+                            {% for w in websites %}
+                               <li>
+                                   <a href="http://{{w.domain}}{% if w.type == 0 %}.{{domain_string}}{% endif %}" target="_blank" style="display:block; float: left; width: 140px; padding-right:0px; margin-right:0px;">
+                                       {{w.name}}
+                                   </a>
+                               </li>
+                             {% endfor %}
+                            </ul>
+                        {% endif %}
+                     {% endif %}
+                </div>     
+            {% endif %}
+            <ul style=" margin-top:5px; margin-bottom:5px;" class="infor_member nav pull-right">
+            {% if request.user.is_authenticated %} 
+                <li class="dropdown">
+                    <a style=" color: #0473b7; margin:0; padding:0; text-shadow:none;" href="javascript:;" role="button" data-toggle="dropdown" id="dropdown"> {% if user.get_profile.chinese_name_or_username %}{{ user.get_profile.chinese_name_or_username }}{% else %}{{ user.username }}{% endif %} &nbsp; <img src="{{ STATIC_URL }}oa/images/nav_ng.png" /></a>
+                   <ul class="dropdown-menu" style=" top:23px;">
+                      <li>
+                      <a href="{% url oa_logout %}" style="display:block; width:140px; padding-right:0px; margin-right:0px;"><i class="icon-share"></i>&nbsp; 退出
+                      </a>
+                      </li> 
+                   </ul>
+               </li>
+            {% endif %}
+           </ul> 
+            <em>|</em><a href="{% url kinger_edu_index %}" target="_blank">微校首页 </a>
+            <em>|</em>
+            <ul style=" margin-top:5px; margin-bottom:5px;" class="infor_member nav pull-right"> 
+              <li class="dropdown">
+                  <a id="dropdown_message" onFocus="this.blur()" rel="message_changge" data-toggle="dropdown" style=" color: #0473b7; margin:0; padding:0; text-shadow:none;" href="javascript:;" >
+                    <span class="message_num" style=" display:none; padding:2px 5px; background-color:#ce0202; color: #fff; -webkit-border-radius:6px; -moz-border-radius: 6px; border-radius: 6px; margin-right:2px;"></span>
+                    提醒&nbsp;
+                  </a> 
+                  {% include 'notifications/nav_notice_oa.html' %} 
+              </li> 
+           </ul> 
+        </div>
+      </div>
+      <div class="header_content" >
+        <div style="">
+            {% get_announcement as announce %}
+            {% if announce %}
+            <div class="system_notice" style="display:none; ">
+                <h2 style="margin-top:0; *top:-10px;">站点公告 - 通知 
+                  <span class="countdown scommon" style="display:none">
+                    <span style="display: block; float: left; height: 54px; width: 42px; background-image: url(http://www.hopejy.cn/img/numbers.png); background-position: 0px -486px; background-repeat: no-repeat no-repeat;"></span>
+                    <span style="display: block; float: left; height: 54px; width: 42px; background-image: url(http://www.hopejy.cn/img/numbers.png); background-position: 0px -270px; background-repeat: no-repeat no-repeat;"></span>
+                  </span> 
+                <span class="tips scommon"><em class="seconds">4</em></span>
+                <a href="javascript:void(0)" class="btn_close scommon" title=""></a></h2> 
+                <div class="txt cf"> 
+                  {{announce.content|safe}} 
+                </div>
+                <div class="sico"></div>
+            </div>
+            <div class="handle scommon" style="display:none" >
+                <a href="javascript:void(0)" title="显示公告" class="showme">站点公告 - 通知  
+                  <span>点击查看详细</span>
+                </a>
+            </div>
+           {% endif %} 
+      </div> 
+      <div id="header" class="" style="padding-top:20px;" > 
+          <div class="header-nav layout_main" >
+              <!-- <img src="{{ STATIC_URL }}oa/images/head_bg.png" />-->
+              <div class="logo" >
+                <a href="{% url oa_home %}">
+                  <img src="{{ STATIC_URL }}oa/images/logo.png" />
+                </a>
+              </div>
+          </div>
+          <div class="menu layout_main">
+            <ul>
+                <li><a class="{% oa_activer home %}" href="{% url oa_home %}">首页</a></li>
+
+                {% can_visit_menu "manage_contact" as manage_contact %}
+                {% if manage_contact %}
+                  <li><a class="{% oa_activer communicate %}" href="{{request.user|get_active_url:'manage_contact'}}">沟通联系</a></li>
+                {% endif %}
+
+                {% can_visit_menu "manage_senate" as manage_senate %}
+                {% if manage_senate %}
+                  <li><a class="{% oa_activer senate %}" href="{{request.user|get_active_url:'manage_senate'}}">教务管理</a></li>
+                {% endif %}
+
+                {% can_visit_menu "manage_access" as manage_access %}
+                {% if manage_access %}
+                  <li><a class="{% oa_activer access %}" href="{{request.user|get_active_url:'manage_access'}}">访问控制</a></li>
+                {% endif %}
+
+                {% can_visit_menu "manage_account_setting" as manage_account_setting %}
+                {% if manage_account_setting %}
+                  <li><a class="{% oa_activer account %}" href="{{request.user|get_active_url:'manage_account_setting'}}">个人设置</a></li>
+                {% endif %}
+
+                {% can_visit_menu "manage_log" as manage_log %}
+                {% if manage_log %}
+                  <li style="display:none"><a href="{{request.user|get_active_url:'manage_log'}}">系统使用日志</a></li>
+                {% endif %}
+
+                {% can_visit_menu "manage_school_website" as manage_school_website %}
+                {% if manage_school_website %}
+                  <li ><a class="{% oa_activer site_admin_home %}" href="{{request.user|get_active_url:'manage_school_website'}}">学园站点管理</a></li>
+                {% endif %}
+
+                {% can_visit_menu "manage_supply_system" as manage_supply_system %}
+                {% if manage_supply_system %}
+                <li ><a class="{% oa_activer supply_admin_home %}" href="{{request.user|get_active_url:'manage_supply_system'}}">物资管理</a></li>
+                {% endif %}
+                <li ><a class="{% oa_activer growth_oa_home %}" href="{% url growth_oa_index %}">成长书</a></li>
+              </ul> 
+            </div>
+      </div>
+    </div>
+<script type="text/javascript">
+var e_no_selector = '.system_notice';
+var s_notice = {
+  hide: function(){
+    //$(e_no_selector).slideUp('fast');
+    $(e_no_selector).hide();
+    setCookie('notice', 1, 1);
+    //$('.handle').fadeIn('fast');
+    $('.handle').show();
+  },
+  show: function(){
+    $(e_no_selector+' span.countdown').trigger('resetTimer');
+    //$(e_no_selector).slideDown(500);
+    $(e_no_selector).show();
+    //$('.handle').fadeOut('fast');
+    $('.handle').hide();
+
+  }
+}
+
+$(function(){
+    // event bind
+    $(e_no_selector+' a.btn_close').click(function(){
+      s_notice.hide();
+    });
+    $('.handle a.showme').click(function(){
+      $(this).parent().fadeOut('fast');
+      s_notice.show();
+    }); 
+
+    // count down
+    var e_cd = $(e_no_selector+' span.countdown');
+    e_cd.spriteTimer({
+      'seconds': 20,
+      everySecondCallback: function(sec) {
+        $(e_no_selector+' .seconds').text(sec);
+      },
+      callback: s_notice.hide
+    });
+
+    $(e_no_selector).bind('mouseover', function() {
+      e_cd.trigger('stopTimer');
+    });
+    $(e_no_selector).bind('mouseout', function() {
+      e_cd.trigger('startTimer');
+    });
+
+    // cookies check
+    var _ck = getCookie('notice'); 
+    if (_ck==null || _ck==""){
+      //setTimeout('s_notice.show()', 2000);
+      $(e_no_selector).show(); 
+      $('.handle').hide();
+    }else{
+      $(e_no_selector).hide(); 
+      $('.handle').show();
+      //s_notice.hide();
+    }
+});
+// cookies
+function getCookie(c_name){
+  if (document.cookie.length>0){
+    c_start=document.cookie.indexOf(c_name + "=")
+    if (c_start!=-1){
+      c_start=c_start + c_name.length+1
+      c_end=document.cookie.indexOf(";",c_start)
+      if (c_end==-1) c_end=document.cookie.length
+        return unescape(document.cookie.substring(c_start,c_end))
+    }
+  }
+  return ""
+}
+function setCookie(c_name,value,expiredays){
+  var exdate=new Date()
+  exdate.setDate(exdate.getDate()+expiredays)
+  document.cookie=c_name+ "=" +escape(value)+
+  ((expiredays==null) ? "" : ";expires="+exdate.toGMTString()+';path=/')
+}
+</script>
+
+
+   

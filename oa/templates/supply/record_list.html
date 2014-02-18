@@ -1,0 +1,333 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate records 10 %} 
+<div class="main">
+     <div class="tab"><span>物资出入记录</span></div> 
+     <div class="column"> 
+         <form class="form-inline" style="margin:10px 0 15px 0px;"  action="" method="GET"> 
+            {% if request.user|is_agency_user %}
+                <select id="school_id" class=" span2 " style=" margin-right:10px; float:left; font-size: 14px; width: auto;" value="{{school.id}}" name="sid">
+                    <option value=""> --所属机构-- </option>
+                    {% for s in schools %}
+                    <option  value="{{s.id}}" {% if sid == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                    {% endfor %}
+               </select> 
+            {% endif %}
+               <select id="status" class=" span2 classSelect" style=" margin-right:10px; float:left; font-size: 14px; width: auto;" value="{{status}}" name="status">
+                   <option value="0">有效记录</option>
+                   <option value="1" {% if status == 1 %}selected="selected"{% endif %}>无效记录</option>
+               </select> 
+                <input type="text" name="q" id="keyW" class=" span1" style="float:left; width:110px; margin-right:10px;" value="{{query}}" placeholder="输入关键字">
+                <div id="adv-search" class="" style=" width:215px; float:left; margin-right:0; ">
+                    <input type="text" placeholder="开始时间" id="from" style=" width:75px;" name="st" class="shijainduan w_80" value="{{st}}" />
+                    &nbsp;至&nbsp; 
+                    <input type="text" placeholder="结束时间" name="et" style=" width:75px;" value="{{et}}" id="to" class="shijainduan w_80" />&nbsp;&nbsp;
+                </div>
+                <button style="margin-left:2px;" type="submit" class="btn" id="searchB"  >{% trans "Search" %}</button>
+            </form>
+        
+         <div class="list" style="min-height:500px;"> 
+                <table>
+                     <tr align="center">
+                        <th width="90" scope="col">记录ID</th>
+                        <th width="180" scope="col">登记人</th>
+                        <th width="180" scope="col">所属机构</th>
+                        <th width="120" scope="col">登记时间</th> 
+                        <th width="90" scope="col">操作</th> 
+                      </tr>
+                      {% if not records|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="5" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                      {% else %}
+                    {% for r in records %}
+                    {% if r.subrecords.all.count > 0 %}
+                    <tr rel="itme_{{r.id}}" class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td><a href="{% url oa_supply_record_detail r.id %}" target="_blank">{{r.id}}</a></td>
+                        <td>{{r.creator|get_name}}</td>
+                        <td>{{r.school.name}}</td>
+                        <td>{{r.stime|date:"Y-m-d G:i"}}</td>
+                        <td><a class="" rel="detail_up" relid="rel_{{r.id}}" data-href="id_{{r.id}}" href="javascript:;">操作</a></td>
+                    </tr>
+                    <tr class="detail_info" id="id_{{r.id}}" rel="itme_{{r.id}}" style="display: none;"> 
+                        <td style=" background-color:#fff; margin0; padding: 0;" colspan="5">
+                            {% if r.type == 0 %}
+                                <table class="form-table">
+                                    <!--物资列表-->
+                                    <tr style="border-top: 1px solid #DDDDDD;">
+                                        <th width="120">物资名称</th>
+                                        <th width="60">录入数量</th>
+                                        <th width="80">类别</th>
+                                        <th width="180">供应商</th>
+                                        <th width="100">录入时间</th>
+                                        <th width="80">{% if status == 0 %}操作{% else %}信息{% endif %}</th>
+                                    </tr>
+                                    {% for rs in r.subrecords.all|effect_records:status|single_supply:query_ctx %}
+                                    <tr rel="itme_{{rs.id}}" >
+                                        <td>{{rs}}</td>
+                                        <td>{{rs.num}}</td>
+                                        <td>{{rs.supply.category}}</td>
+                                        <td>{{rs.provider}}</td>
+                                        <td>{{rs.ctime|date:"Y-m-d G:i"}}</td>
+                                        <td>
+                                            {% if status == 0 %}
+                                                {% if rs.num <= rs.supply.num %}
+                                                    <a rel="delete_record" href="javascript:;" data-id="{{rs.id}}" data-path="{% url oa_supply_record_delete rs.id %}">删除</a>
+                                                {% else %}
+                                                    <a rel="delete_record" href="javascript:;" data-id="{{rs.id}}" data-path="">删除</a>
+                                                {% endif %}
+                                            {% else %}
+                                               无效记录
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    <!--/录入列表-->
+                                    {% if status == 0 %}
+                                    <tr>
+                                        <td style=" background-color:#fff; height:45px;" colspan="6">
+                                            <label style="display: inline-block;">批量删除</label>
+                                            <input class="btn btn-success" data-id="{{r.id}}" rel ="delete_record" type="button" data-boxid="{{rs.id}}" style=" padding:3px 8px;" value=" 执行 " data-path="{% url oa_supply_record_delete r.id %}?ty=bach&ids={{r.subrecords.all|effect_records:status|single_supply:query_ctx|record_sub_pks}}"/> 
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </table>
+                            {% else %} 
+                                <table class="form-table">
+                                    <!--退还列表-->
+                                    <tr style="border-top: 1px solid #DDDDDD;">
+                                        <th width="120">物资名称</th>
+                                        <th width="60">借出数量</th>
+                                        <th width="80">类别</th>
+                                        <th width="180">退还数量</th>
+                                        <th width="100">退还时间</th>
+                                        <th width="80">操作</th>
+                                    </tr>
+                                    {% for rs in r.subrecords.all|effect_records:status|single_supply:query_ctx %}
+                                    <tr>
+                                        <td>{{rs}}</td>
+                                        <td>{{rs.num}}</td>
+                                        <td>{{rs.supply.category}}</td>
+                                        <td>{{rs.num}}/{{rs.back}}</td>
+                                        <td>{% if rs.back > 0 %}{{rs.mtime|date:"Y-m-d G:i"}}{% endif %}</td>
+                                        <td>{% if rs.back < rs.num %}<a data-id="{{rs.id}}" rel="popget" href="javascript:;" data-path="{% url oa_supply_record_reback rs.id %}">退还</a>{% else %}已退还{% endif %}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <!--退还列表-->
+                                    <tr>
+                                        <td style=" background-color:#fff; height:45px;" colspan="6">
+                                            <label style="display: inline-block;">批量退还 </label>
+                                            <input class="btn btn-success" rel ="popget" type="button" data-boxid="{{r.id}}" data-path="{% url oa_supply_record_reback r.id %}?ty=bach&ids={{r.subrecords.all|effect_records:status|single_supply:query_ctx|record_sub_pks}}" style=" padding:3px 8px;" value=" 执行 " {% if r|record_is_back %}disabled="disabled"{% endif %}/> 
+                                        </td>
+                                    </tr>
+                                </table> 
+                            {% endif %}
+                        </td>  
+                    </tr>
+                    {% endif %}
+                 {% endfor %}
+                 {% endif %}
+                </table>
+               <div class="pagination" style="text-align:center;">
+                    {% paginate %}
+               </div>
+           </div>
+     </div>
+</div>
+<div class="modal" id="backModal" style="display:none; width:700px; margin-left:-350px;">
+  <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h4>物资退还</h4>
+   </div> 
+   <div id="content" style="padding:10px; max-height:450px; overflow-x:hidden; overflow-y:auto; ">
+       <form id="post_form" class="registerform" action="{% url oa_supply_supply_back %}?sid={{sid}}&q={{query}}&st={{st}}&et={{et}}&status={{status}}&page={{page}}" method="post" enctype="multipart/form-data">{% csrf_token %} 
+       <input id="post_data" name="desc" type="hidden" value=""> 
+       <div class="popp_table"> 
+            <table id="levetable" width="100%"> 
+            </table>
+        </div>
+        <div id="no_supply_remind" style=" display:none; color:red; text-align: center;">退还数不能为零,不得大于领取数</div>
+        <div class="leave_message">
+            <label>退还备注:</label>
+            <textarea style="width:665px; height:80px;  resize:vertical;" name="remark"></textarea>
+        </div>
+    </form>
+   </div>
+   <div class="modal-footer"> 
+        <p style="padding:0; margin:0; " > 
+            <input type="hidden" id="user_id" value="{{user.id}}"> 
+            <button id="server_back" class="btn btn-success">确定</button> 
+            <!-- <a id="server_back" style="color:#fff;" class="btn btn-success" href="javascript:;">确定</a> -->
+            <a class="btn " data-dismiss="modal" href="javascript:;">取消</a> 
+        </p> 
+   </div>
+</div> 
+<script type="text/javascript"> 
+    $(function(){ 
+         //展开操作列表
+         var listDataId = {{tar|default:0}};
+         if(listDataId){ 
+            $("#id_"+listDataId).show();
+            $('[relid=rel_'+listDataId+']').addClass("nav_brss"); 
+         }
+        //验证表单 
+        $(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            postonce:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "nun" : /^[1-9]*[1-9][0-9]*$/
+             },beforeSubmit:function(curform){
+                //在验证成功后，表单提交前执行的函数，curform参数是当前表单对象。
+                //这里明确return false的话表单将不会提交; 
+                $("#server_back").attr("disabled","disabled");
+            }   
+        });
+    
+        // 操作功能
+        $("a[rel=detail_up]").click(function(){
+            var dataid =$(this).data("href");
+            if($("#"+dataid).is(":hidden")){
+                 $(".detail_info").hide();
+                 $("#"+dataid).show();
+                 $("a[rel=detail_up]").removeClass("nav_brss");
+                 $(this).addClass("nav_brss");
+                 
+            }else{
+                 $(".detail_info").hide();
+                 $(this).removeClass("nav_brss");
+            } 
+        });
+    });
+
+    //物资退还,领取记录弹框
+    $("[rel=popget]").click(function(){ 
+        $("#levetable").html("");
+        url = $(this).data("path");
+        $.get(url,function(result){
+            data = $.parseJSON(result);
+            $("#levetable").html(data.con);
+            $('#backModal').modal('toggle');
+        })
+    }); 
+
+    //单选
+    $("input[type=checkbox]").change(function(){
+        var boxid = $(this).data("boxid");
+        var a = $("#id_"+boxid+" "+"input[ty=checkbox]").length;
+        var b = $("#id_"+boxid+" "+"input[ty=checkbox]:checked").length; 
+        if(a==b){
+            $("#id_"+boxid+" "+"[rel=all_checked]").attr("checked","checked");
+        }else{ 
+            $("#id_"+boxid+" "+"[rel=all_checked]").removeAttr("checked"); 
+        } 
+    });
+
+    //全选
+    $("[rel=all_checked]").change(function(){  
+        var boxid = $(this).data("boxid");
+        if($(this).attr("checked")){ 
+            $("#id_"+boxid+" "+"input[ty=checkbox]").attr("checked","checked");
+        }else{
+            $("#id_"+boxid+" "+"input[ty=checkbox]").removeAttr("checked");
+        }
+    }); 
+    
+    //物资退还,录入记录删除
+    $("[rel=delete_record]").click(function(){ 
+        var url = $(this).data("path");
+        if(url){
+            var r=confirm("是否执行当前操作？\n如果物资已被领取，需退还物资才可删除!");
+            if(r){ 
+                //url = $(this).data("path");
+                id =$(this).data("id");
+                // alert(id);
+                $.get(url,function(result){
+                    data = $.parseJSON(result); 
+                    if(data.status){
+                        $('[rel=itme_'+id+']').remove(); 
+                    }else{
+
+                    }
+                }) 
+            }
+        }else{ 
+            alert("当前记录的物资已被领取，需退还物资，才可进行删除!");
+        } 
+        
+    });
+
+    //退还保存
+    $("#server_back").click(function(){
+        var inputnum = $('#backModal #levetable tr input[name=num]'); 
+        var events = $("#backModal #levetable tr");
+        var str = supplyStrGet(events);  
+        $("#post_data").val(str);
+        if(inputnum.length>1){
+            inputnum.each(function(e,v){
+                var value = v.getAttribute("value");
+                var max =v.getAttribute("max");
+                if(value>max){
+                    $(this).value(max);
+                }
+            });
+            $("#post_form").submit();
+        }else if(inputnum.length==1){ 
+            max = inputnum.attr("max");
+            value = inputnum.attr("value");
+            if(value>0&&value<=max){ 
+                $("#post_form").submit(); 
+            }else{ 
+                $("#no_supply_remind").show();
+            } 
+        } 
+
+        //$("#post_form").submit(); 
+    });
+
+    //循环读取数据
+    function supplyStrGet(event){
+        var str = '',strs = ''; 
+        event.each(function(e,v){ 
+            var idn = v.getAttribute("idn");
+            var appid =v.getAttribute('appid');
+            //var idtype = v.getAttribute("idtype"); 
+            var num = $('[idn='+idn+']').find(".inputnum").val();
+            var regist = $('[idn='+idn+']').find(".inputregister").val(); 
+            if(idn !=null){
+                if(str){ str += "," ; } 
+                str +='"'+idn+'":{"app_id":"'+appid+'","num":'+num+',"regist":"'+regist+'"}'; 
+            } 
+        }) 
+        strs = '{' + str + '}'  
+        return strs; 
+    }
+    //输入数字输入框
+    $(".inputnum").live('keyup',function(){
+        var inputTmp =$(this);
+        isNumber(inputTmp); 
+    });
+    //输入数字判断添加数据
+    function isNumber(event){  
+        var maxnum = event.data('max')
+        var id = event.attr("id");
+        var inputnum = $("#"+id).val(); 
+        if(inputnum){ 
+            var examNumbIds = /^[1-9]*[1-9][0-9]*$/; 
+            if(examNumbIds.test(inputnum)){ 
+                if(parseInt(inputnum) >parseInt(maxnum)){ 
+                    $("#"+id).val(maxnum); 
+                } 
+            }else{ 
+                $("#"+id).val("0"); 
+            } 
+        } 
+    }
+
+</script>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% load i18n kinger_tags oa_tags %}
+<span class="message_add_remind" style="color:#616161; margin-left: 30px; display: none;" ><img src="{{ STATIC_URL }}oa/images/import.gif" />正在加载请稍等...</span>
+<div class="content"> 
+    <div class="group-wrap">
+        <ul class="group-name">
+            <li class="this-group trainee">
+                <select id="school_choice" style="width:auto;" name="sid"> 
+                  {% for s in schools %}
+                    <option value="{{s.id}}" {% if s.id == school.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                  {% endfor %}
+                </select>
+            </li>
+        </ul>
+        <div class="group-data"> 
+        <div class="datas">
+            <div class="teacher-select">
+                <label class="checkbox"><input id="teacher_all" class="teacher_all" name="teacher_all" type="checkbox">职员全选</label>
+            </div>
+            <div class="class-items"> 
+                <div class="basis-list" style="max-height:180px; overflow-x:hidden; ">
+                     <div class="select-basis">
+                       {% if school|is_agency %}
+                       	      <input id="id_depart" class="depart" name="judgment" type="radio" checked="checked" /><label for="id_depart">依据部门</label>
+                       {%else%}
+                      	     <input id="id_class" class="class" name="judgment" type="radio" checked="checked" /><label for="id_class">依据班级</label>
+                       {% endif %} 
+            		    <label id="id_position" class="radio "><input class="position" name="judgment" type="radio" /> 依据职务</label>
+            		    <label id="id_member" class="radio "><input class="member" name="judgment" type="radio" /> 依据姓名</label>
+        	     </div>
+                    <input id="school_id" type="hidden" value="{{school.id}}" />
+                    <div class="b-class">
+                        <div class="class-name"> 
+                              <div class="basis-list list_1"> 
+                                    {% if school|is_agency %}
+                                        <div class="box_depart">
+                                             {% if not depatrment_list|is_empty_list %} 
+                                                  <div class="no_date"> 暂无数据</div> 
+                                              {% else %}
+                                              <div class="cn-item-box">
+                                                 {% for dl in depatrment_list %} <!--部门-->
+                                                      <div class="cn-item" style="margin-left: 0;" data-type="box">
+                                                          <!-- 部门名称 -->
+                                                          <div class="cni" >
+                                                              <a href="javascript:;" class="stretch-btn">展开</a> 
+                                                              <label class="checkbox">
+                                                                  <input name="typeClass" data-type="class" type="checkbox" data-id="{{dl.id}}" data-pid="">
+                                                                  {{dl.name}}
+                                                              </label> 
+                                                          </div>
+                                                          <!-- /部门名称 -->
+
+                                                          <!-- 部门职员 -->
+                                                          <ul class="p-list">
+                                                              {% for d in dl.members %} 
+                                                                  <li>
+                                                                      <label class="checkbox">
+                                                                          <input type="checkbox" schoolid = {{school.id}}  data-type="user" data-id="{{ d.id }}" data-name="{{d|get_name}}"  data-pid="{{dl.id}}" {% if d.id|in_list_q:user_pks %}checked="checked"{% endif %} />
+                                                                           {{d|get_name}}
+                                                                      </label>
+                                                                  </li> 
+                                                              {% endfor %} 
+                                                          </ul>
+                                                          <!-- 部门职员 -->
+                                                        </div> 
+                                                     {% endfor %}
+                                                 </div> 
+                                             {% endif %}
+                                         </div>
+                                     {% else %} 
+                                     <div class="box_class"> 
+                                         {% if not group_list|is_empty_list %} 
+                                             <div class="no_date"> 暂无数据</div> 
+                                         {% else %}
+                                            {% for grade in group_list %}
+                                                <div class="ps-list" data-type="box"> 
+                                                    <!-- 年级名 -->
+                                                    <div class="cni-box" style=" border-bottom: 1px solid #e5e5e5 ;"> 
+                                                        <label class="checkbox" style="margin-top: 20px;">
+                                                          <input name="typeGrade" data-type="top" type="checkbox" data-id="{{grade.id}}" data-pid="">
+                                                          {{grade.name}}
+                                                        </label>
+                                                      </div> 
+                                                    <!-- /年级名 --> 
+                                                    <div class="cn-item-box">
+                                                        {% for s in grade.groups %}
+                                                        <div class="cn-item" data-type="box"> 
+                                                            <!-- 班级名 -->
+                                                            <div class="cni">
+                                                                <a href="javascript:;" class="stretch-btn">展开</a>
+                                                                <label class="checkbox">
+                                                                    <input name="typeClass"  data-type="class" type="checkbox" data-id="{{s.id}}" data-pid="{{grade.id}}">
+                                                                    {{s.name}}
+                                                                </label> 
+                                                            </div>
+                                                            <!-- /班级名 -->
+
+                                                            <!-- 班级成员列表 -->
+                                                            <ul class="p-list">
+                                                                {% for m in s.members %} 
+                                                                    <li>
+                                                                        <label class="checkbox">
+                                                                            <input type="checkbox" schoolid = {{school.id}}  data-type="user" data-id="{{m.id}}" data-name="{{m|get_name}}"  data-pid="{{s.id}}" {% if m.id|in_list_q:user_pks %}checked="checked"{% endif %} />
+                                                                             {{m|get_name}}
+                                                                        </label>
+                                                                    </li> 
+                                                                {% endfor %} 
+                                                            </ul>
+                                                            <!-- /班级成员列表 -->
+                                                        </div> 
+                                                        {% endfor %}
+                                                    </div> 
+                                                </div> 
+                                              {% endfor %} 
+                                          {% endif %}
+                                     </div> 
+                                {% endif %}
+                                
+                                <div class="box_position" style="display:none;">
+                                      {% if not position_list|is_empty_list %} 
+                                        <div class="no_date"> 暂无数据</div> 
+                                      {% else %}
+                                        {% for dl in position_list %}  <!--职务 职位--> 
+                                            <div class="cn-item" style="margin-left: 0;" data-type="box">
+                                                  <!-- 职务名称 --> 
+                                                  <div class="cni" >
+                                                      <a href="javascript:;" class="stretch-btn">展开</a>
+                                                      <label class="checkbox">
+                                                          <input name="typeClass" data-type="class" type="checkbox" data-id="{{dl.id}}" data-pid="">
+                                                          {{dl.name}}
+                                                      </label> 
+                                                  </div>
+                                                  <!-- /职务名称 -->
+                                                  <!-- 职务职员链表 -->
+                                                  <ul class="p-list">
+                                                      {% for d in dl.members %}
+                                                          <li>
+                                                              <label class="checkbox" >
+                                                                  <input type="checkbox" schoolid = {{school.id}}  data-type="user" data-id="{{ d.id }}" data-name="{{d|get_name}}" data-pid="{{dl.id}}" {% if d.id|in_list_q:user_pks %}checked="checked"{% endif %}/>
+                                                                   {{d|get_name}}
+                                                              </label>
+                                                          </li> 
+                                                       {% endfor %} 
+                                                  </ul>
+                                                  <!-- /职务职员链表 -->
+                                           </div> 
+                                      {% endfor %} 
+                                    {% endif %}
+                               </div> 
+                              <div class="box_member" style="display:none;">
+                                    {% if not word_list|is_empty_list %} 
+                                       <div class="no_date"> 暂无数据</div> 
+                                     {% else %}
+                                        {% for dl in word_list %} <!--name -->
+                                            <div class="cn-item" style="margin-left: 0;" data-type="box"> 
+                                                <!-- 姓名首字母链表 -->
+                                               <div class="cni" >
+                                                   <a href="javascript:;" class="stretch-btn">展开</a>
+                                                   <label class="checkbox">
+                                                       <input name="typeClass" data-type="class" type="checkbox" data-id="{{dl.id}}" data-pid="">
+                                                       {{dl.name}}
+                                                   </label> 
+                                               </div>
+                                                <!-- /姓名首字母链表 -->
+                                                <!-- 姓名首字母职员 -->
+                                               <ul class="p-list">
+                                                   {% for d in dl.members %}  
+                                                       <li>
+                                                           <label class="checkbox">
+                                                               <input type="checkbox" schoolid = {{school.id}}  data-type="user" data-id="{{d.id}}" data-name="{{d|get_name}}"   data-pid="{{dl.id}}" {% if d.id|in_list_q:user_pks %}checked="checked"{% endif %} />
+                                                                {{d|get_name}}
+                                                           </label>
+                                                       </li> 
+                                                   {% endfor %} 
+                                               </ul>
+                                                <!-- /姓名首字母职员 -->
+                                           </div> 
+                                        {% endfor %} 
+                                   {% endif %}
+                               </div>  
+                           </div>
+                      </div>
+                </div>
+          </div>
+     </div> 
+</div> 
+        </div>
+    </div>
+    
+</div> 

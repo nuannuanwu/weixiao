@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/shedu.css">
+	<div class="up-kch span12">
+    	<div class="toback">
+            <a href="{% url manage_schedule_teacher %}?class_id={{group.id}}" class="tbbtn"><span>返回</span></a>
+        </div>
+        <form class="upForm" action="{% url manage_create_schedule %}" method="post" enctype="multipart/form-data" id="id_form">{% csrf_token %}
+        	<h4 class="nflieul">新周课表上传</h4>
+            <div class="fliebox">
+            	<input type="file" value="" class="uplfilebtn" id="id_src" name="src" onchange="txt.value=this.value">
+                <input type="hidden" value="{{request.user.id}}" name="user">
+                <input type="hidden" value="{{group.id}}" name="group">
+                <input type="text"  class="mn-f" id="txt">
+                <input type="button" value="浏&nbsp;览" class="mn-s" id="id_file">
+            </div>
+            <span class="help-inline" id="id_src_error"></span>
+            <div class="flshbtn">
+            	<input type="button" value="上&nbsp;传" class="btn-large btn-success subtj" onclick="checkForm()">
+            </div>
+        </form>
+        <div class="usedintro">
+        	<h5>使用说明：</h5>
+            <p>1、为方便老师们上传周课表，特设置此通道</p>
+            <p>2、功能不断完善中</p>
+        </div>
+    </div>
+
+<script type="text/javascript">
+    if($.browser.mozilla){
+            $("#id_mugshot").css({right:"550px",top:"-1px"})
+        }else if(navigator.userAgent.toLowerCase().match(/chrome/)!=null){
+            $("#id_src").addClass("uplfilebtn-webkit").removeClass("uplfilebtn")
+        }	
+   
+    function checkForm(){
+        f = document.getElementById('id_src').value
+        if(!/\.(doc|wps|docx)$/i.test(f)){
+            document.getElementById('id_src_error').innerHTML='文件类型必须是doc,wps,docx中的一种';
+            return false;
+        }else{
+            document.getElementById('id_src_error').innerHTML='';
+            $("#id_form").submit();
+        }
+    }
+    
+    $("#id_src").click(function(){
+        document.getElementById('id_src_error').innerHTML='';
+    })
+</script>  
+
+{% endblock %}  

@@ -1,0 +1,28 @@
+{% load i18n kinger_tags umessages_tags %}
+{% get_latest_message message as latest_message %}
+{% if latest_message %}
+      <dl class="W_linecolor private_list clearfix kDialoglist" onclick="javascript:location.href='{% url user_umessages_history opposite_user.id %}{% if unread_between_count > 0 %}?is_new={{ unread_between_count }}{% endif%}'">
+		    <dt class="pull-left face span1">
+                <a href="{% url user_umessages_history opposite_user.id %}{% if unread_between_count > 0 %}?is_new={{ unread_between_count }}{% endif%}" rel="namecard" data-uid="{{ opposite_user.pk }}">
+                    <img alt="" src="{% media_path opposite_user.get_profile.get_avatar "avatar" %}" class="kHeadborder" style="width:40px;height:40px;">
+                </a>
+            </dt>
+            <dd class="content kspan7">
+                <p>
+                    {% if latest_message.sender_id == user.id %}
+                       	<span class="kFont2">发给</span>
+                    {% endif%}
+                	<span class="kFont1"><a title="{{ opposite_user.get_profile.chinese_name_or_username }}" href="javascript:void(0)">{{ opposite_user.get_profile.chinese_name_or_username }}</a></span>
+                	{% get_unread_message_count_between user and opposite_user as unread_between_count %}
+                	{% if unread_between_count > 0 %}
+                	<span class="kFont5">共{{unread_between_count}}条信息未读</span>
+                	{% endif%}
+                	<a class="close" data-dismiss="alert" href="{% url userena_umessages_contact_remove opposite_user.username %}" onclick="delMsgList(event,this)">×</a>
+                    <span class="kFont3" title="{{ latest_message.body }}">{{ latest_message.body|cut_str:50|code_to_img|safe }}</span>
+                </p>
+		        <p class=" info">
+	                <small class="date pull-right" rel="tooltip" data-title="{{ latest_message.sent_at|date:"具体时间: Y-m-d G:i"}}">{{ latest_message.sent_at|natural_time }}</small>
+                </p>
+            </dd>
+      </dl>
+{% endif%}

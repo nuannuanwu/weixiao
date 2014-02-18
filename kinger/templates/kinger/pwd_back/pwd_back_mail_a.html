@@ -1,0 +1,65 @@
+{% extends 'kinger/pwd_back/base.html' %}
+{% load kinger_tags %}
+
+{% block pwd_back_form %}
+<script type="text/javascript">
+$(function(){
+  $.formValidator.initConfig({formID:"form1",theme:"ArrowSolidBox"});
+
+  $("#{{ form.email.auto_id }}").formValidator({
+        onShow:"请输入正确的邮箱地址",
+        onFocus:"请输入正确的邮箱地址",
+        onCorrect:"正确"
+      })
+    .inputValidator({
+        min:6,
+        max:75,
+        onError:"字符长度为6~75个字符"
+    })
+    .regexValidator({
+        regExp:regexEnum.email,
+        onError:"您输入的邮箱格式不对"
+    });
+})
+</script>
+<form class="form-horizontal" method="post" id="form1">{% csrf_token %}
+  <div class="control-group">
+    <label class="control-label" for="{{ form.email.auto_id }}">邮箱帐号</label>
+    <div class="controls">
+      {{ form.email }}
+      <span class="help-inline">
+        <span id="{{ form.email.auto_id }}Tip"></span>
+      </span>    
+      {% for error in form.email.errors %}
+            <script>
+            $(function() {
+            $('#{{ form.email.auto_id }}Tip').html(
+        '<span><span class="onError_top">{{ error }}</span><span class="onError_bot"></span></span>'    
+            )
+      })
+      </script>
+      {% empty %}     
+      {% endfor %}    
+    </div>
+
+  </div>  
+  <div class="control-group">
+    <div class="controls">           
+      <button type="submit" class="btn btn-success">发送邮件</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block pwd_back_tips %}
+<div class="kTips">		
+	<hr>		
+	<div class="kTips-body">
+		<h5> 步骤提示 </h5>
+		<ul class="muted">
+			<li>输入您注册时的邮箱帐号，系统将会发送一封包含身份验证的链接邮件到您的邮箱。</li>			
+		</ul>
+	</div>
+</div>
+{% endblock %}
+

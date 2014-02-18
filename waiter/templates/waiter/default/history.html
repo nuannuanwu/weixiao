@@ -1,0 +1,38 @@
+{% extends 'waiter/extends/base.html'%}
+{% load kinger_tags %}
+{% block content %}
+<div class="krow">
+	<ul class="ktab">
+		<li class="active"><a href="">对话记录</a></li>
+	</ul>
+	<div class="khistoryInfo">
+		<span class="pull-left">与{{ user.get_profile.chinese_name_or_username }}家长的对话</span>		
+	</div>
+	<div class="ktrackList">
+		{% for c in conversation %}
+			{% if c.sender == user %}
+				<div class="kDialog clearfix">
+					<a href="" class="kmsgHead pull-left" title="{{c.sender.get_profile.chinese_name_or_username}}">
+						<img src="{% media_path c.sender.get_profile.get_avatar "small" %}">
+					</a>
+		    		<div class="thumbnail kChat_left pull-left">
+						<p>{{ c.body }}</p><br />
+			    		<small class="date" rel="tooltip" data-title="">{{ c.sent_at|date:"Y-m-d H:i" }}</small>
+		    		</div>
+				</div>
+			{% else %}
+				<div id="" class="kDialog clearfix">
+					<a href="" class="kmsgHead pull-right" title="{{c.sender.waiter.name}}">
+						<img src="{% media_path c.sender.get_profile.get_avatar "small" %}">
+					</a>
+					<div class="thumbnail kChat_right">
+						<p>{{ c.body }}</p><br />
+			    		<small class="date" rel="tooltip" data-title="">{{ c.sent_at|date:"Y-m-d H:i" }}</small>
+		    		</div>
+				</div>
+			{% endif %}
+		{% endfor%}
+	</div>
+	{% include 'waiter/includes/ktoolbar.html' with mes=conversation num=1%}	
+</div>
+{% endblock%}

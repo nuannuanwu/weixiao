@@ -1,0 +1,47 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n bootstrap %}
+
+{% block title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+
+<form action="" method="post" class="form-horizontal" id="from1">
+  {% csrf_token %}
+  <fieldset>
+    <legend>{% trans "Signup" %}</legend>
+    <div class="span9">
+    {{ form|bootstrap }}
+    </div> 
+    <p class="span2">已有帐号？<a href="{% url userena_signin %}?next={{next|default:"/"}}">请直接登录</a></p>
+  </fieldset>
+ 
+  <div class="form-actions" style="background: none; border: none">
+    <input type="submit" class="btn btn-primary" style="margin-left:110px;" value="{% trans "Signup" %}" />
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/plugins/formValidator-4.1.3.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/plugins/formValidatorRegex.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.formValidator.initConfig({formID:"form1",theme:"ArrowSolidBox"});
+		$("#id_username").formValidator({onShow:"请输入用户名",onFocus:"用户名只允许字母、数字和下划线"}).inputValidator({min:1,onError:"不能为空"}).regexValidator({regExp:"^[a-zA-Z0-9_]*$",onError:"你输入的用户名不合法"});
+		$("#id_email").formValidator({onShow:"请输入邮箱",onFocus:"邮箱6-100个字符",onCorrect:"邮箱合法"}).inputValidator({min:6,max:100,onError:"你输入的邮箱长度非法,请确认"}).regexValidator({regExp:"^([\\w-.]+)@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.)|(([\\w-]+.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(]?)$",onError:"你输入的邮箱格式不正确"});
+		$("#id_password1").formValidator({onShow:"请输入密码",onFocus:"至少1个长度",onCorrect:"密码合法"}).inputValidator({min:1,empty:{leftEmpty:false,rightEmpty:false,emptyError:"密码两边不能有空符号"},onError:"密码不能为空,请确认"});
+		$("#id_password2").formValidator({onShow:"输再次输入密码",onFocus:"至少1个长度",onCorrect:"密码一致"}).inputValidator({min:1,empty:{leftEmpty:false,rightEmpty:false,emptyError:"重复密码两边不能有空符号"},onError:"重复密码不能为空,请确认"}).compareValidator({desID:"id_password1",operateor:"=",onError:"2次密码不一致,请确认"});
+	})
+</script>
+{% endblock %}
+{% block extra_css %}
+<style>
+     
+      
+	.input-public{float: left;}
+	fieldset .span9, fieldset .span2{margin-top:20px;}
+	.row{_margin-left:0px;}
+	.span12{_margin-left:0px;}
+	.span9,.span2{ _float:left;}
+	.span2{_width:200px;}
+</style>
+{% endblock %}

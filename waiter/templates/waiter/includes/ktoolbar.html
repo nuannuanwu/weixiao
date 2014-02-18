@@ -1,0 +1,55 @@
+
+<div class="kToolbar">
+	{% if num > 0 %}
+	<span class="kpage">{{ mes.number }}/{{ mes.paginator.num_pages }}</span>
+	<div class="kToolbar-turn">
+		{% if mes.has_previous %}			
+			<a href="?page={{ mes.previous_page_number }}{{ query }}" class="kToolbar-turn-left btn btn-success">上一页</a>
+		{% else %}
+			<a class="btn btn-success disabled">上一页</a>
+		{% endif %}
+		
+		{% if mes.has_next %}
+			<a href="?page={{ mes.next_page_number }}{{ query }}" class="kToolbar-turn-right btn btn-success">下一页</a>
+		{% else %}
+			<a class="btn btn-success disabled">下一页</a>
+		{% endif %}
+	</div>
+	{% endif %}		
+
+	{% if waiters %}
+	<div class="kWaiterList">			
+		<select name="waiter">
+			<option>
+				全部客服
+			</option>
+			{% for m in waiters %}
+				<option value="{{ m.user.pk }}">
+					{{ m.name }}
+				</option>
+			{% endfor%}		
+		</select>			
+	</div>
+	{% endif %}
+</div>
+
+<style>
+.kWaiterList select { width: 133px; margin: 20px 0 0 10px; border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;
+}
+</style>
+
+<script type="text/javascript">
+	(function(){
+		var select = $('.kWaiterList select');
+		//设置当前的value
+		
+		select.val($.query.get('waiter'))	
+		select.change(function() {
+			//得到当前的值
+			var waiter = $(this).val()
+			//添加url参数
+			var urlParam = $.query.set('waiter',waiter)		
+			window.location.href = urlParam
+		});	
+	})();	
+</script>

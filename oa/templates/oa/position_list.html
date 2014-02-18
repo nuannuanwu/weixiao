@@ -1,0 +1,62 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags  pagination_tags%}
+{% block content %}
+{% autopaginate positions 10 %}
+<div class="main">
+      <div class="tab"><span>职务管理</span><a class="btn" href="{% url oa_position_create %}?sid={{school.id}}"><i class="add_btn">&nbsp;</i>添加</a></div> 
+      <div class="column">
+           <p> 
+                <select id="school_id" style="font-size: 14px; width: auto;" class=" span2 classSelect" value="{{school.id}}">
+                    <option value="">--所有--</option>
+                    {% for s in schools %}
+                    <option  value="{{s.id}}" {% if school.id == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                    {% endfor %}
+               </select>
+           </p>
+            <div class="list"> 
+                <table>
+                     <tr align="center">
+                         <th width="220" scope="col">名称</th>
+                         <th width="150" scope="col">机构</th>
+                         <th width="40" scope="col">排序</th> 
+                         <th width="40" scope="col">操作</th>
+                      </tr>
+                      {% if not positions|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="7" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                        {% else %}
+                     {% for p in positions %}
+                      <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td><a href="{% url oa_position_update p.id %}">{{p.name|truncatestr:":18"}}</a></td>
+                        <td>{{p.school}}</td>
+                        <td>{{p.sort|default:''}}</td>
+                        <td><a rel="del_event" href="javascript:;" data-href="{% url oa_position_delete p.id %}">删除</a></td>
+                     </tr>
+                    {% endfor %}
+                    {% endif %}
+                </table>
+                <div class="pagination" style="text-align:center;">
+                	{% paginate %}
+                </div>
+           </div> 
+      </div>
+</div>           
+ 
+<script>
+     
+    $("#school_id").change(function(){
+        var school_id = $(this).val();
+        javascript:location.href = '{% url oa_position_list %}?sid=' + school_id;
+    })
+    $("a[rel=del_event]").click(function(){ //删除操作
+        var f = confirm('确认删除吗?');
+        if(f){
+          var href = $(this).data("href"); 
+          window.location = href;
+        } 
+    });
+</script>
+{% endblock %}

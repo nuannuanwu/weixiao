@@ -1,0 +1,38 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate starts 14 %}
+<div class="active-content con">
+	<div class="act-c-title start-t-title">
+    	<h3><img src="{{ STATIC_URL }}oa/site/images/title_11.jpg" /></h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content">
+        	<div class="top-bg"></div>
+            <div class="m-c-bg">
+            	<div class="m-c">
+                    {% if not starts|is_empty_list %}
+                        <div style=" margin: 200px 0; text-align: center; font-size: 16px;">暂无数据</div>
+                    {% else %}
+                        {% for s in starts %}
+                            <div class="start-student" id="start_{{s.id}}">
+                            <div class="s-s-img">
+                                    <img src="{% media_path s.user.profile.mugshot "start_normal" %}" width="145" height="145" />
+                            </div>
+                            <div class="s-info">
+                                    <h4>{{s.name}}&nbsp;&nbsp;&nbsp;{{s.group.name}}</h4>
+                                <div class="descride">{{s.user.figure.content|safe}}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="pagination" style="text-align:center;">
+                	{% paginate %}
+            	</div>
+            </div>
+            <div class="bottom-bg"></div>
+        </div>  
+    </div>
+</div>
+{% endblock %}

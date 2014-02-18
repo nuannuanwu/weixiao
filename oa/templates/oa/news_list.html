@@ -1,0 +1,113 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate parts 10 %} 
+<style>
+#item-tab li { float: left; width:60px; }
+#item-tab li a {line-height: 19px;}
+.main .tab li a { float:left; }
+</style>
+<div class="main">
+    <div class="tab">
+        <a class="btn pull_right" href="{% url oa_part_con_news_create site.id %}" style="float:rigth"><i class="add_btn">&nbsp;</i>添加 </a>
+        <ul class="nav nav-tabs" id="item-tab" style="margin-rigth:100px; ">
+            <li><a href="{% url oa_part_con_anc_list site.id %}">公告</a></li>
+            <li class="active"><a href="{% url oa_part_con_news_list site.id %}">新闻</a></li>
+            <li style="width:90px;"><a href="{% url oa_part_con_tips_create site.id %}" >温馨提示</a></li>
+            <li style="width:90px;" ><a href="{% url oa_part_con_video_list site.id %}" >精彩视频</a></li>
+        </ul> 
+    </div> 
+    <div class="column">
+    	<div class="form-div">
+            <select id="part_type" class="span2">
+                <option value="-1" {% if type == -1 %}selected="selected"{% endif %}>--全部--</option>
+                <option value="0" {% if type == 0 %}selected="selected"{% endif %}>草稿</option>
+                <option value="1" {% if type == 1 %}selected="selected"{% endif %}>发布</option>
+                <option value="2" {% if type == 2 %}selected="selected"{% endif %}>置顶</option>
+          </select>
+        </div>
+    	<div class="list">
+            <form class="form-inline" onsubmit="return check()" id="form_post" action="{% url oa_part_con_news_delete %}" method="POST">{% csrf_token %}
+          <table>
+               <tr align="center">
+                  <th scope="col"><input type="checkbox" rel="checkall"></th>
+                   <th scope="col">类型</th>
+                   <th scope="col">标题</th>
+                   <!--th scope="col">内容</th-->
+                   <th scope="col">发布者</th>
+                   <th scope="col">发送时间</th> 
+                   <!--<th scope="col">状态</th>--> 
+                   <th scope="col">操作</th>
+               </tr>
+               {% if not parts|is_empty_list %}
+                    <tr>
+                        <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                            <h4 class="not_date"> 暂无数据</h4>
+                        </td>
+                    </tr>
+                  {% else %}
+              {% for p in parts %}
+              <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                  <td width="30"><input type="checkbox" value="{{p.id}}" rel="role" name="part_pks"></td>
+                  <td width="50">{{p.type|part_type}}</td>
+                  <td width="250"><div class="td-words w_250"> {% if p.type|part_type == "置顶" %}<span class="no_book">[置顶]&nbsp;</span>{% endif %}{{p.title}}</div></td>
+                  <!--td>{{p.content|safe}}</td-->
+                  <td width="90"><div class="td-words w_90">{{p.creator|default:''}}</div></td>
+                  <td width="110"><div class="td-words w_110">{{p.ctime|date:"Y-m-d G:i"}}</div></td>
+                  <!--td width="50">{% if p.is_show %}首页显示{% endif %}</td--> 
+                  <td><a href="{% url oa_part_con_news_update p.id %}">编辑</a></td>
+              </tr>
+              {% endfor %}
+              {% endif %}
+              <tr>
+              	<td><input type="checkbox" rel="checkall"></td>
+                <td colspan="6">
+                   <select id="commit_type" name="operate" class="span2">
+                        <option value="">--批量操作--</option>
+                        <option value="delete">删除</option>
+                        <option value="top">置顶</option>
+                        <option value="cancel_top">取消置顶</option>
+                  </select>
+                  <input disabled="disabled" class="btn btn-success" id="sub_form" type="submit" name="" value="执行" >
+                </td>
+              </tr>
+          </table>
+          <input type="hidden" name="sid" value="{{site.id}}">
+        </form>
+         <div class="pagination pagination-centered">{% paginate %}</div>
+     </div>   
+  </div>  
+</div>
+<script>
+$("#part_type").change(function(){
+  var ty = $(this).val();
+  javascript:location.href = '{% url oa_part_con_news_list site.id %}?ty=' + ty;
+});
+ var flagType=" ";
+$("#commit_type").click(function(){
+    flagType=$(this)find('option:selected').val();
+});
+function check(){  
+   var rimndText="";
+   if(flagType == "delete"){
+       rimndText="是否删除用所选新闻";
+   }else if(flagType == "top"){
+       rimndText="是否执行当前操作";
+   } else if(flagType == "cancel_top"){
+        rimndText="是否执行当前操作";
+   }else{
+        rimndText="你还没选择操作类型";
+   }
+    var r=confirm(rimndText);
+    if (r==true) {
+        if(flagType==""){
+            return false;
+        } //alert("删除成功");
+    } else { 
+            return false;//false:阻止提交表单  
+    }  
+}   
+
+</script>
+
+{% endblock %}

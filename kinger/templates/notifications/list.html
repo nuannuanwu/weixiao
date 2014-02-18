@@ -1,0 +1,33 @@
+
+{% extends 'kinger/base.html' %}
+{% load url from future %}
+{% block content %}
+{% load i18n kinger_tags thumbnail %}
+{% load pagination_tags %}
+{% autopaginate notifications 10 %}
+<div class="newnotest span12">
+     <p>新提醒({{notify_num}})</p><a class="btn btn-small ta" href="{% url 'notifications:mark_all_as_read' %}"><i class="icon-trash"></i>&nbsp;清除</a></li>
+  </div>
+<div class="pinglun span12">
+<ul>
+{% if notifications %}
+  {% for notice in notifications %}
+    {% include 'notifications/notice.html' %}
+  {% endfor %}
+ {% else %}
+  <div class="no-notes">
+     <p>还没有新提醒</p>
+  </div>
+ {% endif %}
+</ul>
+</div>
+
+<div class="span12">
+    {% paginate %}
+</div>
+<script type="text/javascript">
+   $(function(){
+        $(".pinglun ul li:odd").css("backgroundColor","#f9f9f9")
+	   })
+</script>
+{% endblock %}

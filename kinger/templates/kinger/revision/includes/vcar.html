@@ -1,0 +1,19 @@
+
+       <div class="dsh_info">
+          <img src="{{avatar}}" class="pull-left" id="card-img">
+       <div id="card-span">
+          <span>{{user_name}}</span>{% if is_mentor %}<span class="namev"></span>{% endif %}
+          <p>{% if user.mentor.nationality %}{{user.mentor.nationality}}{% endif %}</p>
+       </div>
+       </div>
+       {% if appellation %}<h4 id="card-h">{{appellation|escape|linebreaks}}</h4>{% endif %}
+       <div class="undline"></div>
+       {% if about_me %}<p id="card-p">{{about_me}}</p>{% endif %}
+       {%if show_talk %}
+       <a href="{{talk_link}}" id="card-chat" title="与该用户进行对话">
+         <span></span>对话
+       </a>
+       {% endif %}
+
+
+

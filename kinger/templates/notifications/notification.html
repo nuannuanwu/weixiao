@@ -1,0 +1,4 @@
+{% load notifications_tags %}
+{% load url from future %}
+{% notifications_unread "normal" as notifications_count %}
+<li><a href="{% url 'notifications:all' %}"><span style=" float: none;"><i class="ico_volume_up"></i> 提醒({{notifications_count}})</span></a></li>

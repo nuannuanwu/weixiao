@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+{% block title %}状态： {{cookbook}} | Django 站点管理员{% endblock %}
+{% load i18n %}
+{% load url from future %}
+{% load admin_urls %}
+
+{% block breadcrumbs %}
+<style type="text/css">
+.cb-title{ padding:5px 0px; font:12px; color:#444;}
+.cb-title span em{ font-style:normal; color:#888; padding:0px 10px 0px 2px;}
+</style>
+<ul class="grp-horizontal-list">
+        <li><a href="/admin/">首页</a></li>
+        <li><a href="/admin/kinger/">Kinger</a></li>
+        <li><a href="/admin/kinger/cookbook/">Cookbook</a></li>
+        <li><a href="/admin/kinger/cookbook/{{cookbook.id}}">{{cookbook}}</a></li>
+        <li>status</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>食谱状态：{{cookbook}}</h1>
+	
+	<div id="grp-content-container">  
+	<div>
+		<div class="grp-module g-d-c" style="float:none;">
+			<div class="grp-row grp-cells-1 url ">
+				<p class="cb-content cb-title">
+			    <span>早餐:<em>{{cookbook.breakfast}}</em></span>
+				<span>早点:<em>{{cookbook.light_breakfast}}</em></span>
+				<span>午餐:<em>{{cookbook.lunch}}</em></span>
+				<span>午点:<em>{{cookbook.light_lunch}}</em></span>
+				<span>晚餐:<em>{{cookbook.dinner}}</em></span>
+				<span>晚点:<em>{{cookbook.light_dinner}}</em></span>
+				<span>日期:<em>{{cookbook.date|date:"Y年m月d日"}}</em></span>
+				{% if cookbook.school or cookbook.group %}
+					<span>学校:<em>{% if cookbook.school %}{{cookbook.school}}{% else %}{{cookbook.group.school}}{% endif %}</em></span>
+					{% if cookbook.group %}
+					<span>班级:<em>{{cookbook.group}}</em></span>
+					{% endif %}
+				{% endif %}
+			    </p>
+				
+				<p class="cb-title">
+			      <span>对象总数:<em>{{user_num}}</em></span>
+				  <span>查看总数:<em>{{read_num}}</em></span>
+				  <span>发送短信数:<em>{{send_num}}</em></span>
+			    </p>  
+		</div>    
+	</div>
+    <div class="g-d-c grp-object-history">
+            <table id="grp-change-history">
+                <thead>
+                    <tr>
+                        <th scope="col">用户</th>
+                        <th scope="col">学生姓名</th>
+                        <th scope="col">班级</th>
+                        <th scope="col">已读</th>
+                        <th scope="col">已发送</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  	{% for c in cookbookreads %}
+					<tr>
+						<td>{{c.user}}</td>
+						<td>{{c.user.student.name}}</td>
+						<td>{{c.user.student.group}}</td>
+						<td>{% if c.is_read %}<img alt="True" src="/_static/admin/img/icon-yes.gif">{% else %}<img alt="False" src="/_static/admin/img/icon-no.gif">{% endif %}</td>
+						<td>{% if c.is_send %}<img alt="True" src="/_static/admin/img/icon-yes.gif">{% else %}<img alt="False" src="/_static/admin/img/icon-no.gif">{% endif %}</td>
+					</tr>
+					{% endfor %}	 
+                </tbody>
+            </table>    
+    </div>
+	</div>
+</div>
+<footer class="grp-module grp-submit-row grp-fixed-footer">
+    <header style="display:none"><h1>Submit Options</h1></header>
+    <ul>
+        <li><a class="grp-button" href="/admin/kinger/cookbook/">返回</a></li>
+    </ul>
+</footer>
+{% endblock %}

@@ -1,0 +1,232 @@
+{% extends 'manage_base.html' %}
+{% load i18n kinger_tags%}
+{% block content %}
+{% load pagination_tags kinger_tags i18n %}
+{% if role == 0 %}
+    {% autopaginate class_list 15 %}
+{% else %}
+    {% autopaginate teacher_list 15 %}
+{% endif %}
+<style>
+.table th{font-size:16px;color:#444;font-weight:normal;}
+thead .checkbox{color:#08C;font-size:16px;}
+.tab-content .thumbnail{padding:5px 19px 40px;}
+tr{cursor: pointer;}
+tr:hover{background:#FAFAFA;}
+tr span{display: block;margin-bottom: 5px;font-size: 14px;line-height: 20px;}
+.btnhover{
+  color: #333333;
+  background-color:#e6e6e6;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+	}
+.cclose{ position:relative; top:-25px; right:0px;}	
+.nonecentent{ padding:15px 0px; text-align:right; font-size:1.5em;}
+</style>
+
+<div class="page-header">
+    <h1><a href="{% url manage %}">学校管理</a><i class="icon-chevron-right"></i><a href="{% url manage_school_send_account %}">发送帐号</a></h1>
+</div>
+
+<ul id="myTab" class="nav nav-tabs">
+    <!--li class="active"><a href="" data-toggle="tab">家长</a></li-->
+    <li {% if role == 0 %}class="active" {% endif %}><a href="{% url manage_school_send_account %}?role=0">家长</a></li>
+    <!--li><a href="" data-toggle="tab">教师</a></li-->
+    <li {% if role == 1 %}class="active" {% endif %}><a href="{% url manage_school_send_account %}?role=1">教师</a></li>
+</ul>
+
+<div id="myTabContent" class="tab-content">
+    <div class="tab-pane fade in active">
+        <div class="well">
+            <form class="form-inline" method="GET">
+                <input type="hidden" name="role" value="{{ role }}">
+                <input type="text" name="q" id="keyW" class="input-medium search-query" style="*float: left;" value="{{query}}" {% if role == 0 %} placeholder="班级名" {% else %} placeholder="教师名" {% endif %}>
+                <button type="submit" class="btn" id="searchB" style="*float: left;">{% trans "Search" %}</button>
+                <button type="submit" rel="send" class="btn btn-success pull-right"  data-toggle="modal" data-target="#myModal">发送帐号</button>
+            </form>
+        </div>
+
+        <div class="form-horizontal thumbnail">
+            <form action="" method="post" id="send_account">{% csrf_token %}
+                <table class="table table-striped">          			
+              		<col class="span1">
+                	<col class="span1">
+              		<col class="span1">
+                	{% if role == 1 %}
+					<col class="span2">
+                  	{% endif %}
+                  <thead>
+                    <tr rel="selectAll">
+                      <th><span class="checkbox"><input type="checkbox" rel="selectAll">全选</span></th>
+                      {% if role == 0 %}
+                            <th>序号</th>
+                            <th>班级</th>
+                            <th>学生数量</th>
+                      {% else %}
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>手机号</th>
+                      {% endif %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                   {% if class_list or teacher_list %}
+                        {% if role == 0 %}
+                            {% for c in class_list %}
+                            <tr rel="check">
+                              <td><span class="checkbox"><input type="checkbox" rel="check" name="class_list" value="{{ c.pk }}" stuNum="{{ c.students.all.count }}"> </span></td>
+                              <td>{{ forloop.counter }}</td>
+                              <td>{{ c.name }}</td>
+                              <td rel="stu">{{ c.students.all.count }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            {% for t in teacher_list %}
+                            <tr rel="check">
+                              <td><span class="checkbox"><input type="checkbox" rel="check" name="teacher_list" value="{{ t.pk }}"> </span></td>
+                              <td>{{ forloop.counter }}</td>
+                              <td>{{ t.name }}</td>
+                              <td>{{ t.user.get_profile.mobile }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                   {% else %}
+                      <tr>
+                        <td><div class="nonecentent">没有查询到相关内容</div></td>
+                        <td></td><td></td><td></td>
+                     </tr>
+             	    {% endif %}
+                  </tbody>
+      
+                  <thead>
+                    <tr rel="selectAll">
+                      <th><span class="checkbox"><input type="checkbox" rel="selectAll">全选</span></th>
+                      {% if role == 0 %}
+                            <th>序号</th>
+                            <th>班级</th>
+                            <th>学生数量</th>
+                      {% else %}
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>手机号</th>
+                      {% endif %}
+                    </tr>
+                  </thead>
+                </table>
+                <div class="controls-group">
+                    <button type="submit" rel="send" class="btn btn-success pull-right"  data-toggle="modal" data-target="#myModal">发送帐号</button>
+                    {% paginate %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="set-tip"><p>请先选择要发送的帐号</p></div>
+<script type="text/javascript">
+        var searchw = $("#keyW").attr("value");
+	    if(searchw == ""){
+			    $("#searchB").attr('disabled',true)
+			}else{
+				$("#searchB").attr('disabled',false)
+			}
+		$("#keyW").blur(function(){
+			dissearch()
+			})
+		$("#keyW").keyup(function(){
+			dissearch()
+			})
+    $('button[rel=send]').click(function(){
+		 var num = checkNum();
+		 if(num){
+			 msg = '已选择{% if role == 0 %}班级 {% else %}教师{% endif %}数量：'+checkNum()+'个，{% if role == 0 %}学生数量：' + studentNum() + '个，{% endif %}确认发送吗？'       
+            Bconfirm({
+            message: msg,
+            handler: function(){
+                $('#send_account').submit()
+              }
+          });		
+              return false;
+		}else{
+			if(!$('#set-tip').is(':visible')){ 
+                $('#set-tip').css({display:'block', bottom:'-50px'}).animate({bottom: '+50'}, 400,           function(){ 
+                setTimeout(out, 2000); 
+            }); 
+          } 
+	    }
+    })
+    $(':checkbox[rel=check]').click(function(event){
+        stop(event)
+        //btnDisabled()
+    })
+    $('tr[rel=check]').click(function(){
+        $select = $(this).find(':checkbox')
+        rowSelect($select)
+        //btnDisabled()
+    })
+    $(':checkbox[rel=selectAll]').click(function(event){
+        stop(event)
+        selectAll($(this).attr('checked'))
+        //btnDisabled()
+    })
+    $('tr[rel=selectAll]').click(function(){
+        $select = $(this).find(':checkbox')
+        rowSelect($select)
+        selectAll($select.attr('checked'))
+        //btnDisabled()
+    })
+    function stop(event){
+        if (event && event.stopPropagation){
+            event.stopPropagation()
+        }else{
+            window.event.cancelBubble=true
+        }
+    }
+    function rowSelect($select){
+        if($select.attr('checked')){
+            $select.attr('checked', false)
+        }else{
+            $select.attr('checked', true)
+        }
+    }
+    function selectAll(checked){
+        var allInput = document.getElementsByTagName("input")
+        var loopTime = allInput.length
+        for(i = 0;i < loopTime;i++)
+        {
+            if(allInput[i].type == "checkbox")
+            {
+              allInput[i].checked = checked
+            }
+        }
+    }
+    function checkNum(){
+        var num = $(':checkbox:checked[rel="check"]').length
+        return num
+    }
+    function studentNum(){
+        var num = 0
+        $(':checkbox:checked[rel="check"]').each(function(){ 
+          stu_num = Number($(this).attr("stuNum"));
+          num = num + stu_num 
+        })
+        return num
+    }
+	function dissearch(){
+		var searchw = $("#keyW").attr("value");
+		if(searchw==""){
+		  $("#searchB").attr('disabled',true)
+		}else{
+		  $("#searchB").attr('disabled',false)
+	    }		  
+	}
+	function out(){ 
+        $('#set-tip').animate({bottom:'0'}, 400, function(){ 
+        $(this).css({display:'none', bottom:'-50px'}); 
+      }); 
+   }	
+</script>
+{% endblock %}

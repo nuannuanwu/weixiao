@@ -1,0 +1,158 @@
+{% load i18n kinger_tags oa_tags pagination_tags %}
+<form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <input type="hidden" value="{{doc.id}}" name="doc">
+    <input type="hidden" calue="{{school.id}}" name="sid">
+    <input id="post_data" name="applies" type="hidden" value=""> 
+    <input id="channel" name="channel" type="hidden" value=""> 
+    {% if doc.type == 0 %}  
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h4>物资录入</h4>
+    </div> 
+    <div id="content" style="padding:10px; max-height:450px; overflow-x:hidden; overflow-y:auto; ">
+        <div class="popp_table">
+            <table id="levetable" width="100%">
+                <tbody>
+                    <tr>
+                        <th width="175">供应商</th>
+                        <th width="175">物资名称</th>
+                        <th width="150">申请数/录入数</th>
+                        <th width="105">类别</th>
+                        <th width="135">登记人</th>
+                    </tr>  
+                    {% for a in applies %} 
+                    {% if a|apply_undeal > 0 %}
+                    <tr appid="{{a.id}}" idn="{{forloop.counter}}" class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td> 
+                            <input datatype="*" errormsg=" " nullmsg=" " name="pname"  id="pname_{{forloop.counter}}"  class="inputpname" style="margin-top:5px; width:125px;" type="text" value="">
+                            <span class="Validform_checktip "></span>
+                        </td>
+                        <td>
+                            <input datatype="*" errormsg=" " name="sname" id="sname_{{forloop.counter}}" nullmsg=" "  class="inputsname" style="margin-top:5px; width:125px;" type="text" value="{{a}}">
+                            <span class="Validform_checktip"></span>
+                        </td>
+                             
+                        <td style="overflow: visible;">
+                            <div class="remind_num" style=" zoom: 1; z-index: 0;" data-tunm="{{a|apply_undeal}}" data-sunm="{{a.num}}">
+                                <span style=" font-size:16px;"> {{a.num}} / </span>
+                                <input datatype="nun|*" errormsg=" " autocomplete="off" nullmsg=" " name="num" id="num_{{forloop.counter}}" class="inputnum"  style="width:40px; margin-top:5px;" type="text" value="{{a|apply_undeal}}" max="{{a|apply_undeal}}" min="1" data-max="{{a|apply_undeal}}">
+                                <span class="Validform_checktip "></span>
+                                <div class="boxCapacity " style=" display:none; height: 30px; font-size:12px; position: absolute; z-index: 3; left:0; top:40px; background: #fff6df; border: 1px solid #959595;">
+                                    <div style="position:relative; height:30px; line-height:30px; width: 170px; text-align: center;">
+                                        <span style=" background:url('{{ STATIC_URL }}oa/images/tip.gif') no-repeat; color:#959595; position: absolute; z-index:5; left:20px; top: -5px; padding:3px 10px;"> </span>
+                                    已录入数<span class="tunm">{{a.deal}}</span>,需录入数<span class="sunm">{{a|apply_undeal}}</span>
+                                    </div>
+                                </div>
+                            </div> 
+                        </td> 
+                        <td>{{a.supply.category}}</td>
+                        <td>
+                            <input datatype="*" errormsg=" " name="register" id="register_{{forloop.counter}}" nullmsg=" " placeholder="请输入登记人" class="inputregister" style="margin-top:5px; width:85px;"  type="text" value="">
+                            <span  class="Validform_checktip "></span>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="no_supply_remind" style=" display:none; color:red; text-align: center;">录入数不能为零,且不得大于申请数</div>
+        <div class="leave_message">
+            <label>录入备注:</label>
+            <textarea name="remark" style="width:825px; height:80px; resize:vertical;"></textarea>
+        </div>
+    </div>
+    <div class="modal-footer"> 
+        <p style="padding:0; margin:0; " > 
+            <input type="hidden" id="user_id" value="{{user.id}}">
+            <input id="server_enter" type="button" class="btn btn-success" value="确定" />
+            <!-- <a id="server_enter" style="color:#fff;" class="btn btn-success" href="javascript:;">确定</a>-->
+            <a class="btn " data-dismiss="modal" href="javascript:;">取消</a>  
+        </p> 
+    </div> 
+{% else %}
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h4>物资领取</h4>
+    </div> 
+    <div id="content" style="padding:10px; max-height:450px; overflow-x:hidden; overflow-y:auto; ">
+        <div class="popp_table">
+            <table id="levetable" width="100%">
+                <tbody>
+                    <tr>
+                        <th width="150">物资名称</th>
+                        <th width="130">申请数/领取数</th>
+                        <th width="90">类别</th>
+                        <th width="120">登记人</th>
+                    </tr> 
+                    {% for a in applies %}
+                    <tr appid="{{a.id}}" idn="{{forloop.counter}}" class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}" > 
+                         <td>{{a}}</td>
+                         <td style="overflow: visible;">
+                            <div class="remind_num" style="zoom: 1; z-index: 0;" >
+                                <span style="font-size:16px;">{{a.num}}/</span>
+                                <input datatype="nun|*" errormsg=" " nullmsg=" " name="num" id="num_{{forloop.counter}}" class="inputnum" autocomplete="off" style="width:40px; margin-top:5px;" type="text" value="{% if a.supply.num > a|apply_undeal:'out' %}{{a|apply_undeal:'out'}}{% else %}{{a.supply.num}}{% endif %}" min="1" max="{{a|apply_undeal:'out'}}" data-max="{{a|apply_undeal:'out'}}">
+                                <span  class="Validform_checktip "></span>
+                                <div class="boxCapacity " style="display:none; font-size:12px; height:30px; position: absolute; z-index: 3; background: #fff6df; border: 1px solid #959595;">
+                                    <div class="" style="position:relative; flaot:left; line-height:30px; height:30px; width:240px; text-align: center;">
+                                        <span style=" background:url('{{ STATIC_URL }}oa/images/tip.gif') no-repeat; color:#959595;  position: absolute; z-index:5; left:10px; top: -5px; padding:3px 10px; "> </span>
+                                        已领取数<span class="tunm">{{a.deal}}</span>,可领取数<span class="sunm">{% if a.supply.num > a|apply_undeal %} {{a|apply_undeal}}{% else %}{{a.supply.num}}{% endif %}</span>,当前库存<span>{{a.supply.num}}</span>
+                                    </div> 
+                                </div>
+                            </div> 
+                        </td> 
+                        <td>{{a.supply.category}}</td>
+                        <td>
+                            <input datatype="*" errormsg=" " nullmsg=" " name="register" id="register_{{forloop.counter}}" placeholder="请输入登记人" class="inputregister" style="margin-top:5px; width:85px;"  type="text" value="">
+                            <span  class="Validform_checktip "></span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="no_supply_remind" style=" display:none; color:red; text-align: center;">库存不足</div>
+        <div class="leave_message">
+            <label>领取备注:</label>
+            <textarea name="remark" style="width:665px; height:80px; resize:vertical;" ></textarea>
+        </div>
+    </div>
+    <div class="modal-footer"> 
+        <p style="padding:0; margin:0; " > 
+            <input type="hidden" id="user_id" value="{{user.id}}">
+            <input id="server_get" type="button" class="btn btn-success" value="确定" />
+            <!-- <a id="server_get" style="color:#fff;" class="btn btn-success" href="javascript:;">确定</a> -->
+            <a class="btn " data-dismiss="modal" href="javascript:;">取消</a> 
+        </p> 
+    </div> 
+{% endif %}
+</form> 
+
+<script type="text/javascript">
+$(function(){
+    // 验证
+    $(".registerform").Validform({
+        tiptype:2,
+        showAllError:true,
+        postonce:true,
+        datatype:{//传入自定义datatype类型 ;
+            "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+            "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+            "nun" : /^[1-9]*[1-9][0-9]*$/
+        },beforeSubmit:function(curform){
+            //在验证成功后，表单提交前执行的函数，curform参数是当前表单对象。
+            //这里明确return false的话表单将不会提交; 
+            $("#server_get, #server_enter").attr("disabled","disabled");
+        }   
+    });
+    //提示
+    $(".remind_num").hover(function(){ 
+        $(this).css({position:"relative"});
+        $(this).find(".boxCapacity").show();
+    },function(){ 
+        $(this).find(".boxCapacity").hide();
+        $(this).css({position:""});
+    });
+
+});
+</script>

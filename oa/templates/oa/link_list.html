@@ -1,0 +1,81 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate links 10 %}
+<div class="main">
+    <div class="tab">
+      <span>友情链接</span>
+      <a class="btn" href="{% url oa_link_create site.id %}" style="color:#353535;"><i class="add_btn">&nbsp;</i>添加</a>
+    </div>
+    <div class="column">
+        <form class="form-inline" action="" method="GET">
+            <input type="text" name='q' value="{{q}}" placeholder="标题">
+            <input class="btn" type="submit" name="" value="搜索" >
+        </form>
+    	<div class="list">
+            <form class="form-inline" id="form_post" onsubmit="return check()" action="{% url oa_link_delete site.id %}" method="POST">{% csrf_token %}
+                  <table>
+                       <tr align="center">
+                           <th scope="col" width="30"><input type="checkbox" rel="checkall"></th>
+                           <th scope="col" width="180">标题</th>
+                           <th scope="col" width="195">链接</th>
+                           <th scope="col">加入时间</th>
+                       </tr>
+                       {% if not links|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                      {% else %}
+                      {% for l in links %}
+                      <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                          <td width="30"><input type="checkbox" value="{{l.id}}" rel="role" name="link_pks"></td>
+                          <td width="180"><div class="td-words w_180">{{l.title}}</div></td>
+                          <td width="195"><div class="td-words w_195">{{l.url}}</div></td>
+                          <td>{{l.ctime|date:"Y-m-d G:i"}}</td>
+                      </tr>
+                      {% endfor %}
+                      {% endif %}
+                      <tr>
+                        <td><input type="checkbox" rel="checkall"></td>
+                        <td colspan="3">
+                            <select id="select_val" name="attr" class="span2">
+                              <option value="0">-- 批量操作 --</option>
+                              <option value="1">删除</option>
+                            </select>
+                            <input type="submit" disabled="disabled" class="btn  btn-success" id="sub_form" name="" value="执行" >
+                        </td>
+                      </tr>
+                  </table>
+                  <input type="hidden" name="sid" value="{{site.id}}">
+            </form>
+            <div class="pagination" style="text-align:center;">
+                {% paginate %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  var flagType="0";
+$("#select_val").click(function(){
+    flagType=$(this).find('option:selected').val();
+});
+function check(){  
+   var rimndText="";
+   if(flagType == 1){
+       rimndText="是否删除用所选";
+   }else{
+       rimndText="你还没选择操作类型";
+   }  
+    var r=confirm(rimndText);
+    if (r) {
+        if(flagType==0){
+            return false;
+        } //alert("删除成功");
+    } else { 
+            return false;//false:阻止提交表单  
+    }  
+}   
+</script>
+{% endblock %}

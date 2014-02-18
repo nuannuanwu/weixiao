@@ -1,0 +1,106 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate approvals 10 %}
+<div class="main"> 
+  {% include "supply/document_url_menu.html" %}
+    <div class="column"> 
+        <div>
+        <form class="form-inline" method="GET" id="search-form-box"> 
+            <div id="slimp-seatch" class="pull_left w_175">
+                <input type="text" name="q" id="keyW" class="input-medium"  value="{{query}}" placeholder="标题">
+            </div> 
+            <div id="adv-search" class="hide">
+                <input type="text" placeholder="开始时间" id="from" name="st" class="shijainduan w_80" value="{{st}}" />
+                &nbsp;&nbsp;至&nbsp;&nbsp;
+                <input type="text" placeholder="结束时间" name="et" value="{{et}}" id="to" class="shijainduan w_80" />&nbsp;&nbsp;
+            </div>
+            <button type="submit" class="searchB btn" id="searchB">{% trans "Search" %}</button>
+            <a href="javascript:;" id="adv-search-btn" class="show">高级搜索</a>
+            
+        </form>
+        </div>
+        <div class="list"> 
+            <table>
+                <tr align="center">
+                    <th width="40" scope="col">级别</th>
+                    <th width="130" scope="col">状态</th>
+                    <th width="100" scope="col">操作</th> 
+                    <th scope="col" width="100">标题</th>
+                    <th width="60" scope="col">申请类型</th>
+                    <th width="85"  scope="col">发布时间</th>
+                    <th width="60" scope="col">发布者</th>
+                    <th width="60" scope="col">操作</th>
+                </tr>
+                {% if not approvals|is_empty_list %}
+                <tr>
+                    <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                        <h4 class="not_date"> 暂无数据</h4>
+                    </td>
+                </tr>
+                {% else %}
+                {% for a in approvals %}
+                <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                    <td>{{a.document.level|document_level}}</td>
+                    <td>{{a.document|document_status|safe}}</td>
+                    <td><a href="{% url oa_supply_edit_reback_document a.id %}">编辑</a> {% if request.user == a.document.sender %}<a style="color:#C93; margin-left:10px;" href="{% url oa_supply_invalid_user_document a.document.id %}">作废</a>{% endif %}</td> 
+                   <td><a target="_blank" href="{% url oa_document_detail a.document.id %}" title="{{a.document.title}}">{{a.document.title|truncatestr:":8"}}</a></td> 
+                    <td>{% if a.document.type == 0 %}采购{% else %}采购{% endif %}</td>
+                    <td title="{{a.document.ctime|date:"Y-m-d H:i"}}">{{a.document.ctime|date:"Y-m-d"}}</td>
+                    <td>{{a.document.sender.profile.realname}}</td>
+                    <td>
+                        <a rel="doc_document" data-id="{{a.id}}" href="javascript:;">查看</a>
+                    </td>
+                </tr>
+                <tr id="id_{{a.id}}" class="detail_info" style="display:none;">
+                    <td style=" background-color:#fff; margin: 0; padding: 0;" colspan="8"> 
+                            <table class="form-table"> 
+                                <!--物资列表-->
+                                <tr style="border-top: 1px solid #DDDDDD;"> 
+                                    <th width="140">物资名称</th>
+                                    <th width="100">申请数</th>
+                                    <th width="80">类别</th>
+                                    {% if a.document.type == 0 %}
+                                        <th width="130">供应商</th> 
+                                    {% endif %}
+                                </tr>
+                                {% for d in a.document.applies.all %} 
+                                <tr> 
+                                    <td>{{d.supply}}</td>
+                                    <td>{{d.num}}</td>
+                                    <td>{{d.supply.category}}</td>
+                                    {% if a.document.type == 0 %}
+                                        td>{{d.provider}}</td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                                <!--/物资列表--> 
+                            </table> 
+                    </td>  
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </table>
+             <div class="pagination" style="text-align:center;">
+                {% paginate %}
+            </div>
+       </div>
+    </div>
+</div>
+<script type="text/javascript">
+//查看 
+    $("[rel=doc_document]").click(function(){
+        var id = $(this).data("id");
+        if($("#id_"+id).is(':visible')){ 
+            $(this).removeClass("nav_brss")
+            $(".detail_info").hide();
+        }else{ 
+            $(".detail_info").hide(); 
+            $('[rel=doc_document]').removeClass("nav_brss")
+            $(this).addClass("nav_brss")
+            $("#id_"+id).show();
+        } 
+    }); 
+</script>
+
+{% endblock %}

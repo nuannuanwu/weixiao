@@ -1,0 +1,141 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags%}
+{% block content %}
+<div class="main">
+     <div class="tab">
+         <span>角色信息</span>
+         <a href="{% url oa_permission_role_list %}">返回</a>
+     </div>
+     <div class="column"> 
+     <form id="post_form" class="registerform" action="{% if role %}{% url oa_permission_update_role role.id %}{% else %}{% url oa_permission_create_role %}{% endif %}" method="post">
+          {% csrf_token %}
+          {% if role.type == 1 %}
+          <p><label>角色名称*</label>
+              <span>{{role.name}}</span>
+          </p>
+          {% else %}
+          <p><label>角色名称*</label>
+              {{form.name|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入角色名称"}}
+              &nbsp;<span id="id_nameTip" class="erro-tips"> {{form.name.errors|striptags}}</span>
+          </p>
+          {% endif %}
+          <p><label>描述</label> {{form.description}}</p>  
+            <div class="b-class">
+                <div class="class-name">
+                    <div class="parent-cn"> 
+                        <div style="overflow:hidden;">
+                            <input style="float:left;" id="all_class_1" name="user_name" class="all_type" type="checkbox" /> 
+                            <label for="all_class_1" style=" float:left; margin-left:5px; " >全选</label>
+                        </div>
+                    </div>
+                   <div id="type_user_name" >
+                        {% for p in agency_par_accesses %}
+                        <div class="cn-item"> 
+                            <div class="cni">  
+                                <input id="t_class_{{p.id}}" style="float:left;" name="group"  type="checkbox" class="agency" rel="class_{{p.id}}"> 
+                                <label for="t_class_{{p.id}}" name="group" style="float:left; margin-left:5px;" >{{p.name}}</label> 
+                                <a href="javascript:;" class="stretch-btn">展开</a> 
+                            </div>
+                            <div class="p-list">
+                               <ul id="list_class_{{p.id}}">
+                                {% for s in agency_sub_accesses %}
+                                     {% if s.parent_id == p.id %}
+                                    <li>
+                                     <input id="c_class_{{s.id}}"  style="float:left;" class="user_name" name="user" type="checkbox" {% if s.pk|in_list_q:agency_pks %}checked="checked"{% endif %} username="1"  rel="class_{{p.id}}"  value="{{s.id}}" />
+                                     <label for="c_class_{{s.id}}" style="float:left; margin-left:5px;">{{ s.name }}</label> 
+                                    </li>
+                                     {% endif %}   
+                                {% endfor %} 
+                            </ul> 
+                            </div> 
+                        </div> 
+                     {% endfor %}
+                   </div>
+                </div>
+           </div>
+         <p> <input class="btn btn-success" type="submit" value="保 存"/></p> 
+     </form>
+ </div>
+ </div>
+ 
+       
+<script type="text/javascript"> 
+   $(document).ready(function(){ 
+       $(".p-list").show();
+       $(".stretch-btn").text("折叠");
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             } 
+	});
+ });	 
+$("[name=user]").change(function(){
+	var idVal=$(this).val(),
+	relVal=$(this).attr('rel'),
+	nameVal=$(this).attr('username'),
+	classVal=$(this).attr('class')
+	boxType=$("#list_"+relVal),
+	boxClass=$("#type_"+classVal),
+	a = boxType.find('input:checked').length,
+	b = boxType.find('input').length,
+	c = boxClass.find('input[class='+classVal+']:checked').length,
+	d = boxClass.find('input[class='+classVal+']').length; 
+	if(a==b){
+		$("#t_"+relVal).attr("checked","checked");
+	}else{
+		$("#t_"+relVal).removeAttr("checked");
+		}
+	if(c==d){
+		$("#all_class_"+nameVal).attr("checked","checked");
+	}else{
+		$("#all_class_"+nameVal).removeAttr("checked");
+		}
+	 
+});
+
+$('[name=group]').click(function(event){ //单元选中
+        event.stopPropagation();
+	var box = $("#list_"+$(this).attr('rel')); 
+	var box_checked = $(this).attr("checked");
+	box.find("input").each(function(k,v){ 
+		id = v.getAttribute('id');
+		$mm = $("#"+id); 
+		valId=v.getAttribute('value'); 
+		if(box_checked && $mm.attr("checked"))
+		{ 
+		}else{
+			$mm.click();
+		} 
+	}); 
+});
+   
+$('.all_type').click(function(){//集团
+    var nameVal=$(this).attr('name');
+	var box = $("#type_"+nameVal); 
+	var box_checked = $(this).attr("checked");
+	box.find('input[class='+nameVal+']').each(function(k,v){ 
+		id = v.getAttribute('id');
+		$mm = $("#"+id);  
+		valId=v.getAttribute('value'); 
+		if(box_checked && $mm.attr("checked"))
+		{ 
+		}else{
+			$mm.click();
+		} 
+	});
+        //alert($(this).attr("checked"));
+        if($(this).attr("checked") == "checked"){
+             $('[name=group]').attr("checked","checked");
+        }else{
+            $('[name=group]').removeAttr("checked");
+        }
+});
+  
+
+</script>
+
+{% endblock %}

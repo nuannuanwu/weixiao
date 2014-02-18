@@ -1,0 +1,13 @@
+{% load i18n kinger_tags umessages_tags oa_tags %}
+{% get_latest_message message as latest_message %}
+{% if latest_message %}
+{% get_unread_message_count_between user and opposite_user as unread_between_count %}
+<tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+    <td><input type="checkbox" name="user_pks" value="{{opposite_user.id}}" rel="role"></td>
+    <td><div class="info-td" style="height:auto;">{% if unread_between_count > 0 %}<span class="no_red">[共{{unread_between_count}}条信息未读]</span>{% endif%}<a href="{% url oa_message_history opposite_user.id %}" title="{{ latest_message.body|cut_str:30|safe }}">{{ latest_message.body|cut_str:20|code_to_img|safe }}</a></div></td>
+    <td>
+        <div class="info-td w_80" style="float:left;">{{ opposite_user|get_name }}</div>
+    </td>
+    <td><div class="info-td w_105" style="float:left;">{{ latest_message.sent_at|date:"Y-m-d G:i" }}</div></td>
+</tr>
+{% endif%}

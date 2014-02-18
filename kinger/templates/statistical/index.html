@@ -1,0 +1,10 @@
+{% extends 'statistical/base.html' %}
+{% block content %}
+<div>
+<h4>微校数据统计</h4>
+<p><a href="{% url statistical_school_group %}">班级使用情况表</a></p>
+<p><a href="{% url statistical_group_teacher %}">老师使用情况表</a></p>
+<p><a href="{% url statistical_school_student %}">家长使用情况表</a></p>
+<p><a href="{% url statistical_tile_visit %}">家长使用分析表</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,309 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<div class="main">
+      <div class="tab"><span>{% if student %}修改学生{% else %}添加学生{% endif %}</span><a class="tbbtn" href="{% url oa_student_list %}">返回</a></div>
+      <div class="column">
+          <div class="form-horizontal form-kPicCon">  
+		       <form id="post_form" class="registerform" action="{% if student %}{% url oa_student_update student.id %}{% else %}{% url oa_student_create %}{% endif %}" method="post" enctype="multipart/form-data">
+                     {% csrf_token %}
+                     <div class="login-info">
+                           <div class="title">登录信息 &nbsp;&nbsp;&nbsp;&nbsp;
+                            {% if not student %}
+                                 <label class="radio inline w_70">
+                                    <input type="radio" rel="signup" name="signup" value="manua" checked="checked" > 手动指定
+                                 </label>
+                                 <label class="radio inline w_70">
+                                    <input id="auto_create" type="radio" rel="signup" name="signup" value="auto"> 自动生成
+                                 </label>
+                            {% endif %}
+                           </div>
+                           <p>
+                               <label> 登录帐号* </label>
+                               {{form1.username|attr:"class:input-medium"|attr:"datatype:user "|attr:"errormsg:输入3-24位字符(汉字和特殊字符除外）"|attr:"nullmsg:请填写登录帐号"}}&nbsp;
+                               <span class="erro-tips">{{form1.username.errors|striptags}}</span> 
+                               {% if student %}<a class="search_more" target="_blank" href="{% url oa_account_password_set student.user.id %}">修改密码</a>{% endif %}
+                               <span id="id_usernameTip" class="Validform_checktip "></span>
+                           </p>
+                           {% if not student %}
+                           <p>
+                               <label> 登录密码* </label> 
+                               {{form1.password|attr:"class:input-medium"|attr:"datatype:pow "|attr:"errormsg:输入6-4位字符：由数字英文特殊字符组成的字符串"|attr:"nullmsg:请填写登录密码"}}&nbsp;
+                               <span class="erro-tips">{{form1.password.errors|striptags}}</span>
+                               <span id="id_passwordTip" class="Validform_checktip "></span>
+                           </p> 
+                           {% endif %}
+                	 </div>
+                     <div class="uers-info">
+                          <div class="title">个人资料</div>
+                          <p style="margin-bottom:15px;position:relative; height:100px; width:708px;">
+                            <!--{{form2.mugshot}}-->
+                           	 <img  src="{% media_path student.user.get_profile.get_avatar "normal" %}" style="height:100px; width:100px;" id="upuerpic" /> 
+                             <input id="id_mugshot" autocomplete="off" name="mugshot" type="file" class=".input-xlarge" value="{{ form2.mugshot.value }}" onchange="filename.value=this.value;previewImage(this,'upuerpic');" /> 
+                             <input type="text" id="filename" value="{% if student %}{{student.user.get_profile.get_avatar}}{% else %}{% endif %}" />
+                             <input type="button" class="btn" id="upfilebtn" value="修改头像" /> 
+                         </p>
+                          <p>
+                              <label> 姓 名* </label>
+                              {{form2.realname|attr:"class:input-medium"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入姓名"}}&nbsp;
+                              <span id="id_realnameTip" class="erro-tips">{{form2.realname.errors|striptags}}</span> 
+                          </p>
+                          <p>
+                              <label> 性 别 </label>
+                              {{form2.gender|attr:"style:width:90px;"|attr:"class:Validform_error"|attr:"errormsg: "|attr:"nullmsg:请选择性别"}}
+                              <span id="id_genderTip" class="erro-tips">{{form2.gender.errors|striptags}}</span> 
+                          </p>
+                          <p>
+                                <label> 出生日期 </label> 
+                                {{form2.birth_date|attr:"class:gg input-medium"|attr:"style:cursor:pointer;display:none;"|attr:"value:"|attr:"style:cursor:pointer;"|attr:"value:"|attr:"errormsg: "|attr:"nullmsg:请输入出生日期"}}
+                                &nbsp;<span id="id_birth_dateTip" class="erro-tips"> </span> 
+                         </p> 
+                         <p>
+                            <label> 身份证号 </label>{{form2.id_number|attr:"class:input-xlarge"|attr:"ignore:ignore"|attr:"datatype:id-18 "|attr:"errormsg:身份证号不正确"|attr:"nullmsg:请输入您的身份证号"}}
+                            &nbsp;<span id="id_id_numberTip" class="erro-tips"> </span> 
+                         </p>
+                         <p>
+                           <label> 手 机* </label>{{form2.mobile|attr:"class:span2"|attr:"datatype:m "|attr:"errormsg:手机号不正确"|attr:"nullmsg:请输入手机号"}}&nbsp; 
+                           <span style="color: #999;" >此手机号用于接收信息</span>
+                           <span id="id_mobileTip" class="erro-tips">{{form2.mobile.errors}}</span>
+                         </p>
+                      </div>
+                     <div class="uers-info" id="guardian_info" >
+                           <div class="title">监护人&nbsp;&nbsp;</div>
+                                {{ form4.management_form }}
+                                {% for form in form4 %}
+                                <div rel="form" order="{{forloop.counter0}}" attr="show">
+                                    <p>
+                                       <label> 姓 名 </label>
+                                       {{form.name|attr:"class:input-medium guardian"|attr:"errormsg: "|attr:"nullmsg:请输入监护人姓名"}}&nbsp; 
+                                       {{form.relation|attr:"class:input-medium guardian"|attr:"placeholder:关系"|attr:"errormsg: "|attr:"nullmsg:请输入关系"}}&nbsp;
+                                       <span  id="id_form-0-nameTip" class="erro-tips">{{form.name.errors|striptags}}</span>
+                                       <span  id="id_form-0-relationTip" class="erro-tips">{{form.relation.errors|striptags}}</span> 
+                                    </p>
+                                    <p>
+                                       <label> 手 机 </label>
+                                       {{form.mobile|attr:"class:input-medium guardian"|attr:"placeholder:办公电话/手机"|attr:"ignore:ignore"|attr:"datatype:m|tel-3 "|attr:"errormsg:手机号或电话号码不正确"|attr:"nullmsg:"}}&nbsp;
+                                       <span style="color: #999;"> 此手机号用于接收信息</span>
+                                       <span id="id_form-0-mobileTip" class="erro-tips">{{form.mobile.errors|striptags}}</span>
+                                    </p>
+                                    <p>
+                                       <label> 电 话 </label>
+                                       {{form.office_phone|attr:"class:input-medium guardian"|attr:"placeholder:办公电话/手机"|attr:"ignore:ignore"|attr:"datatype:m|tel-3 "|attr:"errormsg:手机号或电话号码不正确"|attr:"nullmsg:"}}&nbsp; 
+                                       {{form.other_phone|attr:"class:input-medium guardian"|attr:"placeholder:其它电话/手机"|attr:"ignore:ignore"|attr:"datatype:m|tel-3 "|attr:"errormsg:手机号或电话号码不正确"|attr:"nullmsg:"}}&nbsp;
+                                       <span id="id_form-0-office_phoneTip" class="erro-tips"> {{form.office_phone.errors|striptags}}</span> 
+                                       <span id="id_form-0-other_phoneTip" class="erro-tips">{{form.other_phone.errors|striptags}}</span>
+                                    </p>
+                                    <p>
+                                       <label> 电 邮 </label> 
+                                       {{form.office_email|attr:"class:input-medium guardian"|attr:"placeholder:办公电邮"|attr:"placeholder:办公电邮"|attr:"ignore:ignore"|attr:"datatype:e"|attr:"errormsg:电邮格式不正确"|attr:"nullmsg:"}}&nbsp;
+                                       {{form.other_email|attr:"class:input-medium guardian"|attr:"placeholder:其他电邮"|attr:"placeholder:办公电邮"|attr:"ignore:ignore"|attr:"datatype:e"|attr:"errormsg:电邮格式不正确"|attr:"nullmsg:"}}&nbsp;
+                                       <span id="id_form-0-office_emailTip" class="erro-tips">{{form.other_email.errors|striptags}} </span><span id="id_form-0-office_emailTip" class="erro-tips">{{form.office_email.errors|striptags}}</span> 
+                                    </p>
+                                    <p>
+                                       <label> 住 址 </label>
+                                       {{form.address|attr:"class:guardian"|attr:"style:width:450px;"|attr:"errormsg: "|attr:"nullmsg:请输入监护人住址"}}&nbsp;
+                                       <span id="id_form-0-addressTip" class="erro-tips">{{form.address.errors|striptags}}</span> 
+                                    </p> 
+                                    <p style="margin-left: 80px;" ><a rel="del_guardian" href="javascript:;" order="{{forloop.counter0}}"> 删除该监护人</a></p>
+                                   </div>
+                              {% endfor %} 
+                               
+                              <p style="padding-top:0px; margin-top: 0px"><label></label><a id="add_guardian" href="javascript:;"> 添加监护人</a></p>
+                         </div> 
+                      
+                       <div  style="" class="uers-info">
+                            <div class="title">计划生育情况</div>
+                                <label class="radio inline w_70">
+                                 <input type="radio" id="is_single1" rel="is_single" name="is_single" value="1" {% if form5.is_single.value == '1' or not form5.is_single.value %}checked="checked" {% endif %}>
+                                  独生子女
+                                </label>
+                                <label class="radio inline w_70">
+                                <input type="radio" id="is_single2" rel="is_single.is_single" name="is_single" value="0" {% if form5.is_single.value == '0' %} checked="checked" {% endif %} />
+                                  非独生子女</label>
+                                <div id="many" style="display:none; margin:10px 0; background-color:#F0EFEF; border:1px solid #DDDDDD; padding:10px;">
+                                    <p><label style="width:80px;">家中子女数</label>{{form5.childnum|attr:"class:span1"}}
+                                    </p>
+                                    <p><label style="width:80px;">幼儿本人是第</label>{{form5.order|attr:"class:span1"}}胎</p> 
+                                    <div class="manyOk" style=" float:right; margin-right:270px; {% if not form5.overtbirth.value %} display:none; {% endif %}" >
+                                        <label class="radio inline"> 
+                                         <input type="radio" rel="is_pay" name="is_pay" value="1" {% if form5.is_pay.value == '1' %}checked="checked"{% endif %} />
+                                            超生但已办理超生手续
+                                        </label> 
+                                      <label class="radio inline">
+                                   <input type="radio" rel="is_pay" name="is_pay" value="0" {% if form5.is_pay.value == '0' or not form5.is_pay.value %}checked="checked"{% endif %} />
+                                       超生未办理超生手续
+                                      </label>
+                                    </div> 
+                                     <label class="checkbox inline" style=" margin-right:10px;"> 
+            <input id="id_overtbirth" type="checkbox" name="overtbirth" value="0" {% if form5.overtbirth.value %}checked="checked"{% endif %}/>
+         						  属于超生
+                                  </label>
+                                </div> 
+                       </div>
+                       <div class="uers-info">
+                            <div class="title">在园信息</div>
+                                <p>
+                                    <label> 所属校园* </label> 
+                                    {{form3.school|attr:"style:width:150px;"|attr:"datatype:* "|attr:"errormsg:"|attr:"nullmsg:请选择学园"}} 
+                                    {{form3.group|attr:"style:width:150px;"}}
+                                    <span id="id_schoolTip" class="erro-tips">{{form3.school.errors|striptags}}</span>
+                                    <span id="id_groupTip" class="erro-tips">{{form3.group.errors|striptags}}</span>
+                                </p>
+                            <p>
+                            <label> 入园时间</label>
+                            {{form3.school_date|attr:"class:selectdata span2"|attr:"value:"}}
+                            &nbsp;<span id="id_school_dateTip" class="Validform_checktip erro-tips">{{form3.school_date.errors|striptags}}</span>
+                            </p>
+                            <p>
+                                <label> 考勤卡 </label>
+                                {{form3.timecard|attr:"class:span2"}} 
+                            </p>
+                            <p>
+                                <label> 状 态 </label>
+                                {{form3.status|attr:"style:width:80px;"}}
+                            </p> 
+                       </div>  
+                    <p>
+                        <label> &nbsp; </label> 
+                        <input class="btn btn-success" type="submit" name="" value=" 保存 " >
+                        <!--input class="btn" style=" margin-left:25px; " type="reset"  value="取 消"/-->
+                        <a class="btn" href="{% url oa_student_list %}" style="margin-left:28px;">取 消</a>
+                    </p> 
+               </form> 
+          </div>
+      </div>
+</div>
+<script type="text/javascript">
+var FormNum = Number($("#id_form-TOTAL_FORMS").val());
+  //表单验证 
+ $(function(){
+    	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "user" : /^[a-z0-9_-]{3,16}$/,
+                "pow"  : /^[0-9a-zA-Z!$#%]{6,24}$/,
+                "date" :/^(?:(?:1[6-9]|[2-9][0-9])[0-9]{2}([-/.]?)(?:(?:0?[1-9]|1[0-2])\1(?:0?[1-9]|1[0-9]|2[0-8])|(?:0?[13-9]|1[0-2])\1(?:29|30)|(?:0?[13578]|1[02])\1(?:31))|(?:(?:1[6-9]|[2-9][0-9])(?:0[48]|[2468][048]|[13579][26])|(?:16|[2468][048]|[3579][26])00)([-/.]?)0?2\2(?:29))$/
+             } 
+	});
+ 
+ //日期选择
+$(".gg").sjSelect(); 
+$(".lSelect").click(function(){
+    $("#id_birth_date").blur();
+}); 
+ 
+$(':radio[name=signup]').click(function(){
+    var ty = $(this).attr("value");
+    if(ty == "auto"){
+        url = "{% url oa_get_pre_username %}"
+        $.get(url,function(result){
+            data = $.parseJSON(result); 
+            $("#id_username").attr("value",data.username);
+            $("#id_password").attr("value",data.password);
+        }); 
+        $("#id_username,#id_password").attr("disabled","true"); 
+        $("#id_passwordTip").removeClass("Validform_wrong"); 
+        $("#id_usernameTip").removeClass("Validform_wrong"); 
+        $("#id_passwordTip").text("");
+        $("#id_usernameTip").text("");
+    }else{
+        $("#id_username,#id_password").removeAttr("disabled");
+        $("#id_username,#id_password").val("");
+        $("#id_passwordTip").removeClass("Validform_right"); 
+        $("#id_usernameTip").removeClass("Validform_right"); 
+    }
+})
+ 
+if(!$("#id_school").find('option:selected').val()){ 
+    $("#id_group").html(''); 
+} 
+ 
+$("#id_school").change(function(){
+    school_id = $(this).find('option:selected').val(); 
+    if(school_id==""){  
+        $("#id_group").html('');
+    }else{ 
+        url = "{% url oa_get_school_class %}";
+        $.get(url,{sid:school_id,ty:'all'},function(result){
+            data = $.parseJSON(result); 
+            $("#id_group").html('<option value="">--------</option>');
+            for(var i=0;i<data.length;i++){
+                $("#id_group").append('<option value="' + data[i].id + '">' + data[i].name + '</option>')
+            }
+        });
+    }
+    school_id = ""
+})
+$("#id_school").change();
+/*
+$("#add_guardian").click(function(){
+    var form_num = {{extra}} + 1;
+    //url = $("#cu").attr("herf");
+    javascript:location.href = "?extra=" + form_num;
+   //$('#guardian_info').append('<a id="del_guardian" href="javascript:;"> 添加监护人</a>');
+})
+*/
+function first_delete(){
+  if($("[rel=form][attr=show]").length == 1){
+    $("[rel=form][attr=show]").first().children().find('[rel=del_guardian]').hide()
+  }else{
+    $("[rel=form][attr=show]").first().children().find('[rel=del_guardian]').show()
+  }
+}
+
+first_delete();
+
+ $("#add_guardian").click(function(e){ 
+      e.preventDefault();
+    FormNum = FormNum + 1;
+    url = "{% url oa_guardian_get_extra_form %}"
+    $.post(url,{order:FormNum},function(result){
+      data = $.parseJSON(result);
+      $("#add_guardian").parent().before(data.con);
+      first_delete();  
+      //alert($("#id_form-TOTAL_FORMS").val());
+    });
+     $("#id_form-TOTAL_FORMS").val(FormNum); 
+  });
+
+$("[rel=del_guardian]").live('click',function(e){ 
+      e.preventDefault()
+  var order = $(this).attr('order')
+  $("#id_form-" + order + "-name").val("empty_name");
+  $("#id_form-" + order + "-mobile").val("13900000000");
+  $("#id_form-" + order + "-address").val("empty_address");
+  $("[rel=form][order=" + order + "]").attr('attr','hide')
+  $("[rel=form][order=" + order + "]").hide()
+  first_delete()
+})
+
+var s=0;
+$(document).ready(function () { 
+	if($('input[id="is_single2"][checked]').val()!=null){
+		$("#many").show(); 
+	}
+  //独生与非独生按钮
+   $("#is_single1").click( function(){ 
+        $("#many").toggle();
+		
+   });
+   $("#is_single2").click( function(){  
+        $("#many").toggle(); 
+        if($('input[id="is_single2"][checked]').val()!=null){
+                $("#many").show(); 
+        }
+   });
+	$("#id_overtbirth").click( function(){  
+		$(".manyOk").toggle();  
+   });
+    
+});
+
+});
+</script>
+
+{% endblock %}

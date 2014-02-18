@@ -1,0 +1,151 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<style>
+    .list table th {background-color: #cfe4fd; }
+    .list table tr.bg th{background-color: #f8f8f8;}
+    .list table.table_border { border: 1px solid #e5e5e5; }
+    .list table.table_border th {border: 1px solid #e5e5e5; }
+    .list table.table_border td {border: 1px solid #e5e5e5; }
+</style>
+<div class="main">
+      <div class="tab"><span>出入记录详情</span><a class="tbbtn" href="{% url oa_supply_record_index %}">返回</a></div>
+      <div class="column">
+          <div class="form-horizontal form-kPicCon"> 
+              <form id="post_form" class="registerform" action="" method="post">{% csrf_token %}
+                    <input type="hidden" value="{{school.id}}" name="school"> 
+                    <p><label>记录ID:</label>{{record.id}}&nbsp;</p>
+                    <p><label>所属机构:</label>{{record.school.name}}&nbsp;</p>
+                    <p><label>申请人:</label>{{record.document.sender|get_name}}&nbsp;</p>
+                    <p><label>申请时间:</label>{{record.document.ctime|date:"Y-m-d G:i"}}&nbsp;</p>
+                    <p><label>申请备注:</label>{{record.document.description}} &nbsp;</p>
+                {% if doc.type > 0 %}
+                    <p>退还记录:</p>
+                    <div class="list">
+                        <table>
+                            <tr class="bg">
+                                <th>序号</th>
+                                <th>物资名称</th>
+                                <th>退还数量</th> 
+                                <th>登记人</th>
+                                <th>时间</th>
+                                <th>退还备注</th>
+                            </tr>
+                            {% for b in backs %}
+                            <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                                <td>{{forloop.counter}}</td>
+                                <td>{{b.record.supply}}</td>
+                                <td>{{b.num}}</td> 
+                                <td>{{b.regist}}</td>
+                                <td>{{b.back_time|date:"Y-m-d G:i"}}</td>
+                                <td>{{b.remark}}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                    <p>领取记录:</p>
+                    <div class="list">
+                        <table>
+                            <tr class="bg">
+                                <th>序号</th>
+                                <th>物资名称</th>
+                                <th>领取数量</th> 
+                                <th>登记人</th>
+                                <th>时间</th>
+                                <th>领取备注</th>
+                            </tr>
+                            {% for r in records %}
+                            <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                                <td>{{forloop.counter}}</td>
+                                <td>{{r.supply}}</td>
+                                <td>{{r.num}}</td> 
+                                <td>{{r.regist}}</td>
+                                <td>{{r.ctime|date:"Y-m-d G:i"}}</td>
+                                <td>{{r.remark}}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                   
+                    <p>物资列表：</p> 
+                        <div class="list"> 
+                            <table class="table_border">
+                                <tr>
+                                    <th>物资名称</th> 
+                                    <th>类别</th>
+                                    <th>借出总数</th>
+                                    <th>退还总数</th>
+                                    <!-- <th>退还时间</th> --> 
+                                </tr>
+                                {% for a in doc.applies.all %}
+                                    <tr>
+                                        <td>{{a.supply.name}}</td>
+                                        <td>{{a.supply.category}}</td>
+                                        <td>{{a.deal}}</td>
+                                        <td>{{a|apply_reback}}</td>
+                                        <!-- <td>{{a.mtime|date:"Y-m-d G:i"}}</td> -->
+                                    </tr>
+                                {% endfor %}
+                            
+                            </table>
+                        </div>    
+                {% else %}
+                        <p>录入记录:</p>
+                        <div class="list">
+                            <table>
+                                <tr class="bg">
+                                    <th>序号</th>
+                                    <th>物资名称</th>
+                                    <th>供应商</th>
+                                    <th>录入数量</th> 
+                                    <th>登记人</th>
+                                    <th>时间</th>
+                                    <th>录入备注</th>
+                                </tr>
+                                {% for r in records %}
+                                <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{r.supply}}</td>
+                                    <td>{{r.provider}}</td>
+                                    <td>{{r.num}}</td> 
+                                    <td>{{r.regist}}</td>
+                                    <td>{{r.ctime|date:"Y-m-d G:i"}}</td>
+                                    <td>{{r.remark}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                       
+                        <p>物资列表：</p> 
+                        <div class="list"> 
+                            <table class="table_border">
+                                <tr>
+                                    <th>物资名称</th> 
+                                    <th>类别</th>
+                                    <th>录入总数</th>
+                                    <!-- <th>供应商</th> -->
+                                    <!-- <th>录入时间</th> --> 
+                                </tr>
+                                {% for a in doc.applies.all %}
+                                    <tr>
+                                        <td>{{a.supply.name}}</td>
+                                        <td>{{a.supply.category}}</td> 
+                                        <td>{{a.deal}}</td>
+                                        <!-- <td>{{a.supply.provider|default:""}}</td> -->
+                                        <!-- <td>{{a.mtime|date:"Y-m-d G:i"}}</td> -->
+                                    </tr>
+                                {% endfor %}
+                            
+                            </table>
+                        </div>    
+                {% endif %}
+             </form> 
+         </div>
+     </div>
+</div>
+ 
+<script type="text/javascript">
+</script>
+{% endblock %}
+ 

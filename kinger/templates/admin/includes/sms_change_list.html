@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}  
+  
+{% block extrahead %}  
+<script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">  
+$(function(){
+	url = '{% url admin_not_logged_in_sms %}';
+	$(".grp-object-tools").append("<li><a href='" + url + "'>未登录用户短信</a></li>");
+})
+</script>  
+{% endblock %}  

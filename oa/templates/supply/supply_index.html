@@ -1,0 +1,169 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate supplies 10 %}
+<div class="main">
+     <div class="tab"><span>物资列表</span></div>
+     <div class="column"> 
+         <form class="form-inline" style="margin:10px 0 15px 0px;"  action="" method="GET"> 
+                {% if request.user|is_agency_user %}
+                    <select id="school_id" class=" span2 classSelect" style=" font-size: 14px; width: auto;" value="{{school.id}}" name="sid">
+                        <option value=""> --所有机构-- </option>
+                        {% for s in schools %}
+                        <option  value="{{s.id}}" {% if school.id == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                        {% endfor %}
+                   </select> 
+                {% else %}
+                    <select id="school_id" class=" span2 classSelect" style="display:none; font-size: 14px; width: auto;" value="{{school.id}}" name="sid">
+                        {% for s in schools %}
+                        <option  value="{{s.id}}" {% if school.id == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                        {% endfor %}
+                   </select> 
+                {% endif %}
+                    <select id="category" class=" span2 classSelect" style=" font-size: 14px; width: auto;" value="{{category.id}}" name="cat">
+                        <option value=""> --全部类别-- </option>
+                        {% for c in categorys %}
+                        <option  value="{{c.id}}" {% if category.id == c.id %}selected="selected"{% endif %}>{{c.name}}</option>
+                        {% endfor %}
+                   </select> 
+                   <select id="is_show" class=" span2 classSelect" style=" font-size: 14px; width: auto;" value="" name="is_show">
+                        <option  value="1" {% if is_show == 1 %}selected="selected"{% endif %}>启用</option>
+                        <option  value="0" {% if is_show == 0 %}selected="selected"{% endif %}>禁用</option>
+                        <option value="-1" {% if is_show == -1 %}selected="selected"{% endif %}> --全部状态-- </option>
+                   </select> 
+                <input type="text" name="q" id="keyW" class="input-medium " value="{{query}}" placeholder="输入关键字">
+                <button style=" margin-left:10px;" type="submit" class="btn" id="searchB">{% trans "Search" %}</button>
+            </form> 
+         <div class="list"> 
+            <form class="form-inline" onsubmit="return check()" id="form_post" action="" method="POST">{% csrf_token %}
+                <table>
+                     <tr align="center">
+                         <th scope="col" width="30"><input type="checkbox" rel="checkall"></th>
+                         <th scope="col">名称</th> 
+                         <th scope="col">类别</th>
+                         <th scope="col">总量</th>
+                         <th scope="col">添加时间</th>
+                         <th scope="col">所属机构</th> 
+                         <th scope="col">操作</th>
+                         <th scope="col">状态</th>   
+                      </tr>
+                      {% if not supplies|is_empty_list %}
+                        <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                            <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                      {% else %}
+                     {% for s in supplies %}
+                    <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td><input type="checkbox" value="{{s.id}}" rel="suply" name="supply_pks"></td> 
+                        <td><a href="{% url oa_supply_update s.id %}">{{s.name}}</a></td> 
+                        <td rel="{{s.category_id}}">{{s.category.name}}</td>
+                        <td>{% if s.num < s.min or s.num == 0 %}<span class="color_red">{{s.num}}&nbsp;库存不足</span>{% else %}{{s.num}}{% endif %}</td> 
+                        <td>{{s.stime|date:"Y-m-d "}}</td>
+                        <td>{{s.school.name}}</td>
+                        <td><a href="{% url oa_supply_record_index %}?q={{s.name}}&qty=1">查看</a></td>
+                        <td>{% if s.is_show %}启用{% else %}禁用{% endif %}</td>
+                    </tr>
+                 {% endfor %}
+                 <tr>
+                    <td><input type="checkbox" rel="checkall"></td>
+                    <td colspan="7">
+                        <select id="select_val" name="attr" style="width:auto;"> 
+                          <option value="1">--启用物资--</option>
+                          <option value="0">--禁用物资--</option>
+                        </select>
+                        <input class="btn btn-success" disabled="disabled" id="sub_form" type="submit" name="" value="执行" >
+                    </td>
+                  </tr>
+                 {% endif %}
+                </table>
+            </form>
+               <div class="pagination" style="text-align:center;">
+               		{% paginate %}
+               </div>
+           </div>
+     </div>
+</div>
+<script>
+$("#school_id").change(function(){
+    $("#category").html('<option value="">--全部类别--</option>');
+        var sid = $(this).val();
+    if(sid){
+        url = "{% url oa_supply_school_realtes %}";
+        $.get(url,{school_id:sid},function(result){
+            data = $.parseJSON(result);
+            if(data.categorys){ 
+                var cats = data.categorys;
+                var htmls = ''
+                for(var i=0;i<cats.length;i++){
+                    htmls += '<option class="optgroup" value="' + cats[i].pid + '" class="optgroup">' + cats[i].pname + '</option>'; 
+                    sub = cats[i].member; 
+                    for(var j=0;j<sub.length;j++){  
+                      htmls += '<option value="' + sub[j].sid + '">&nbsp;&nbsp;&nbsp;' + sub[j].sname + '</option>'; 
+                    }
+                }
+                 $("#category").append(htmls); 
+            }   
+        });
+    } 
+ })
+$("#school_id").change();
+// var flagType="";
+// $("#select_val").click(function(){
+//     flagType=$(this).find("option:selected").val(); 
+// });
+
+$("[name=supply_pks]").change(function(){
+    var formChek = $("#form_post"),
+    a = formChek.find('input[name=supply_pks]').length,
+    b = formChek.find('input[name=supply_pks]:checked').length; 
+    if(b==0){
+        $("#sub_form").attr("disabled",true );
+    }else{
+        $("#sub_form").attr("disabled",false);
+        } 
+    if(a==b){
+        $(':checkbox[rel=checkall]').attr("checked","checked");
+        $("#sub_form").attr("disabled",false);
+    }else {
+        $(':checkbox[rel=checkall]').removeAttr("checked");
+    }
+});
+$(':checkbox[rel=checkall]').click(function(event){
+        stop(event)
+        selectAll($(this).attr('checked'));
+        var formSit = $("#form_post");  
+        var a=formSit.find('input[rel=suply]:checked').length;
+        if(a>0){
+            $("#sub_form").attr("disabled",false);
+        }else{
+            $("#sub_form").attr("disabled",true);
+        }
+    
+});
+
+function check(){  
+    var r=confirm("是否执行当前操作?");
+    if (r==true) { 
+        return true;
+    }else{ 
+        return false;//false:阻止提交表单  
+    }
+}
+
+ 
+function selectAll(checked){
+    var formSit = $("#form_post");
+    var allInput = document.getElementsByTagName("input")
+    var loopTime = allInput.length
+    for(i = 0;i < loopTime;i++)
+    {
+        if(allInput[i].type == "checkbox")
+        {
+          allInput[i].checked = checked
+        }
+    }
+}
+</script>
+{% endblock %}

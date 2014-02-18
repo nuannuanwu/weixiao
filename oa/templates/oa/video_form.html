@@ -1,0 +1,299 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="main">
+        <div class="tab">
+            {% if part %}
+                <span>更新视频</span>
+            {% else %}
+                <span>添加视频</span> 
+            {% endif %}
+            <a href="{% url oa_part_con_video_list site.id %}">返回</a>
+        </div>
+        <div class="column">
+                <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                        <div class="form-div">
+                            <label>标题文字*</label> 
+                            {{form.title|attr:"class:span3"|attr:"datatype:*"|attr:"errormsg: "|attr:"nullmsg:请填写标题"}}&nbsp; 
+                            <span id="id_titleTP" class="erro-tips"> </span>
+                            <!--<span id="title_R" style=" color: red;" class="Validform_checktip Validform_wrong ">请填写标题</span>-->
+                        </div>
+                        <div class="form-div-video"> 
+                            <p style="margin-left:75px;">
+                                <input type="radio" id="m-control" value="0" name="video_type" {% if not part or part.video_type == 0 %}checked="checked"{% endif %}/><label for="m-control">手动上传</label>
+                                <input type="radio" id="m-auto" value="1" name="video_type" {% if part.video_type == 1 %}checked="checked"{% endif %}/><label for="m-auto">输入链接</label>
+                            </p>  
+                            <div class="form-div v-up" id="v-up" style="  margin:20px 0;">
+                                <label>选择视频*</label> 
+                                <input style="margin:0px;" type="hidden" name="video_url" value="{{part.video}}"  id="id_video_url" class="upfile">&nbsp;
+                                {{form.video|attr:"style:display:none;"}} 
+                                <input id="addvideofile" type="button" class="btn" value=" 选择 "/> 
+                                <span id="video_url_on">{{part.video}}</span>
+                                <span id="onload_tp" style=" margin: 0 10px;" ></span>
+                                <span id="onLoad_inport" style="display: none; color:#616161; margin-left: 30px;"><img src="{{ STATIC_URL }}oa/images/import.gif" />正在上传请稍等...</span>
+                                <span id="video_upload_rem" class="Validform_wrong" style=" display:none;">请选择视频文件</span>
+                                <p style="color:#999; margin:0 10px;"><label></label> &nbsp;&nbsp;(视频文件大小不能超过200MB)</p>
+                                <div style=" margin-left: 80px; " id="quoteRequests"></div>
+                            </div> 
+                            <div class="v-auto hide form-div" id="v-auto"><label>链接地址</label>
+                                {{form.url|attr:"datatype:weburl"|attr:"errormsg:链接地址不正确 "|attr:"nullmsg:请输入链接地址 "}}&nbsp;&nbsp;
+                                <span id="id_titleTP" class="erro-tips"> </span>
+                            </div> 
+                            
+                            <div class="form-div v-up" style=" margin: 0; overflow: hidden; margin-top:0; display:none;">
+                                <label style="margin-bottom:30px;">视频封面<span style="color:#999;">(可选)</span></label> 
+                                {{form.attachment|attr:"style:margin:0px;padding-bottom:10px;"|attr:"class:upfile cover_file_upload_input"|attr:"file-size-limit:20MB"|attr:"file-type-exts:*.jpg; *.jpeg; *.png; *.gif " }} 
+                                <div style="width: 100%; height: 10px;"></div>
+                            </div> 
+
+                        </div>
+                        <div style="width: 100%; height: 20px; text-align: center;">
+                            <span id="up_static" style=" display:none; color:#71b83d;" class="Validform_loading">正在上传</span></div>
+                        <div class="form-div mar-l-75" style=" overflow:hidden;">
+                             {{form.type|attr:"class:span2"|attr:"style:float:left;"}}
+                            <!--<label class="checkbox" style="margin-left:20px;">{{form.is_show }}首页显示</label>-->
+                        </div>
+                        <p> 
+                            <label class="" style="width: 65px;"></label>
+                            <input id="post_button" type="button" class="btn btn-success " style="text-shadow: 0; color: white; " id="sub_form" value="{% trans 'Save' %}" > 
+                            <a class="btn mar-l-75" style="text-shadow: 0; color: #343434; " href="{% url oa_part_con_video_list site.id %}" >取消</a>
+                        </p>       
+                </form>
+        </div>
+</div>
+<!--flash 上传 -->
+<script src="{{ STATIC_URL }}kinger/plupload/js/plupload.js"></script>
+<script src="{{ STATIC_URL }}kinger/plupload/js/plupload.flash.js"></script>  
+<!--/flash 上传 -->
+<input id="" type="hidden" value="{% if part %}1 {% else %}0{% endif %}" />
+
+<script type="text/javascript"> 
+ var is_link = false;
+ $(document).ready(function(){
+       $("#id_title").focus(); 
+       function pr(a){ if ( window.console ){ console.log(a) }} 
+   // just for test 
+     var url =window.location.href; 
+     UploaderFlash.init({'swf':'{{ STATIC_URL }}kinger/plupload/js/plupload.flash.swf','container':'v-up','buttonId':'addvideofile', 'url':url});
+     
+        $('#id_video').change(function(){
+            $('#videos').val($('#id_video').val());
+        });
+
+        $('#id_attachment').change(function(){
+            $('#videos-pic').val($(this).val());
+        });
+
+        if( $("#m-auto:checked").val() == 1){    // 1:链接方式
+            $("#v-auto").show();
+            $("#v-up").hide();
+            is_link = true; 
+            $("#id_url").attr("datatype","weburl");
+        }else{
+            is_link = false;
+            $("#id_url").removeAttr("datatype");
+        }
+        $("[name=video_type]").change(function(){
+            if($(this).val() == 1){
+                $("#v-auto").show();
+                $("#v-up").hide(); 
+                 is_link = true;
+                 $("#id_url").attr("datatype","weburl");
+            }else{
+                $("#v-auto").hide();
+                $("#v-up").show();
+                is_link = false;
+                $("#id_url").removeAttr("datatype");
+            } 
+        });
+
+        // 提交表单(包括上传文件)
+//        $("#sub_form").click(function(){
+//            // 1. 检查title 是否为空
+//            // 未实现 
+//            // 2. 检查视频大小
+//            //pr('sdsdfsd')  
+//            if($("#id_url").val()== ""){
+//                $("#url_R").show(); 
+//                 return;
+//             }else{
+//                $("#post_form").submit();  
+//            } 
+//           // 3. 提交表单
+//            $("#post_form").submit(); 
+//            $("#up_static").show();
+//            $(this).attr("disabled","disabled"); 
+//        });
+  });
+ 
+  var UploaderFlash = {  
+        init: function (settings) { 
+            var url = settings.url; 
+            var file_size_limit = '200mb'; // 10 MB
+            var flash_swf_url = settings.swf;
+            var button = settings.buttonId;
+            var container =settings.container;  
+            var formtoken = $('input[name=csrfmiddlewaretoken]').val(); 
+            var uploadify_settings = {
+                runtimes : 'flash',
+                file_data_name: 'video',
+                browse_button : button,
+                container: container,
+                max_file_size : file_size_limit,
+                max_file_count: 200, // user can add no more then 1 files at a time
+                url : url,
+                unique_names : true,
+                chunk_size : '1mb',
+                //resize : {width : 320, height : 240, quality : 90},
+                flash_swf_url :flash_swf_url ,
+                //unique_names :true,
+                multipart_params : {
+                "csrfmiddlewaretoken" : formtoken,
+                "file_id" : '',
+                "type":'1',
+                "video_type":'0',
+                "title":''
+                }, 
+                filters : [
+                    {title : "vidio files", extensions : "mp4"}
+                ] 
+            }; 
+            var uploader = new plupload.Uploader(uploadify_settings); 
+            uploader.bind('Init', function(up, params) { 
+                //$('#filelistbox').html("<div>Current runtime: " + params.runtime + "</div>")
+            }); 
+            uploader.init(); 
+            uploader.bind('FilesAdded', function(up, files) { 
+                var fileItme = '';
+                 if(up.files.length > 1){
+                     alert("一次只能上传一个视屏");
+                 }
+                for (var i in files) {
+                    if(up.files.length > 1){
+                        up.files.splice(i,1); 
+                    }else{
+                        var file = files[i];
+                        fileItme +=  '<div id="file_'+ file.id + '"><span class="filesname">'+ file.name +'</span>'+'(' + plupload.formatSize(file.size) + ')<span id="typeid_'+file.id+'" class="types"></span><a data-did="'+file.id+'" href="javascript:;" class="delectfile1">删除</a></div>'; 
+                    }  
+                }
+                $("#quoteRequests").append(fileItme);
+                $("#video_url_on").hide();
+                $("#post_button").removeAttr("disabled");
+            });
+            uploader.bind('BeforeUpload',function(up,file){ 
+                 up.settings.multipart_params.file_id = file.id;
+                 up.settings.multipart_params.title = $('#id_title').val(); 
+                 up.settings.multipart_params.type = $('#id_type').find("option:selected").attr("value");
+            });
+            uploader.bind('UploadProgress', function(up, file) { 
+                var speed =up.total.bytesPerSec ;
+                var speed2 = parseInt(up.total.bytesPerSec/1024) ;
+                var rapportdownloaded = uploader.total.loaded/uploader.total.size*100 ;
+                var percentdownloaded = ((Math.round(rapportdownloaded*100))/100) ;
+                var bytelefttoupload = uploader.total.size-uploader.total.loaded;
+                var eta = secondeenminute(Math.round(bytelefttoupload/speed));  
+                $("#onload_tp").html( speed2 +'Kb/s,' + percentdownloaded +'% '+ eta); 
+                $("#typeid_"+file.id).html(file.percent + "% "); 
+            }); 
+             uploader.bind('Error', function(up, err) {  
+                if(err.code == -600){
+                     alert("您选择的视频文件:" + err.file.name + "超过了"+file_size_limit+"mb")
+                     $("#tpyeid_"+err.file.id).text('<font style="color:red;">太大了</font>'); 
+                } else if(err.code == -601){
+                     alert("您选择的视频文件:"+ err.file.name+"格式不对"); 
+                } else if(err.code == -700) { 
+                     alert("您选择的视频文件:"+ err.file.name+"有问题");
+                     $("#tpyeid_"+err.file.id).text('<font style="color:red;">文件有问题</font>'); 
+                } 
+                up.refresh(); 
+            }); 
+            uploader.bind('UploadComplete',function(up,file){  
+                window.location.href='{% url oa_part_con_video_list site.id %}'; 
+            })
+            uploader.bind('FileUploaded', function(up, file, response){ 
+                   var data 
+                   try{
+                        data = response.response;
+                        var datas = $.parseJSON(data); 
+                    }catch(err){
+                        alert("上传出错!");
+                        $("#tpyeid_"+file.id).text("上传出错");
+                        return false;
+                    } 
+                    if(datas.status){  
+                         window.location.href='{% url oa_part_con_video_list site.id %}';
+                    }else{ 
+                        return false; 
+                    } 
+            });
+            $('#post_button').click(function() { 
+                 if(is_link){  
+                    $("#post_form").submit();
+                 }else{ 
+                    if(uploader.files.length > 0){
+                        if($('#id_title').val()==""){
+                            $("#title_R").show();
+                        }else{ 
+                            $("#onLoad_inport").show();
+                            $(".types").html("正在上传..."); 
+                            $("#post_button").attr("disabled","disabled");
+                            uploader.start(); 
+                        }
+                    }else{ 
+                         if($("#id_video_url").val()){
+                                $("#post_form").submit();
+                         }else{
+                            alert("请选择视频"); 
+                         } 
+                    } 
+                }  
+             });
+             
+             $(".delectfile1").live('click',function(e){
+                 var did =$(this).data("did");
+                 $.each(uploader.files, function(i, file) {
+                    if(did == file.id){
+                        //alert(uploader.files.length); 
+                        uploader.removeFile(file); 
+                        $("#file_"+file.id).remove(); 
+                    }  
+                }); 
+                if(uploader.files.length == 0){
+                    $("#post_button").attr("disabled","disabled"); 
+                }
+             });
+             function secondeenminute(sec) {
+                if ((sec/60)<1) {
+                    return  sec+'sec.' ;
+                } else if ((sec/60)>1 && (sec/3600)<1) {
+                    var min = sec/60;
+                    sec = sec % 60;
+                    return  Math.floor(min)+'min. '+Math.floor(sec)+'sec.' ;
+                } else {
+                    var hou = sec/3600;
+                    var rmin = sec % 3600;
+                    var min = rmin/60;
+                    sec = rmin % 60;
+                    return  Math.floor(hou)+'h. '+Math.floor(min)+'min. '+Math.floor(sec)+'sec.' ;
+                }
+            }
+        }
+        
+    }
+    
+    //表单验证 
+    $(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;  
+                "weburl" : /^http:\/\/[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\:+!]*([^<>])*$/
+            },
+            beforeSubmit:function(curform){
+		//在验证成功后，表单提交前执行的函数，curform参数是当前表单对象。
+		//这里明确return false的话表单将不会提交;
+                $("#onLoad_inport").show();
+                $("#post_button").attr("disabled","disabled"); 
+            } 
+     }); 
+</script>
+{% endblock %}

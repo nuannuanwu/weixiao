@@ -1,0 +1,81 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags bootstrap %}
+{% block content %}
+<div class="main">
+     <div class="tab">
+     	<span>互通信息设置</span>
+     	<a href="">返回</a>
+     </div>
+     <div class="column">
+          <div style="margin-left:50px;">
+          <span>说明：默认不开启学园之间的互发</span>  
+             <dl id="dl_checkbox">
+                <dt style="overflow:hidden; margin-left:2px;">
+                    <input id="checkall" type="checkbox" style="float:left; display:block; " >
+                    <label for="checkall" style="float:left; margin-left:5px;">全选</label>
+                </dt>
+                <form id="post_form" action="" method="post">{% csrf_token %} 
+                {% for s in schools %}
+                    <dd style="overflow:hidden; margin-left:22px;"> 
+                         <input id="c_{{s.id}}" type="checkbox" name="schools" style="float:left;" {% if s.id|in_list_q:school_pk_list %} checked="checked" {% endif %} value="{{s.id}}" />
+                         <label for="c_{{s.id}}" style="float:left; margin-left:5px;"> {{s.name}} </label>
+                    </dd>
+                {% endfor %}  
+                <p style="margin-top: 30px;"> <input style="margin-top:0px;" class="btn btn-success" type="submit" name="" value="{% trans "Save" %}">
+                {% if success %}
+                    <span style="margin:5px 0 0 5px;"><i class="icon-ok"></i> 保存成功</span>
+                {% endif %}</p> 
+                </form>
+		</dl>
+          </div>
+     </div>
+</div>
+
+<!--<div>互通信设置</div>
+<div>
+<p><input type="checkbox" id="checkall">全选</p>
+<form action="" method="post">{% csrf_token %}
+{% for s in schools %}
+<p><input type="checkbox" name="schools" {% if s.id|in_list_q:school_pk_list %}checked="checked"{% endif %} value="{{s.id}}">{{s.name}}</p>
+{% endfor %}
+<input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}">
+</form>
+</div>-->
+<script>
+var boxType=$("#dl_checkbox"),
+a = boxType.find('input[name=schools]:checked').length,
+b = boxType.find('input[name=schools]').length; 
+    if(a==b && a!=0 ){
+	$("#checkall").attr("checked","checked");
+    }else{
+	$("#checkall").removeAttr("checked");
+    }
+$("[name=schools]").change(function(){
+	var boxTypes=$("#dl_checkbox"),
+	c = boxTypes.find('input[name=schools]:checked').length,
+	d = boxTypes.find('input[name=schools]').length; 
+	if(c==d){
+		$("#checkall").attr("checked","checked");
+	}else{
+		$("#checkall").removeAttr("checked");
+	}
+});
+
+$('#checkall').click(function(){ //单元选中
+	var box = $("#dl_checkbox"); 
+	var box_checked = $(this).attr("checked");
+	box.find("input[name=schools]").each(function(k,v){ 
+		id = v.getAttribute('id');
+		$mm = $("#"+id); 
+		valId=v.getAttribute('value'); 
+		if(box_checked && $mm.attr("checked"))
+		{ 
+		}else{
+			$mm.click();
+		} 
+	}); 
+});
+
+ 
+</script>
+{% endblock %}

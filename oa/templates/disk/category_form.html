@@ -1,0 +1,164 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<script src="{{ STATIC_URL }}oa/js/jquery-1.9.1.js"></script>
+ <!--<script src="{{ STATIC_URL }}oa/js/jquery-migrate-1.2.1.js"></script>-->
+ <script type="text/javascript">
+    var jQ19 = $.noConflict(true); // JQ19
+</script> 
+<script src="{{ STATIC_URL }}oa/js/checkbox_mian.js"></script>
+<div class="main">
+      <div class="tab">
+        {% if type == 0 %}
+        <span>个人类别设置</span><a href="{% url oa_disk_index %}" class="tbbtn">返回</a>{% endif %}
+        {% if type == 1 %}
+        <span>幼儿园类别设置</span><a href="{% url oa_disk_index %}?ty=school" class="tbbtn">返回</a>{% endif %}
+        {% if type == 2 %}
+        <span>集团类别设置</span><a href="{% url oa_disk_index %}?ty=agency" class="tbbtn">返回</a>{% endif %}
+      </div>
+      <div class="column">
+        {% if request.user|is_agency_user and type == 1 %}
+        <select id="school_id" class=" span2 classSelect" style=" font-size: 14px; width: auto;" value="{{school.id}}" name="sid">
+          <option value="0" >--选择机构--</option>
+          {% for s in schools %}
+            {% if s.parent_id > 0 %}
+            <option  value="{{s.id}}" {% if sid == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        {% endif %}
+        <div class="form-horizontal form-kPicCon">  
+		      <form  id="form_horzt" action="{% url oa_disk_category %}?ty={{type}}&sid={{sid}}" method="post" enctype="multipart/form-data" >{% csrf_token %} 
+            {{ form.management_form }}
+            {% for f in form %}
+              <div class="box_content">
+                  <div class="show_del" rel="{{categorys|obj_pk:forloop.counter0}}" style="margin-bottom:10px;"> 
+                      {% if f.parent.value %}
+                      <div id="son_content_{{categorys|obj_pk:forloop.counter0}}" style="padding-left:45px; width:400px; margin:0;" class="box_son show_del" > 
+                          {{f.name|attr:"rel:input-text"}} 
+                          <span class="del" style="padding:10px; cursor:pointer;">
+                            <a style=" display: none;" href="javascript:;" onclick="if(confirm('确认删除吗?')) window.location='{% url oa_disk_delete_category categorys|obj_pk:forloop.counter0|default:0 %}?ty={{type}}&sid={{sid}}'" rel="doc_category">删除</a>
+                          </span>
+                      </div>
+                      {% else %}
+                          {% if f.name.value == "其他" %}
+                            {{f.name|attr:"rel:input-text"|attr:"onFocus='this.blur()'"}}
+                          {% else %}
+                            {{f.name|attr:"rel:input-text"}}
+                          {% endif %} 
+                      {% endif %} 
+                      {% if not f.parent.value %}  
+                          {% if f.name.value != "其他" and f.order.value != 1 %}
+                              <a style=" margin-left:5px 10px;" href="javascript:;" rel="{{categorys|obj_pk:forloop.counter0}}" att="add_son"> 添加子目录</a>
+                              <span class="del" style="padding:10px; cursor:pointer;">
+                                  <a style=" display: none;" href="javascript:;" onclick="if(confirm('确认删除吗?')) window.location='{% url oa_disk_delete_category categorys|obj_pk:forloop.counter0|default:0 %}?ty={{type}}&sid={{sid}}'" rel="doc_category">删除</a>
+                               </span> 
+                          {% endif %} 
+                      {% endif %}
+                   </div>
+                   <div id="son_content_{{categorys|obj_pk:forloop.counter0}}" style="padding-left:40px;" class="box_son" ></div>
+                   </div>
+              	<p style="display:none">{{f.parent}}</p>
+                {{f.name.errors}} 
+            {% endfor %}
+            <div id="parent_content"> 
+            </div>
+            <p id="add_btn_Box" style=" {% if request.user|is_agency_user and type == 1 %} display:none;{% endif %}"><!--<input id="pearten" type="text" value="新分类名称">-->
+              <a class="btn" title="添加分类" href="javascript:;" id="add_parent"><i class="icon-plus"></i>添加新分类</a></p>
+            <div id="parent_content"></div>
+            <p style="margin-top:20px;">
+                <a id="server_add" style="color:#fff;" href="javascript:;" class="btn btn-success"> 保 存 </a> 
+                <!-- <input class="btn" style="margin-left:15px;" type="reset" value=" 取 消 " /> -->
+            </p>
+           </form> 
+        </div>
+      </div>
+</div>
+<script type="text/javascript">
+    var FormNum = Number($("#id_form-TOTAL_FORMS").val());
+    $("#add_parent").click(function(){ 
+      url = "{% url oa_disk_get_extra_form %}"
+      $.post(url,{order:FormNum},function(result){
+          data = $.parseJSON(result);
+          $("#parent_content").append(data.con);
+          FormNum = FormNum + 1;
+          $("#id_form-TOTAL_FORMS").val(FormNum);
+         // alert($("#id_form-TOTAL_FORMS").val());
+        });
+    });
+  //$("#add_parent").click();
+    $("[att=add_son]").click(function(){
+	   var relSon=$(this).attr('rel');
+      url = "{% url oa_disk_get_extra_form %}"
+      pid = $(this).attr("rel");
+      $.post(url,{order:FormNum,parent_id:pid},function(result){
+          data = $.parseJSON(result);
+          $("#son_content_"+relSon).append(data.con);
+          FormNum = FormNum + 1;
+          $("#id_form-TOTAL_FORMS").val(FormNum);
+          //alert($("#id_form-TOTAL_FORMS").val());
+        });
+    });
+    $(".show_del").hover(function(){ 
+		$(this).find('[rel=doc_category]').show();
+	},
+	function(){ 
+		$(this).find('[rel=doc_category]').hide();
+	});
+	
+	$(".del_son").live('click',function(){
+		 $(this).parents('p').remove();
+		 FormNum= FormNum-1;
+     $("#id_form-TOTAL_FORMS").val(FormNum);
+	});
+        
+	$("#server_add").live('click',function(){ 
+	 	var formHorzt=$("#form_horzt"),i=0;
+		formHorzt.find('input').each(function(k,v){ 
+			boxId = v.getAttribute('id'); 
+			$mmbox = $("#"+boxId); 
+			if($mmbox.val()=="")
+			{   i++;
+			    $(this).attr("placeholder","不能为空"); 
+			}
+		});
+		if(i==0){       
+			$("#form_horzt").submit();
+		}
+		
+	});
+	
+	/*function subBtn(){ 
+		 var formHorzt=$("#form_horzt");
+		formHorzt.find('input[rel=input-text]').each(function(k,v){ 
+			boxId = v.getAttribute('id'); 
+			$mmbox = $("#"+boxId); 
+			if($mmbox.val()=="")
+			{   
+				$(this).val("不能为空");
+				return false;
+			}else{
+				return true;
+			}
+			
+	 }); 
+	 
+	}*/
+  if($("#school_id").find("option:selected").val() && $("#school_id").find("option:selected").val()!=0){ 
+    $('#add_btn_Box').show();
+  }
+  var url_inint = "{% url oa_disk_category %}?ty={{type}}&sid=";
+  $("#school_id").change(function(){ 
+      var school_id = $(this).find("option:selected").val();
+      if(school_id==0){ 
+        $("#form_horzt").attr("action",url_inint);
+        document.location.href = url_inint;
+      }else{ 
+        var url = "{% url oa_disk_category %}?ty={{type}}&sid=" + school_id;
+        $("#form_horzt").attr("action",url);
+        document.location.href = url;
+      } 
+  })
+</script>
+
+{% endblock %}

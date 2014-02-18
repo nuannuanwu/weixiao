@@ -1,0 +1,10 @@
+{% load kinger_tags i18n %}
+<div class=" {% if comment.id == last.id %} kComment-lastItem {% endif %}" id="c{{comment.id}}" style="margin: 5px 0; overflow: hidden;">
+    <a class="pull-left face kComment-ava" href="javascript:void(0)" {% if request.user.is_authenticated %}rel="namecard" data-uid="{{ comment.user.pk }}"{% endif %}>
+        <img alt="" src="{% media_path comment.user.get_profile.get_avatar "avatar" %}">
+    </a>
+    <p class="kComment-con" style="margin-left: 40px;">
+        <a href="javascript:void(0)">{{comment.user.get_profile.chinese_name_or_username}}</a>:
+        {{comment.comment|truncatestr:":50"|code_to_img|safe}}
+    </p>
+</div>

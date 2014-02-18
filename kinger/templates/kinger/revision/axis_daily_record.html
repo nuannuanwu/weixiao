@@ -1,0 +1,192 @@
+{% load pagination_tags kinger_tags i18n%}
+<style type="text/css">
+#footer{position:fixed;left:0;bottom:0;}
+.thumbnails, .row{margin-left:0;}
+.thumbnails ul{margin-left:0;}
+.thumbnails > li{margin:0 14px 14px 0;}
+.kBabyA:hover{ text-decoration: none;}
+.kTileBar { padding-bottom: 0; *padding-bottom: 20px;}
+.kTileBar .btn-group{ margin-bottom: 20px; }
+.kTileBar, .row{padding-left:15px;}
+#container{width: 960px;}
+.kCategory{ margin-bottom: 20px; background-color: #FFF;}
+.kCategory td{ border: 1px solid #DDD; vertical-align: top; width: 458px }
+.kCategory td.single{ width: 919px}
+.kCategory-item{ padding: 15px 30px; margin-bottom: -8px}
+.kCategory .item-icon{ float: left; width: 48px; height: 48px; display: inline-block; }
+.kCategory .item-body{ margin:0 -6px 0 61px}
+.kCategory .body-title{ line-height: 1.6; font-size: 14px; font-weight: normal; color: #AAA; margin: 0; margin-bottom: 5px}
+.kCategory .body-categorys a{ float: left; line-height: 1; white-space: nowrap; color: #545454; font-size: 14px;  padding: 5px 6px; margin:0 3px 8px 0; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius:4px;}
+.kCategory .body-categorys a:hover,.kCategory .body-categorys a.ac{background-color: #EDEDED; text-decoration: none;}
+.title { margin: 20px 0; font-size: 24px; color: #666; font-weight: 600; }
+#datepicker_record { cursor: pointer; left: 0; top: 0; position: absolute; width:80px; height: 30px; filter: alpha(opacity=0);-moz-opacity:0; opacity: 0;  }
+.act_items ul li.left-border{ border-left: 1px solid #ddd; }
+.lb-items ul li.data {color: #999; }
+</style>
+<div>
+    <div class="title">生活记录</div>
+    <div class="kToolbar-turn">
+        {% if is_last_page %} {% else %}
+        <a style=" z-index: 100; top:50%; left: 2px;cursor: pointer;" {% if is_last_page %}class="right-btn1 disabled"{% else %}class="right-btn1" rel="record_pre"{% endif %} herf="javascript:;" alt="{{type}}"  page="{{page|add:1}}" date="{{date|date:'Y-m-d'}}" >&nbsp;</a>
+        {% endif %}
+        {% if page == 1 %} {% else %}
+            <a style=" z-index: 100; top:50%; right:2px; cursor: pointer;" {% if page == 1 %}class="left-btn disabled"{% else %}class="left-btn" rel="record_next"{% endif %} herf="javascript:;" alt="{{type}}"  page="{{page|add:-1}}" date="{{date|date:'Y-m-d'}}" >&nbsp;</a>
+        {% endif %}
+    </div>
+    <div class="lb-items">
+        <ul>
+          <li class="data" style=" position: relative; width: 90px; border-left: 1px #ddd solid;"><input type="text" id="datepicker_record" alt="{{type}}" rel="0"><span>日期</span></li>
+          <li name="order_type" alt="1" min="{% if type == 1 %}1{% else %}0{% endif %}" class ="{% if type == 1 %}checked_on{% else %}{% endif %} "> 考勤 </li>
+          <li name="order_type" alt="2" min="{% if type == 2 %}1{% else %}0{% endif %}" class ="{% if type == 2 %}checked_on{% else %}{% endif %} "> 体温 </li>
+          <li name="order_type" alt="3" min="{% if type == 3 %}1{% else %}0{% endif %}" class ="{% if type == 3 %}checked_on{% else %}{% endif %} "> 用餐 </li>
+          <li name="order_type" alt="4" min="{% if type == 4 %}1{% else %}0{% endif %}" class ="{% if type == 4 %}checked_on{% else %}{% endif %} "> 情绪 </li>
+          <li name="order_type" alt="5" min="{% if type == 5 %}1{% else %}0{% endif %}" class ="{% if type == 5 %}checked_on{% else %}{% endif %} "> 排便 </li>
+          <li name="order_type" alt="6" min="{% if type == 6 %}1{% else %}0{% endif %}" class ="{% if type == 6 %}checked_on{% else %}{% endif %} "> 午睡 </li>
+          <li name="order_type" alt="7" min="{% if type == 7 %}1{% else %}0{% endif %}" class ="{% if type == 7 %}checked_on{% else %}{% endif %} "> 喝水 </li>
+       </ul> 
+    </div>
+    <div class="act_items" style="position: relative;" > 
+    {% if record_list %}
+        {% for d in record_list %}
+            <ul>
+                <li class="datashow {% if d.is_first %}monthshow{% endif %}">
+                    <div class="ds_bgico">
+                        <strong>{{d.day.day|zfill}}</strong>
+                        <span>{% if d.day|isToday %}今天{% else %}星期{{d.day.isoweekday|chinese_weekday}}{% endif %}</span>
+                        <div class="month">
+                            <span>{% if d.is_first %}{{d.day.month}}{% endif %}</span>
+                        </div>
+                    </div>
+                </li>
+                {% for c in d.data %}
+                {% if not c.tiles %} 
+                <li order="order_{{forloop.counter}}" name="order" class="{% if type == forloop.counter  %}left-border{% else %} {% if type != 0  %}transparent_class{% endif %}{% endif %} {{c.id|rev_category_report_img:c.tiles}}">
+                    <em class="icobg" id="hstb"></em>
+                    <i></i>
+                </li>
+                {% else %}
+                <li order="order_{{forloop.counter}}" name="order" class="{% if type == forloop.counter %}left-border{% else %}{% if type != 0  %}transparent_class{% endif %}{% endif %} {{c.id|rev_category_report_img:c.tiles}} {% if c.num > 1 %}hasdata{% endif %}  ">
+                    <em class="icobg" id="shangico"></em>
+                    <i id="shangwz">{{c.top.description}}</i>
+                    {% if c.num > 1 %}
+                        <div class="hiddenceng" style="padding-bottom:20px;">
+                            <ul style="box-shadow:2px 2px 2px #b7b7b7; -wobkit-box-shadow:2px 2px 2px #b7b7b7; -moz-box-shadow:2px 2px 2px #b7b7b7;">
+                                {% for t in c.tiles %}
+                                        <li rel="{{t.id}}">
+                                            <span>{{t.start_time|date:"H:i A"}}</span>
+                                            <em class="icobg {{c.id|rev_category_img:c.tiles}}"></em>
+                                            <b>{{t.description}}</b>
+                                        </li>
+                                {% endfor %}  
+                            </ul> 
+                        </div>
+                    {% endif %}
+
+                </li>
+                {% endif %}	
+            {% endfor %}
+            </ul>
+       {% endfor %} 
+    {% else %}
+    <div style=" width: 100%; overflow: hidden; text-align: center; padding:150px 0; font-size: 24px; color:#ccc;">
+        没有数据
+    </div>
+    {% endif %}
+    </div>
+</div>
+ 
+<script type="text/javascript">
+ $(function(){
+	  var hasdiv=$(".act_items > ul:lt(3) > li.hasdata");
+	  var hidiv=hasdiv.find("div");
+	  var gtfdiv=$(".act_items > ul:gt(3) > li.hasdata");
+	  var gtxd=gtfdiv.find("div");
+	  var sdiv=$(".act_items > ul:eq(3) > li.hasdata");
+	  var eqxd=sdiv.find("div");
+	  hidiv.hide();
+	  eqxd.hide();
+	  gtxd.hide();
+	  hasdiv.hover(function(){
+             if($(this).is(".left-border")||!$(this).is(".transparent_class")){ 
+                $(this).css("position", "relative");
+                $(this).children("div").slideToggle(200).addClass("dingwei");
+            }
+            },
+            function(){
+                $(this).css("position", "static");
+                $(this).children("div").hide();
+            })
+	  gtfdiv .hover(function(){
+              if($(this).is(".left-border")||!$(this).is(".transparent_class")){ 
+                $(this).css("position", "relative");
+                $(this).children("div").slideToggle(200).addClass("dingwei");
+                //$(this).children("div").slideToggle(200).addClass("dw");  
+             }else{  
+             }
+           },function(){
+                $(this).css("position", "static");
+                $(this).children("div").hide();
+                //$(this).children("div").slideUp(200); 
+            }) 
+	  sdiv.hover(function(){
+              if($(this).is("left-border")||!$(this).is(".transparent_class")){ 
+                $(this).css("position", "relative");
+                $(this).children("div").slideToggle(200).addClass("dingwei"); 
+              }
+            },
+            function(){
+                $(this).css("position", "static");
+                $(this).children("div").hide();
+            })
+	  // if(!$(".hiddenceng > ul > li > b").html()){ 
+   //              $(".hiddenceng > ul > li > b").html("&nbsp;&nbsp;")
+	  // } 
+          
+        var dates = {{effective_date|safe}};
+	    if(!dates){dates=false;}else{ 
+            var d = new Date();
+            var years = d.getFullYear(),
+            months = d.getMonth()+1,
+            days = d.getDate();
+            var rq = years +"-"+ months +"-"+days;
+            rq = rq.replace(/\b(\w)\b/g, '0$1');
+            dates.push(rq);
+        }
+	$('#datepicker_record').live("click",function(){ 
+            //var typeshow = $(this).attr("rel"); 
+		WdatePicker({
+			opposite:true,
+            disabledDates:dates,
+            maxDate:'%y-%M-%d',
+            isShowClear:false,
+            isShowOthers:false,
+            autoPickDate:true,
+            isShowOK:true,
+            errDealMode:true,
+            highLineWeekDay:false,
+            dateFmt:'yyyy年MM月dd日',
+			onpicked:function(dp){
+                date = dp.cal.getDateStr();
+                date_fmt = dp.cal.getP('y') + '-' + dp.cal.getP('M') + '-' + dp.cal.getP('d') 
+                if(date){
+                    d = date_fmt;
+                    t = typeid;
+                    p = 1;
+                    url = "{% url kinger_axis_daily_record %}";
+                    $.post(url,{date:d,ty:t,page:p},function(result){
+                        data = $.parseJSON(result); 
+                        //console.log(data.con);
+                        $("#box_record").html('');
+                        $("#box_record").html(data.con).show();
+                    });
+                }else{
+                        return false;
+                }	
+			} 
+		}); 
+	}) 
+ })
+</script> 
+
+
+

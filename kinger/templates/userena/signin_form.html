@@ -1,0 +1,60 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n bootstrap %}
+
+{% block title %}{% trans "Signin" %}{% endblock %}
+
+{% block content %}
+<form action="" method="post" class="form-horizontal" id="from1">
+  {% csrf_token %}
+  <fieldset>
+    <legend>{% trans "Signin" %}</legend>
+    {% if lack_perm %}
+    <div class="kDailyItems cf" >
+        <div class="kDailyItem cf"  > 
+            <h2 class="" style=" font-size: 18px; ">您当前登录的用户无权访问本页面，请联系学校管理员</h2>
+        </div>
+    </div>
+    {% endif %}
+    <div class="span9">
+    {{ form|bootstrap }}
+    <p class="forgot-password" style="margin: -46px 0 0 350px;">
+        <a href='{% url kinger_pwd_back_mail %}' title="{% trans "Forgot your password?" %}">{% trans "Forgot your password?" %}</a>
+    </p>
+    </div> 
+    <p class="span2">还没有帐号？<a href="{% url userena_signup %}">立即注册</a></p>
+  </fieldset>
+  <div class="form-actions" style="background: none; border: none">
+    <input type="submit" value="{% trans "Signin" %}" class="btn btn-primary" style="margin-left:110px;"/>
+    {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/plugins/formValidator-4.1.3.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/plugins/formValidatorRegex.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+       //$("[for=id_identification]").text("邮箱地址或用户名");
+        $.formValidator.initConfig({formID:"form1",theme:"ArrowSolidBox"});
+        $("#id_identification").formValidator({onFocus:"请输入您的邮箱地址或用户名"}).inputValidator({min:1,onError:"不能为空"});
+        $("#id_password").formValidator({onShow:"请输入密码",onFocus:"至少1个长度",onCorrect:"密码合法"}).inputValidator({min:1,empty:{leftEmpty:false,rightEmpty:false,emptyError:"密码两边不能有空符号"},onError:"密码不能为空,请确认"});
+    }) 
+</script>
+{% endblock %}
+{% block extra_css %}
+<style>
+       .kDailyItems{ margin: 0 0 0 200px; width: 450px; border: 2px dashed #CCCBCA; padding: 24px; background: url('{{ STATIC_URL }}kinger/img/site/daily_bg.png'); margin-bottom: 20px;}
+       .kDailyItem{ margin-bottom: 20px;  *zoom:1;}
+       .kDailyItem-icon{ width: 80px; height: 80px; float: left;}
+       .kDailyItem-con{ margin-left: 25px; }
+       .kDailyItem h2{ color: #a3a3a3; font-size: 24px; margin-left: 0; line-height: 1; margin-bottom: 20px; } 
+	.input-public{float: left;}
+	fieldset .span9, fieldset .span2{margin-top:20px;}
+	.row{_margin-left:0px;}
+	.span12{_margin-left:0px;}
+	.span9,.span2{ _float:left;}
+	p.span2{_width:160px;}
+	.checkbox span{ _margin-left:-60px;}
+	.checkbox #id_remember_me{ _position:relative; _left:46px;}
+</style>
+{% endblock %}

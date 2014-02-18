@@ -1,0 +1,112 @@
+{% load i18n kinger_tags oa_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <title>{{site.name}}</title>
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon-weixiao.ico">
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/base.css">
+    <!--link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css"/-->
+    <link href="{{ STATIC_URL }}oa/site/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}oa/js/jui/css/base/jquery-ui.css"/>
+    <!-- <link href="{{ STATIC_URL }}oa/site/js/videoplay/style.css" rel="stylesheet" /> -->
+    {% block extra_css %}{% endblock %}
+
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery.hope12580.plugins.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/js/base.js"></script>
+    <!--script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script-->
+    <script src="{{ STATIC_URL }}oa/js/base.js"></script>
+    <script src="{{ STATIC_URL }}oa/site/js/gakuen.js"></script>
+	<script src="{{ STATIC_URL }}oa/site/js/effect_commonv.js"></script>
+    <script src="{{ STATIC_URL }}oa/site/js/view_list.js"></script>
+    <script src="{{ STATIC_URL }}oa/js/jui/js/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL }}oa/js/Validform_v5.3.2_min.js" type="text/javascript" charset="UTF-8"></script>
+    {% block extra_js %}{% endblock %}
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body id="{% block body_id %}body{% endblock %}">
+    {% for message in messages %}
+        <script>jNotify("{{ message }}");</script>
+    {% endfor %}
+    {% get_parent_domain as parent_domain %}
+	{% if request.user.is_authenticated %}
+        <div style="height:30px; background-color:#F2DEB5; color:#b5d8f1;" class="">
+        	<div style="width:950px; margin:0 auto; height:30px; line-height:30px;">
+            	<a id="site_logout" href="javascript:;" style="color:#6AA026; display:block; float:right;">退出</a>
+                <a href="javascript:;" style="color:#959595; display:block; float:right; margin-right:15px;">{% if user.get_profile.chinese_name_or_username %}{{ user.get_profile.chinese_name_or_username }}{% else %}{{ user.username }}{% endif %}</a>
+            </div>
+        </div>
+    {% endif %}
+    <div id="wrap" class="{{class}}">
+        <div class="contentwrap">
+            <div class="header {% if page_type == 'video' %}video-top{% endif %}">
+                <div class="logo">
+                    <a href="http://{{request.get_host}}" title="{{site.name}}">
+                            {% if site.logo %}
+                                <img src="{% media_path site.logo "site_logo" %}" width="126" height="44">
+                            {% else %}
+                                {{site.name}}
+                            {% endif %}
+                            </a>
+                </div>
+                <div class="meun">
+                    <ul>
+                        <li {% if channel == 'site_index' %}class="on"{% endif %}><a href="{% url_site oa_site_index %}">首页</a></li>
+                        <li><a target="_blank" href="{% if parent_domain %}{{parent_domain}}{% endif %}{% url kinger_edu_index %}">家园共育</a></li>
+                        <li {% if channel == 'site_intro' %}class="on"{% endif %}><a href="{% url_site oa_site_introduction %}">园所介绍</a></li>
+                        <li {% if channel == 'site_teache' %}class="on"{% endif %}><a href="{% url_site oa_site_teache %}">教学教研</a></li>
+                        <li {% if channel == 'site_feature' %}class="on"{% endif %}><a href="{% url_site oa_site_feature %}">特色展现</a></li>
+                        <li {% if channel == 'site_recruit' %}class="on"{% endif %}><a href="{% url_site oa_site_recruit %}">招生专栏</a></li>
+                    </ul>
+                </div>
+            </div>
+            {% block content %}{% endblock %}
+            
+        </div>
+        <div class="footer">
+            <div class="foot-info">
+                <p><span class="schoolname">{{site.school.name}}</span><span class="address">地址:{{site.school.province|default:"广东省"}}{{site.school.city|default:"深圳市"}}{{site.school.area}}</span><span class="tel">电话:{{site.telephone}}</span><span class="emailaddress">Email:{{site.email}}</span></p>
+                <p>@{{site.ctime.year}} 育明科技</p>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript">
+function cross_domain_logout(u,s,h){
+    var domain = "{{parent_domain|default:'http://weixiao178.com'}}";
+    $.ajax({
+        url:domain + "/cross_domain/logout",
+        data:{uid:u,salt:s,hash:h},
+        type: 'GET',
+        dataType: 'jsonp', // Notice! JSONP <-- P (lowercase)
+        success:function(result){
+            if(result.status){
+                jNotify("您已成功登出");
+                //javascript:location.href = "{% url_site oa_site_index %}";
+                window.location.reload();
+            }    
+        },
+        error:function(){
+
+        }
+    });
+}
+
+$("#site_logout").click(function(){
+    url = "{% url_site oa_ajax_logout %}"
+    $.post(url,{},function(data){
+        result = $.parseJSON(data);
+        if(result.uid && result.status){
+            cross_domain_logout(result.uid,result.salt,result.hash)
+        }else{
+            return false;
+        }
+    });
+})
+</script>
+</body>
+</html>

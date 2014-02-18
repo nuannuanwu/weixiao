@@ -1,0 +1,279 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<style type="text/css">
+<!--
+    .ui-menu .ui-menu-item { *width:150px;  }
+    .ui-autocomplete {
+    max-height: 160px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+  }
+  /* IE 6 doesn't support max-height
+   * we use height instead, but this forces the menu to always be this tall
+   */
+  * html .ui-autocomplete {
+    height: 160px;
+  } 
+-->
+</style>
+<script src="{{ STATIC_URL }}oa/js/jquery-1.9.1.js"></script>
+<!-- <script src="{{ STATIC_URL }}oa/js/typeahead.min.js"></script>  -->
+<!-- <script src="{{ STATIC_URL }}oa/js/jquery-migrate-1.2.1.js"></script> -->
+ <script type="text/javascript">
+    var jQ19 = $.noConflict(true); // JQ19
+</script> 
+<div class="main">
+     <div class="tab"><span>物资录入</span><a class="btn" href="{% url oa_supply_record_index %}">返回</a></div>
+     <div class="column">  
+         <form class="form-itme" style="margin:8px 0 5px 0px;" class="registerform"  action="" method="POST">{% csrf_token %}
+                <input id="jsonstr"  type="hidden" name="applies" value=""/>
+                <div class="detailed_list" >
+                    <div class="detailed_list_item">
+                        <p><label>所属机构*:</label>
+                            <select id="school_id" datatype="*" name="sid" errormsg="" nullmsg="请选择机构"  class=" span2 classSelect" style=" font-size: 14px; width: auto;" value="{{school.id}}" >
+                                <option value=""> --所属机构-- </option>
+                                {% for s in schools %}
+                                <option  value="{{s.id}}" {% if school.id == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                                {% endfor %}
+                           </select>
+                        </p>
+
+                        <p>
+                            <label>物资清单*:</label>
+                               <div>
+<!--                              <select id="provider" class="span2">
+                                        <option value="">---------</option>
+                                        {% for p in providers %}<option value="{{p.id}}">{{p.name}}</option>{% endfor %} 
+                                    </select>--> 
+                                    <input id="provider" type="text" class="span2" placeholder="输入供应商" />
+                                    <select id="category" class="span2">
+                                       <option value="">---------</option>
+                                       {% for c in categorys %}<option value="{{c.id}}">{{c.name}}</option>{% endfor %}
+                                    </select>
+                                   <input rel="inputname" supinput="input" class="span2" type="text" id="supply_name" value="" placeholder="物资名称" />
+                                   <input rel="inputnum" supinput="input" style=" width: 50px;" type="text" id="supply_num" value="" placeholder="数量" /> 
+                                   <input  disabled="disabled" type="button" class="btn" style="margin-bottom: 10px;" id="add_supply" value="添加" />
+                                </div>
+                            </p>
+                            <div class="leveltip_list" style="width: 630px; ">
+                                <table id="levetable" width="100%" >
+                                    <tr>
+                                        <th width="130">供应商</th>
+                                        <th width="80">类别</th>
+                                        <th width="200">物资名称</th>
+                                        <th width="100">数量</th>
+                                        <th width="60">操作</th>
+                                    </tr>
+                                    <tr rel="typenull"><td></td><td></td><td></td><td></td><td></td></tr>
+                                </table>
+                           </div> 
+
+                            <p><label>录入备注:</label>
+                                 <textarea name="remark" style=" width: 615px; height: 75px;"></textarea>
+                            </p>
+
+                        </div>
+                        <!-- <div  class="operate">
+                            <a href="javasceript:;">添加新订单</a>
+                            <a href="javasceript:;">复制订单</a>
+                        </div> -->
+                    </div>
+                    <div class="operate_button" style="margin-top:40px;">
+                       <button style=" margin-right:15px;" class="btn btn-success" id="searchB" >确 定</button>
+                       <input class="btn" type="reset" value="取 消" />
+                    </div> 
+            </form> 
+     </div>
+</div> 
+<script>
+    jQ19(function(){  
+        
+
+        // function log( message ) {
+        //   $( "<div/>" ).text( message ).prependTo( "#log" );
+        //   $( "#log" ).attr( "scrollTop", 0 );
+        // }
+ 
+        // $.ajax({
+        //   url: "london.xml",
+        //   dataType: "xml",
+        //   success: function( xmlResponse ) {
+        //     var data = $( "geoname", xmlResponse ).map(function() {
+        //       return {
+        //         value: $( "name", this ).text() + ", " +
+        //           ( $.trim( $( "countryName", this ).text() ) || "(unknown country)" ),
+        //         id: $( "geonameId", this ).text()
+        //       };
+        //     }).get();
+        //     $( "#birds" ).autocomplete({
+        //       source: data,
+        //       minLength: 0,
+        //       select: function( event, ui ) {
+        //         log( ui.item ?
+        //           "Selected: " + ui.item.value + ", geonameId: " + ui.item.id :
+        //           "Nothing selected, input was " + this.value );
+        //       }
+        //     });
+        //   }
+        // }); 
+
+    	//$(".registerform").Validform();  //就这一行代码！; 
+    	$(".registerform").Validform({
+                tiptype:2,
+                showAllError:true,
+                datatype:{//传入自定义datatype类型 ;
+                    "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                    "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                    "nun" : /^[0-9]*[1-9][0-9]*$/
+                 } 
+    	});
+        $(".selectdata").datepicker({
+            dateFormat: 'yy-mm-dd',
+            changeYear: true,
+            onSelect:function(date){  
+                this.focus();  
+                this.blur();  
+            }
+       });
+    //添加物资到列表记录 
+    //var n = 0
+    $("#add_supply").click(function(){ 
+        var provider =  $("#provider").val(); 
+        var type = $("#category").val(); 
+        var num = $("#supply_num").val(); 
+        var typename = $("#category").find("option:selected").text();
+        var name =  $("#supply_name").val();
+        $("[rel=typenull]").remove();
+        var n = $("#levetable tr").length-1; 
+        var tr = '<tr rel="tr_'+type+'" idtype="'+type+'" idn="'+ n +'"><td><input datatype="*" errormsg="" nullmsg="请输入供应商" id="input_pname_'+n+'" rel="inputname" class="pname span2" type="text" value="'+provider+'" /></td><td>'+typename+'</td><td><input datatype="*" errormsg="" nullmsg="请输入名称" id="input_name_'+n+'" rel="inputname" class="inputname span2" type="text" value="'+name+'" /><span id="user_tip" class="Validform_checktip "></span></td><td><input datatype="nun" errormsg="输入正整数" nullmsg="请输入数量" rel="inputnum" id="input_num_'+n+'" class="inputnum" style="width:50px;" type="text" value="'+num+'" /><span id="user_tip" class="Validform_checktip "></span></td><td><a data-type="'+type+'" href="javascript:;" rel="delete">删除</a></td></tr><tr rel="typenull"><td></td><td></td><td></td><td></td><td></td></tr>';
+        $("#levetable").append(tr);
+        $("#supply_name").val(''); 
+        $("#supply_num").val('');
+        $("#provider").val('');
+        $(this).attr("disabled","disabled")
+    });
+    //删除列表记录
+    $(document).on('click','[rel = delete]',function(){
+       var typetr= $(this).data('type');
+        $(this).parents("[rel =tr_"+typetr+"]").remove(); 
+    });
+    $("[supinput=input]").keyup(function(){
+      var inputTmp =$(this);
+      isNumber(inputTmp); 
+   });
+});
+//循环读取数据
+function supplyStr(event){
+    var str = '',strs = '';
+    event.each(function(e,v){ 
+       var id = v.getAttribute("idn");
+       var idtype = v.getAttribute("idtype");
+       var pname = $('[idn='+id+']').find(".pname").val(); 
+       var sname = $('[idn='+id+']').find(".inputname").val(); 
+       var num = $('[idn='+id+']').find(".inputnum").val();
+       if(id !==null){
+            if(str){str += ","}; 
+            str =str +'"'+id+'":{"pname":"'+pname+'","sname":"'+sname+'","cat":'+idtype+',"num":'+num+'}';
+        } 
+    }) 
+    strs = '{' + str + '}'
+    return strs; 
+  }
+
+ //输入数字判断添加数据
+ function isNumber(event){
+     var id = event.attr("id")
+     var input = $("#"+id).attr("rel"); 
+     var inputValue = $("#"+id).val();
+     var inputname = $('#supply_name').val();
+     var inputnum = $('#supply_num').val();
+     if(input == "inputname" ){
+        if(inputValue){
+            if(inputnum){
+                $("#add_supply").removeAttr("disabled");
+                //attr(11)
+            } 
+        }else {
+            $("#"+id).val('');
+            $("#add_supply").attr("disabled","disabled");
+        }
+     }else if(input == "inputnum"){
+        if(inputValue){
+            var examNumbIds = /^[0-9]*[1-9][0-9]*$/; 
+            if(examNumbIds.test(inputValue)){
+                if(inputname){
+                    $("#add_supply").removeAttr("disabled"); 
+                }  
+            }else{ 
+             $("#"+id).val("");
+             $("#add_supply").attr("disabled","disabled");
+            }
+        }else{
+           $("#"+id).val("");
+           $("#add_supply").attr("disabled","disabled");
+        }
+     }
+ }
+ //提交表单
+ $("#searchB").click(function(){ 
+    var event = $("#levetable tr");
+    var str = supplyStr(event);//物资信息
+    $("#jsonstr").val(str); 
+    $("#post_form").submit();
+});
+
+$("#school_id").change(function(){ 
+    var sid = $(this).val();
+    if(sid){
+        url = "{% url oa_supply_school_realtes %}";
+        $.get(url,{school_id:sid},function(result){
+            data = $.parseJSON(result);
+            if(data.categorys){ 
+                $("#category").html('<option value="">--------</option>');
+            }
+            //console.log(data.categorys[0].member);
+            //console.log(data.providers);//供应商数据key:id,name
+            //console.log(data.supplies);//物资数据key:id,name
+            var plusones = data.providers;
+            var plusones1 = data.supplies;
+            var ppp = new Array() ,ppp1 = new Array();
+            for (var i = 0; i < plusones.length; i++) { 
+                ppp.push(plusones[i].name); 
+            }; 
+            for (var i = 0; i < plusones1.length; i++) { 
+                ppp1.push(plusones1[i].name); 
+            };
+            var availableTags = ppp;
+            var availableTags1 = ppp1;
+            //availableTags1 = data.supplies;
+            console.log(availableTags);
+            console.log(availableTags1);
+            $("#category").html('<option value="">--------</option>');
+            var cats = data.categorys;
+            var htmls = ''
+            for(var i=0;i<cats.length;i++){
+                htmls += '<option value="' + cats[i].pid + '" class="optgroup">' + cats[i].pname + '</option>'; 
+                sub = cats[i].member; 
+                for(var j=0;j<sub.length;j++){  
+                  htmls += '<option value="' + sub[j].sid + '">' + sub[j].sname + '</option>'; 
+                }
+                
+            } 
+            $("#provider").autocomplete({ 
+                source: availableTags,
+                minLength: 0
+            });
+            $("#supply_name").autocomplete({ 
+                source: availableTags1,
+                minLength: 0 
+            });
+            $("#category").append(htmls); 
+        }); 
+    } 
+});
+   
+</script>
+ 
+{% endblock %}

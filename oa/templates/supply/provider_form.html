@@ -1,0 +1,85 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %} 
+<div class="main">
+      <div class="tab"><span>{% if provider %}供应商详情{% else %}添加供应商{% endif %}</span><a class="tbbtn" href="{% url oa_provider_index %}">返回</a></div>
+      <div class="column">
+          <div class="form-horizontal form-kPicCon"> 
+              <form id="post_form" class="registerform" action="{% if provider %}#{% else %}{% url oa_provider_create %}{% endif %}" method="post">{% csrf_token %}
+                    <input type="hidden" value="{{school.id}}" name="school">
+                    <div class="uers-info">
+                    {% if not request.user|is_agency_user %}  
+                        <p> 
+                            <select id="id_school" style=" width: auto; display:none;" name="school" class="span3" datatype="*" errormsg="" nullmsg="请选择机构">  
+                                  {% for s in schools %}
+                                  <option value="{{s.id}}" {% if sid == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                                  {% endfor %}
+                              </select>
+                         </p>
+                    {% else %}
+                         <p> 
+                            <label>所属机构*</label> 
+                            <select id="id_school" style=" width: auto;" name="school" class="span3" datatype="*" errormsg="" nullmsg="请选择机构">  
+                                {% for s in schools %}
+                                <option value="{{s.id}}" {% if sid == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <span id="id_schoolTip" class="erro-tips">{{form.school.errors|striptags}}</span>
+                         </p>
+                         
+                    {% endif %}
+                         <p>
+                             <label> 供应商名称* </label>
+                             {{form.name|attr:"class:span3"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入供应商名称"}}
+                             &nbsp;<span class="erro-tips">{{form.name.errors|striptags}}</span>
+                          </p>
+                         <p>
+                              <label>供应商描述</label>
+                                {{ form.description|attr:"class:span5"|attr:"style:height:70px"}}
+                          </p>
+                         <p>
+                             <label> 联系人*</label>
+                             {{form.charger|attr:"class:span3"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入联系人"}}
+                             &nbsp;<span class="erro-tips">{{form.charger.errors|striptags}}</span>
+                         </p>
+                         <p>
+                            <label> 联系电话*</label>
+                            {{ form.mobile|attr:"class:span3"|attr:"placeholder:办公电话\其他电话"|attr:"datatype:tel-3|m"|attr:"errormsg:手机号或电话号码不正确 "|attr:"nullmsg:请输入联系电话"}}
+                            &nbsp;<span id="id_telephone_twoTip" class="erro-tips">{{form.mobile.errors|striptags}}</span>
+                         </p>
+                         <p>
+                            <label>联系地址*</label>
+                            {{form.address|attr:"datatype:*"|attr:"errormsg:"|attr:"nullmsg:请输入联系地址"}}
+                         </p> 
+                         <p>
+                              <label>备注</label>
+                                {{ form.remark|attr:"class:span5"|attr:"style:height:70px"}}
+                          </p>
+                     </div> 
+                    <p>
+                        <label>&nbsp;</label>
+                        <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+                        <!--<input class="btn" style=" margin-left:15px;" type="reset"  value="取 消"/>-->
+                         <a class="btn" href="{% url oa_provider_index %}" style=" margin-left:28px;">取 消</a>
+                    </p>
+                </form>
+          </div>
+	</div>
+</div>
+<script> 
+   //表单验证 
+   $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "tel-h" : /^(\d{3,4}-)?\d{7,8}$/
+             } 
+	});
+}); 
+  
+</script>
+{% endblock %}

@@ -1,0 +1,748 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<script src="{{ STATIC_URL }}oa/js/jquery-1.9.1.js"></script>
+ <!--<script src="{{ STATIC_URL }}oa/js/jquery-migrate-1.2.1.js"></script>-->
+ <script type="text/javascript">
+    var jQ19 = $.noConflict(true); // JQ19
+</script> 
+<script src="{{ STATIC_URL }}oa/js/checkbox_mian.js"></script>
+<style>
+  .ui-autocomplete-ie9-fix { position: relative !important; }
+  .ui-menu .ui-menu-item { *width:150px;  }
+      .ui-autocomplete {
+      max-height: 160px;
+      overflow-y: auto;
+      /* prevent horizontal scrollbar */
+      overflow-x: hidden;
+    }
+    /* IE 6 doesn't support max-height
+     * we use height instead, but this forces the menu to always be this tall
+     */
+    * html .ui-autocomplete {
+      height: 160px;
+    } 
+   select option.optgroup{ color:#000;font-size:15px;}
+</style>
+<div class="main">
+    <div class="tab"><span>已发回公文</span><a href="{% url oa_supply_reback_document %}">返回</a></div>
+    <div class="column">
+        <div class="file_info">
+            <p>撰文人：   &nbsp;&nbsp;{{doc.sender.profile.realname}}</p>
+            <p>申请类型：{% if doc.type == 0 %}采购{% else %}采购{% endif %}</p>
+            <p>公文级别：{{doc.level|document_level}}</p>
+            <div style="margin-bottom:5px;"> 
+                <div style="float:left;" >发送对象：</div> 
+                <div style="margin-left:75px;"> {% for r in receivers %}<span style="margin-right:20px;">{{r.user.teacher.name}}({{r.user.teacher.school}})</span>{% endfor %}&nbsp;</div>
+            </div> 
+            <p>发送时间：{{doc.ctime|date:"Y-m-d G:i"}}</p>
+        </div> 
+        <div class="list">
+            <table>
+                <tr align="center">
+                    <th width="10" scope="col">序号</th>
+                    <th width="40" scope="col">时间</th>
+                    <th width="30" scope="col">审批人</th> 
+                    <th width="50" scope="col">审批备注</th>
+                    <th width="80" scope="col">公文状态</th> 
+                </tr> 
+                {% for h in history %}
+                <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                    <td width="30">{{forloop.counter}}</td>
+                    <td width="30">{{h.send_time|date:"Y-m-d G:i"}}</td>
+                    <td width="30">{{h.sender.profile.realname}}</td>
+                    <td width="40">{{h.remark}}</td>
+                    <td width="60">{{h|approval_status|safe}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="line" style="text-align:center;"><div class="text" >以下为公文正文</div></div>         
+        <div class="form-horizontal form-kPicCon">  
+            <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                {{form.media}}
+                <input id="jsonstr"  type="hidden" name="applies" value=""/>
+                <div id="class_hide" class="hide">
+                    {% for s in schools %}
+                    <input id="school_cache_{{s.id}}" sname="school_cache" rel="school_cache" type="hidden" alt="{{s.id}}" value="{% if doc %}{{s|get_document_user:doc}}{% endif %}">
+                    {% endfor %} 
+                </div>
+                <p>
+                    <label>公文标题*</label>{{form.title|attr:"class:input-xlarge"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入公文标题"}}&nbsp;
+                    <span id="id_titleTip" class="erro-tips">{{form.title.errors|striptags}}</span>
+                </p>
+                <p>
+                    <label> 公文类型*</label>
+                   <select id="id_category" name="type" class="span2 Validform_error" datatype="*" errormsg="" nullmsg="申请类型">
+                     <option value="" >--申请类型--</option>
+                     <option value="0" {% if doc.type == 0 %}selected="selected"{% endif %}>采购</option>
+                     <option value="0" {% if doc.type == 1 %}selected="selected"{% endif %}>领取</option>
+                  </select><span id="id_categoryTip" class="erro-tips">{{form.type.errors|striptags}}</span>
+               </p>
+                <p>
+                    <label>公文级别*</label>{{form.level|attr:"class:span2 Validform_error"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请选择公文级别"}}&nbsp;
+                </p>
+                <p><label>物资清单*</label>
+               <div>
+                {% if request.user|is_agency_user %}
+                  <select id="school_id" class=" span2 classSelect" style="font-size: 14px; width: auto;" value="{{school.id}}" name="sid">
+                      <option value="">---------</option>
+                      {% for s in school_list %}
+                      <option  value="{{s.id}}" {% if doc.applies.all.0.school_id == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                      {% endfor %}
+                  </select> 
+                  {% else %}
+                    <select id="school_id" class=" span2 classSelect" style="display:none;font-size: 14px; width: auto;" value="{{school.id}}" name="sid">
+                      {% for s in school_list %}
+                      <option  value="{{s.id}}">{{s.name}}</option>
+                      {% endfor %}
+                    </select> 
+                  {% endif %}
+                   <select id="category" class="span2">
+                      <option value="">--物资类别--</option>
+                      {% for c in categorys %}
+                      <option class="optgroup" value="{{c.id}}">{{c.name}}</option> 
+                      {% endfor %}
+                    </select> 
+                   <input rel="inputname" supinput="input" class="span2" type="text" id="supply_name" value="" placeholder="物资名称" />
+                   <input rel="inputnum" supinput="input" style=" width: 50px;" type="text" id="supply_num" value=""  min="1" placeholder="数量" />
+                   <input  disabled="disabled" type="button" class="btn" id="add_supply" value="添加" />
+                </div>
+               </p>
+               <div class="leveltip_list" style="width: 630px; ">
+                    <table id="levetable" width="100%" >
+                        <tr>
+                            <th width="80">类别</th>
+                            <th width="260">物资名称</th>
+                            <th width="170">数量</th>
+                            <th width="60">操作</th>
+                        </tr>
+                        {% for l in applies %}
+                          <tr idn="{{forloop.counter0}}" idtype="{{l.supply.category_id}}" rel="tr_{{forloop.counter0}}"><td>{{l.supply.category.name}}</td><td><input type="text" value="{{l.supply.name}}" class="inputname span2" rel="inputname" id="input_name_{{forloop.counter0}}" nullmsg=" " errormsg="" datatype="*"><span class="Validform_checktip "></span></td><td><input type="text" value="{{l.num}}" style="width:50px;" class="inputnum" min="1" id="input_num_{{forloop.counter0}}" rel="inputnum" nullmsg=" " errormsg=" " datatype="nun"><span class="Validform_checktip " ></span></td><td><a rel="delete" href="javascript:;" data-type="1">删除</a></td>
+                          </tr> 
+                        {% endfor %}
+                    </table>
+               </div> 
+               <div style="clear: both;"></div>
+              <p><label>备注</label>
+                  <textarea name="description" style=" width: 615px; height: 75px;"></textarea>
+              </p>
+                <div>
+                    <label style="float:left;" style=" font-size: 13px;">发布对象*</label>
+                    <div id="server_name" class="add_user name-list" >
+                        <ul>
+                            {% for r in receivers %}
+                            <li>
+                                <input type="checkbox" name="receiver_pks" schoolid="{{r.user.teacher.school.id}}" value="{{r.user.id}}"  checked="checked" style="display:none;">
+                                <label class="user_names" for="all_depatrment_{{r.user.id}}">{{r.user|get_name}}<span class="close-btn"></span></label></li>
+                            {% endfor %}
+                        </ul> 
+                    </div> 
+                </div>
+                <p>
+                    <label>&nbsp;</label>
+                    <a style=" float:right;" href="javascript:;">清空</a> 
+                    <button id="add_member_btn" class="btn" style="color:#353535;"><i class="icon-plus"></i> 添加对象</button>
+                    <input id="user_numbe" style=" display: none" type="text" value="" datatype="nun" errormsg="请选择发送对象" nullmsg="请选择发送对象" />&nbsp; 
+                </p>
+                <p><label>落款*</label>{{form.inscribed|attr:"datatype:*"|attr:"errormsg: "|attr:"nullmsg:请输入落款"}}&nbsp;<span id="id_inscribedTip" class="erro-tips">{{form.inscribed.errors|striptags}}</span></p>
+                <p><label>公文时间*</label>
+                    {{form.send_time|attr:"readonly:readonly"|attr:"class:selectdata input-medium"|attr:"style:cursor:pointer; background-color:#ffffff;"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入时间"}}&nbsp;
+                    <span id="id_send_timeTip" class="erro-tips">{{form.send_time.errors|striptags}}</span>
+                </p> 
+                <div class="line" style="text-align:center;"><div class="text" >以上为公文正文</div></div>
+                <p>
+                    <label>&nbsp;</label>
+                    <a class="btn" href="{% url oa_supply_invalid_user_document doc.id %}">作废</a> 
+                    <a id="draft" class="btn" href="{% url oa_supply_resave_document doc.id %}">另存到个人文档</a>
+                    <span id="onLoad_inport" style="display: none; color:#616161; margin-left: 30px;"><img src="{{ STATIC_URL }}oa/images/import.gif" />正在保存请稍等...</span>
+                </p>
+                <p><label>&nbsp;</label> <input style="display:none;" class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" > </p> 
+
+                <input type="hidden" name="ty" value="{{ty}}">
+            </form> 
+        </div>
+    </div>
+</div>
+<div class="modal" id="myModal" style="display:none;">
+    <div class="modal-header">
+        <!--<a class="close" data-dismiss="modal">×</a>-->
+        <input class="btn" style="float: right; vertical-align: auto;" data-dismiss="modal" type="button" value=" 取 消 "/>
+        <input id="server_role" style="color:#fff; float: right; vertical-align: auto; margin-right: 30px;" type="button" class="btn btn-success" data-dismiss="modal" value="{% trans 'Save' %}"> 
+        <h4  style="margin-right: 200px;" >选择发布对象</h4>
+    </div>
+    <div id="content" style="padding:10px;">
+        <div class="member">
+            <p class="slt-title"><span>已选发布对象</span><a href="javascript:;" class="rem-btn">清空</a></p>
+            <div id="data_panel" class="name-list"> 
+                <ul>
+                {% for u in member_list %} 
+                    {% if u.teacher.school == school %}
+                        <li>
+                            <input data-id="{{u.id}}" type="checkbox" name="to" value="{{u.id}}" checked="checked" style="display:none;">
+                            {{u|get_name}}
+                            <span class="rm_user" data-id="{{t.id}}">&nbsp;</span>
+                        </li> 
+                     {% endif %}  
+                 {% endfor %}
+                </ul> 
+            </div>
+        </div>
+        <div id="data-up"> 
+        </div>
+    </div>
+    <div class="modal-footer"> 
+        <p style="text-align:center; padding:0; margin:0; height: 5px;" > 
+            <input type="hidden" id="user_id" value="{{user.id}}"> 
+            <!--<a id="server_role" style="color:#fff;" class="btn btn-success" data-dismiss="modal" href="javascript:;">{% trans "Save" %}</a>-->
+            <!--<a class="btn " data-dismiss="modal" href="javascript:;">取消</a>--> 
+        </p> 
+    </div>
+</div>
+<div id="cheak_dis" style="display:none;">
+    <ul>
+    </ul>
+</div> 
+<input id="box_type1" type="hidden" value="0" /> 
+<input id="box_type" type="hidden" value="0" />
+<input id="box_server" type="hidden" value="1" /> 
+
+<script type="text/javascript">
+ 
+jQ19(function(){ 
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            postonce:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "nun" : /^[0-9]*[1-9][0-9]*$/
+             },
+              beforeSubmit:function(curform){
+            		//在验证成功后，表单提交前执行的函数，curform参数是当前表单对象。
+            		//这里明确return false的话表单将不会提交;
+                 $("#post_date").attr("disabled","disabled");
+                 $("#onLoad_inport").show();
+            } 
+	});
+    $(".selectdata").datepicker({//日期插件
+           dateFormat: 'yy-mm-dd',
+           changeYear: true,
+           onSelect:function(date){  
+               this.focus();  
+               this.blur();  
+           }
+    });
+        // $("#doc_send").click(function(){//
+        //     var serverName = $("#server_name ul"); 
+        //     var len = serverName.find('li').length;
+        //     $("#user_numbe").attr("value", len);
+        //     $("[name=commit_type]").val(1); 
+        //     //alert( $("[name=status]").val())
+        //     $("#post_form").submit()
+        // })
+        // $("#doc_approval").click(function(){
+        //     var serverName = $("#server_name ul"); 
+        //     var len = serverName.find('li').length;
+        //     $("#user_numbe").attr("value", len);
+        //     $("[name=commit_type]").val(3); 
+        //     //alert( $("[name=status]").val())
+        //     $("#post_form").submit()
+        // })
+        // $("#doc_reback").click(function(){
+        //     var serverName = $("#server_name ul"); 
+        //     var len = serverName.find('li').length;
+        //     $("#user_numbe").attr("value", len);
+        //     $("[name=commit_type]").val(2);
+        //     //alert( $("[name=status]").val()) 
+        //     $("#post_form").submit()
+        // });
+  
+      $("#post_date").click(function(){//提交 数据
+          var serverName = $("#server_name ul"); 
+          var len=serverName.find('li').length;
+          $("#user_numbe").attr("value",len); 
+          $("[name=status]").val(0); //保存发送
+          var events = $("#levetable tr");
+          var str = supplyStr(events);//物资信息
+          $("#jsonstr").val(str); 
+          $("#post_form").submit();  
+      });
+       
+      $('#draft').click(function(){ //
+          $("[name=status]").val(1);//草稿 
+          var events = $("#levetable tr");
+          var str = supplyStr(events);//物资信息
+          $("#jsonstr").val(str); 
+          $("#post_form").submit();
+      }); 
+        
+      var boxCheck= $("#userName");//已选box 对象
+          //strVal= ",";
+          boxCheck.find("input").each(function(k,v){  //存储以选对象id 到strVar
+          id = v.getAttribute('id');
+          $mms = $("#"+id);
+          strVal +=$mms.val()+',';
+      });
+	
+//    if($("#id_send_msg").attr('checked')){
+//            $("#note_text").show();
+//    }else{
+//            $("#note_text").hide()
+//    }
+//    if($("#id_is_submit").attr('checked')){
+//            url = "{% url oa_document_get_approvalers %}" 
+//            $.post(url,{},function(result){
+//                    data = $.parseJSON(result);  
+//                    $("#sub_user").empty();
+//                    $("#sub_user").html(data.con);
+//                    $("#box_type1").val('1');
+//            }); 
+//            $("#sub_user").show();
+//    }else{
+//            $("#sub_user").hide();
+//    } 
+
+    $(document).on('click' , "#add_member_btn" , function(){ //添加成员面板数据、显示
+       var box=$("#server_name ul"),  
+       url = "{% url oa_document_set_receiver %}",
+       did = {{ doc.id|default:0 }};  
+           if($("#box_type").val()==0){
+               $.post(url,{doc_id:did},function(result){
+                   data = $.parseJSON(result);  
+                   $("#data-up").empty();
+                   $("#data-up").html(data.con);
+                   $("#box_type").val('1');
+               });
+           }
+           type = $("[name=ty]").attr("value");
+           $('#myModal').modal('toggle'); //弹框   
+           boxAdd=$("#cheak_dis ul"); 
+           boxAdd.find('input').each(function(k,v){
+               boxId = v.getAttribute('schoolid'); 
+                if(boxId==$("#school_id").val()){  
+                   $(this).parent('li').remove(); 
+                }
+           });  
+   });
+
+    //选择学园
+    var  schoolUserList = " "; 
+    $(document).on('click' , "[alt=school_item]" ,function(){
+        $('.message_add_remind').show();
+            url = "{% url oa_document_set_receiver %}"
+            did = {{doc.id|default:0}};
+            var school_id = $(this).attr('rel'); 
+            $.post(url,{sid:school_id,doc_id:did},function(result){
+                data = $.parseJSON(result);  
+                $("#data-up").empty();
+                $("#data-up").html(data.con);
+                $("#box_type").val('1');
+            });
+            schoolUserList = " ";
+            var boxAdd = $("#cheak_dis ul input"); 
+            //pr(boxAdd) 
+            $.each(boxAdd, function(k,v){  
+                boxId = v.getAttribute("schoolid");
+                //alert(boxId);
+                if(boxId == school_id){ 
+                   schoolUserList +="<li>"+ $(this).parent('li').html()+"</li>"; 
+                   $(this).parent('li').remove(); 
+                }
+            });  
+            //alert(schoolUserList + "schoolUserList")
+            var addUserHtml=$("#data_panel ul").html(); 
+            //alert(addUserHtml);
+            //schoolUserList = $("#cheak_dis ul").html();
+            $("#cheak_dis ul").append(addUserHtml);
+            $("#data_panel ul").empty();
+            $("#data_panel ul").append(schoolUserList); 
+    });
+
+    //审批人选择学园
+    $(document).on('click' , "[alt=school_item]" , function(){
+        url = "{% url oa_document_get_approvalers %}"
+        var school_id = $(this).attr('rel'); 
+        $.post(url,{sid:school_id},function(result){
+            data = $.parseJSON(result);  
+            $("#sub_user").empty();
+            $("#sub_user").html(data.con);
+            $("#box_type1").val('1');
+        }); 
+    }) 
+
+/*$('#myModal').on('hide', function (e) {
+   schoolId=$("#school_id").val();
+   userIdAdd=$("#school_cache_"+schoolId).val();
+   cheak_dis=$('#cheak_dis ul').html();
+   $("#box_server").val(0);
+   $("#server_name ul").append(cheak_dis);
+})
+*/  
+    //送审选框
+    // $("#id_is_submit").removeAttr("checked");
+    // $("#id_is_submit").click(function(){
+    //     if($(this).attr('checked')){
+    //         $("#sub_user").show();
+    //         $(".sub_info").show();
+    //         //$("#id_remark").attr("datatype","*");
+    //     }else{
+    //         $("#sub_user").hide()
+    //         $(".sub_info").hide();
+    //         //$("#id_remark").removeAttr("datatype"); 
+    //     } 
+    //     url = "{% url oa_document_get_approvalers %}"
+    //     if($("#box_type1").val()==0){ 
+    //         $.post(url,{},function(result){
+    //             data = $.parseJSON(result); 
+    //             $("#sub_user").empty();
+    //             $("#sub_user").html(data.con);
+    //             $("#box_type1").val('1');
+    //         }); 
+    //     } 
+    // });
+
+    $(document).on('click' , ".rem-btn" ,function(){ //删除全部 
+            $(".name-list ul").empty();
+            $("#cheak_dis ul").empty();
+            //$("[username=type]").removeAttr("checked");
+            //strVal=","
+            userIdAdd="";
+            schoolVar=$("#school_id").val()
+            $("#school_cache_"+schoolVar).val('');
+    });
+ 
+    $(document).on('click' , "[name=judgment]" , function(){//
+            var csName = $(this).attr('class');
+            if($(this).attr("checked")){
+                    $(".box_"+csName).show();
+                    $(".box_"+csName).siblings('.box').hide();
+            }  
+    });
+    $(".user_names").click(function(){ 
+            $(this).parent('li').remove();
+    }); 
+//    $(document).on('click' ,'#teacher_all' , function(){//全部选中 
+//              var radio=$('[name=judgment]:checked').attr('class'),
+//              teacherType=$(".list_2"),
+//              inputChecked=$(this).attr('checked'); 
+//              teacherType.find('.user_name').each(function(k,v){ 
+//                 boxInput = v.getAttribute('id');
+//                     $mmInput=$("#"+boxInput); 
+//                     if(inputChecked && $mmInput.attr('checked')){
+//                 }else{
+//                             $mmInput.click();
+//                     }
+//              }); 
+//    });
+
+    //弹框初始化删除功能
+  $(document).on('click' , "[name=int_add]" , function(){
+            var nameId=$(this).attr('nameid'),
+            schoolVar=$("#school_id").val(), 
+            cheakId=$("#school_cache_"+schoolVar).val();
+            $("#all_depatrment_"+nameId).removeAttr("checked");
+            $("#all_position_"+nameId).removeAttr("checked");
+            $("#all_word"+nameId).removeAttr("checked");
+            $(this).parent('li').remove();
+            $(".lable_"+nameId).parent('li').remove();
+            cheakId = userIdAdd.replace(nameId+',' , '');
+            $("#school_cache_"+schoolVar).val(cheakId); 
+    });
+    
+    $(document).on('click' ,"#server_role" ,function(){//保存选中
+        var serverEndbox=$("#data_panel ul").html();
+            $("#server_name ul").append(serverEndbox);
+        var serverChecked =$("#cheak_dis ul").html(); 
+        $("#server_name ul").empty();
+        $("#server_name ul").append(serverChecked);
+        // var serverName = $("#server_name ul"); 
+        // var len=serverName.find('li').length;
+        // $("#user_numbe").attr("value",len);
+        // if(len > 0){
+        //     $("#user_tip").addClass("Validform_right");
+        //     $("#user_tip").removeClass("Validform_wrong");
+        //     $("#user_tip").text("");
+        // }else {
+        //     $("#user_tip").addClass("Validform_wrong");
+        //     $("#user_tip").removeClass("Validform_right");
+        //     $("#user_tip").text("请选择发送对象");
+        // } 
+    });
+
+//    $(".set-time").hide();
+//    $(".settime").click(function(){//填写信息显示
+//            if($(this).children("input").attr("checked")){
+//                $(".set-time").slideDown();
+//            }else{
+//                $(".set-time").slideUp();
+//            }
+//    }); 
+
+//    $(document).on('click' , ".radio_name" , function(){ //选着送审人
+//        $("#sub_user_name").val($(this).val());
+//        $("#sub_user_id").val($(this).attr("userid"));
+//    });
+
+
+    $("[rel=doc_file]").click(function(){//提交公文
+        file_id = $(this).attr('alt')
+        url = "{% url oa_delete_document_file %}";
+            $.post(url,{fid:file_id},function(result){
+            data = $.parseJSON(result);
+        }) 
+    })
+
+  //集团用户选机构
+  // var availableTags = {};
+  // var availableTags1 = {}; 
+  // $("#school_id").change(function(){ 
+  //   var sid = $(this).find("option:selected").val();
+  //   if(sid){
+  //       url = "{% url oa_supply_school_realtes %}";
+  //       $.get(url,{school_id:sid},function(result){
+  //           data = $.parseJSON(result);
+  //           if(data.categorys){ 
+  //               $("#category").html('<option value="">--物资类别--</option>');
+  //           }
+  //           //console.log(data.categorys[0].member);
+  //           //console.log(data.providers);//供应商数据key:id,name
+  //           //console.log(data.supplies);//物资数据key:id,name
+  //           var plusones = data.providers;
+  //           var plusones1 = data.supplies;
+  //           var ooo = {};
+  //           var ppp = new Array(), ppp1 = new Array();
+  //           // for (var i = 0; i < plusones.length; i++) {  //供应商
+  //           //     ppp.push(plusones[i].name); 
+  //           // }; 
+  //           for (var i = 0; i < plusones1.length; i++) { //物资名称
+  //               ppp1 += '{label:"'+plusones1[i].name+'",value:"'+plusones1[i].cid+'"}'+','; 
+  //               ooo[plusones1[i].name] = plusones1[i].cid;
+  //           };
+  //           //availableTags ="["+ppp+"]";
+  //           availableTags1 ="["+ppp1+"]";
+  //           var obj = eval("("+availableTags1+")"); 
+
+  //           $("#category").html('<option value="">--物资类别--</option>');
+  //           var cats = data.categorys;
+  //           var htmls = ''
+  //           for(var i=0;i<cats.length;i++){
+  //               htmls += '<option class="optgroup" value="' + cats[i].pid + '" class="optgroup">' + cats[i].pname + '</option>'; 
+  //               sub = cats[i].member; 
+  //               for(var j=0;j<sub.length;j++){  
+  //                 htmls += '<option value="' + sub[j].sid + '">&nbsp;&nbsp;&nbsp;' + sub[j].sname + '</option>'; 
+  //               } 
+  //           } 
+  //           // $("#provider").autocomplete({ 
+  //           //     source: availableTags,
+  //           //     minLength: 0
+  //           // });
+  //           // $("#supply_name").autocomplete({ 
+  //           //     source: availableTags1,
+  //           //     minLength: 0 
+  //           // });
+  //           $("#category").append(htmls); 
+  //           $("#supply_name").focus(function(e){  //根据物资称选着类别
+  //               }).blur(function(e){  
+  //                   var v = $(e.target).val(); 
+  //                   $("#category option[value="+ooo[v]+"]").attr("selected", true); 
+  //               })
+  //               $("#supply_name").autocomplete({
+  //                   minLength: 0,
+  //                   source: obj,
+  //                   focus: function( event, ui ) {
+  //                       console.log(event);
+  //                       $("#supply_name").val( ui.item.label );
+  //                       return false;
+  //                   },
+  //                   select: function( event, ui ) {//根据物资称选着类别
+  //                       $("#supply_name").val( ui.item.label); 
+  //                       //$("#project-id").val( ui.item.value );
+  //                       $("#category option[value="+ui.item.value+"]").attr("selected", true); 
+  //                       return false;
+  //                   }
+  //               }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+  //                   return $( "<li>" ).append( "<a>" + item.label+ "</a>" ).appendTo( ul );
+  //               };
+  //       }); 
+  //    } 
+  // });
+  // $("#school_id").change();
+    if (!$.browser.msie || ($.browser.msie && $.browser.version != 9)) {
+        $("ul.ui-autocomplete").addClass("ui-autocomplete-ie9-fix");
+    }
+    var ooo = {};
+    $("#supply_name").focus(function(e){  //根据物资称选着类别
+    }).blur(function(e){   
+        var v = $('#supply_name')[0].value; 
+        $("#category option[value="+ooo[v]+"]").attr("selected", true); 
+    }).change(function(e){ 
+    });
+
+    $(document).on('change', '#school_id', function(e){ 
+        var school_id = e.target.value;
+        get_data(school_id);
+    })
+
+    // 自动补全代码  
+    function auto_init(tags, cates){
+       // pr('auto_init')
+        $( "#supply_name" ).autocomplete({
+            source: function( request, response ) {
+                var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( $.grep( tags, function( item ){
+                    return matcher.test( item );
+                }) );
+            },
+            select: function( event, ui ) { 
+                var value = ui.item.value
+                //pr(value)
+                //pr(cates[value])
+                $("#category option[value="+cates[value]+"]").attr("selected", true); 
+            }
+        });
+    }
+    
+    function get_data(sid){
+        var url = "{% url oa_supply_school_realtes %}";
+        //console.log(url)
+        var ppp = {school_id:sid};
+        var staff_list = [];
+        var cate_dict = {};
+        var extra_date = Math.random();  
+        $.get(url,{school_id:sid,extra:extra_date},function(result){
+            data = $.parseJSON(result);
+           //pr(data)
+            console.log(data['supplies'])
+            for (var i = 0; i < data['supplies'].length; i++) {
+                var sname = data['supplies'][i]['name'];
+                var cid = data['supplies'][i]['cid'];
+                staff_list.push( sname );
+                cate_dict[sname] = cid;
+                ooo[sname] = cid;
+            };
+            
+
+            $('#category').html('<option value="">--物资类别--</option>');
+            for (var i = 0; i < data['categorys'].length; i++) {
+                var labal = data['categorys'][i]['pname'];
+                var value = data['categorys'][i]['pid'];
+                var members = data['categorys'][i]['member'];
+                var option = '<option class="optgroup" value="'+value+'">'+labal+'</option>';
+                $('#category').append(option);
+                for (var k = 0; k < members.length; k++) {
+                    var member = members[k];
+                    var member_id = member['sid'];
+                    var member_name = member['sname'];
+                    var option = '<option value="'+member_id+'">&nbsp;&nbsp;&nbsp;'+member_name+'</option>';
+                    $('#category').append(option);
+                };
+                
+            }; 
+            //pr(staff_list)
+            //pr(cate_dict)
+            auto_init(staff_list, cate_dict);
+       });
+    } 
+    //var school_id_id = $("#school_id option:selected").attr("value");
+    get_data( $("#school_id option:selected").val() );
+
+});
+
+//添加物资到列表记录  
+    $("#add_supply").click(function(){  
+        var type = $("#category").find('option:selected').val();
+        if(type){ 
+          var num = $("#supply_num")[0].value; 
+          var typename = $("#category").find("option:selected").text();
+          var name =  $("#supply_name")[0].value;
+          //$("[rel=typenull]").remove();
+          var n = $("#levetable tr").length-1; 
+          var tr = '<tr rel="tr_'+type+'" idtype="'+type+'" idn="'+ n +'"><td>'+typename+'</td><td><input datatype="*" errormsg="" nullmsg=" " id="input_name_'+n+'" rel="inputname" class="inputname span2" type="text" value="'+name+'"/><span id="user_tip" class="Validform_checktip "></span></td><td><input datatype="nun" errormsg=" " nullmsg=" " rel="inputnum" id="input_num_'+n+'" class="inputnum" style="width:50px;" type="text" min="1" value="'+num+'" /><span id="user_tip" class="Validform_checktip "></span></td><td><a data-type="'+type+'" href="javascript:;" rel="delete">删除</a></td></tr>';
+          $("#levetable").append(tr);
+          $("#supply_name").val(''); 
+          $("#supply_num").val('');
+          $(this).attr("disabled","disabled");
+      }else{
+          alert("请选择物资类别!");
+      }
+    });
+    //删除列表记录
+    $(document).on('click','[rel = delete]',function(){
+        var typetr= $(this).data('type');
+        $(this).parents("[rel =tr_"+typetr+"]").remove();  
+    });
+
+    $("[supinput=input]").keyup(function(){
+      var inputTmp =$(this);
+      isNumber(inputTmp); 
+    }); 
+
+function supplyStr(event){
+    var str = '',strs = '';
+    event.each(function(e,v){ 
+       var id = v.getAttribute("idn");
+       var idtype= v.getAttribute("idtype");
+       var name = $('[idn='+id+']').find(".inputname").val(); 
+       var num = $('[idn='+id+']').find(".inputnum").val();
+       if(id !==null){
+            if(str){str += ","}; 
+            str =str +'"'+id+'":{"name":"'+name+'","cat":'+idtype+',"num":'+num+'}';
+        } 
+    }) 
+    strs = '{' + str + '}'
+    return strs; 
+  }
+ 
+function isNumber(events){ 
+     var id = events.attr("id");
+     var type = $("#category").find('option:selected').val();
+     var input = $("#"+id).attr("rel");  
+     var inputname = $('#supply_name')[0].value;
+     var inputnum = $('#supply_num')[0].value;  
+     var examNumbIds = /^[1-9]*[1-9][0-9]*$/; 
+     if(input == "inputname" )
+     {
+        if(inputname)
+        { 
+            if(examNumbIds.test(inputnum))
+            { 
+                $("#add_supply").removeAttr("disabled"); 
+            } 
+        }
+        else 
+        { 
+            $("#add_supply").attr("disabled","disabled");
+        }
+     }
+     else if(input == "inputnum")
+     {
+        if(inputnum)
+        {  
+            if(examNumbIds.test(inputnum))
+            {
+                if(inputname) {
+                    $("#add_supply").removeAttr("disabled"); 
+                }
+            }
+            else
+            {
+
+                $("#"+id).val("1");
+                if(inputname) {
+                    $("#add_supply").removeAttr("disabled");
+                }else{
+                     $("#add_supply").attr("disabled","disabled"); 
+                }
+            }
+        }
+        else
+        { 
+           $("#add_supply").attr("disabled","disabled"); 
+        }
+    } 
+ }
+</script> 
+{% endblock %}

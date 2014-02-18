@@ -1,0 +1,71 @@
+{% extends 'umessages/base_message.html' %}
+{% load i18n kinger_tags umessages_tags oa_tags %}
+{% block content_title %}
+<h2>{% blocktrans %} Contacts {% endblocktrans %}</h2>
+{% endblock %}
+{% block message_right_link %}{% endblock %}
+{% block content %}
+<div class="kspan8 kthumbnail">
+	{% if mentors %}
+	<div class="kMsgBar">
+        <h3 class="kListType">导师</h3>
+        <ul class="thumbnails">
+            {% for recipient in mentors %}
+            <li class="kListItem">
+        		<a href="{% url user_umessages_history recipient.user.id %}?type=1" class="kthumbnail" rel="namecard" data-uid="{{ recipient.user.pk }}">
+                <img src="{% media_path recipient.user.get_profile.get_avatar "avatar" %}" alt="" style="width:40px;height:40px;">
+				</a>
+				<span class="kListName"><a href="{% url user_umessages_history recipient.user.id %}?type=1" title="{{recipient.name}}">{{recipient.name}}</a></span>
+        	</li>
+            {% endfor %}
+        </ul>
+	</div>
+	{% endif%}
+	{% if teachers %}
+	<div class="kMsgBar kBackCol">
+        <h3 class="kListType">老师 </h3>
+        <ul class="thumbnails">
+        {% for recipient in teachers %}
+        <li class="kListItem">
+        	<a href="{% url user_umessages_history recipient.user.id %}?type=1" class="kthumbnail" rel="namecard" data-uid="{{ recipient.user.pk }}">
+            	<img src="{% media_path recipient.user.get_profile.get_avatar "avatar" %}" alt="" style="width:40px;height:40px;">
+			</a>
+			<span class="kListName"><a href="{% url user_umessages_history recipient.user.id %}?type=1" title="{{recipient.user|get_name}}">{{recipient.user|get_name}}</a></span>
+        </li>
+        {% endfor %}
+        </ul>
+	</div>
+	{% endif%}
+    {% if students %}
+	<div class="kMsgBar {% if teachers %}{% else %}kBackCol{% endif%}">
+        <h3 class="kListType">学生</h3>
+        <ul class="thumbnails">
+        {% for recipient in students %}
+        <li class="kListItem">
+        	<a href="{% url user_umessages_history recipient.user.id %}?type=1" class="kthumbnail" rel="namecard" data-uid="{{ recipient.user.pk }}">
+            	<img src="{% media_path recipient.user.get_profile.get_avatar "avatar" %}" alt="" style="width:40px;height:40px;">
+			</a>
+			<span class="kListName"><a href="{% url user_umessages_history recipient.user.id %}?type=1" title="{{recipient.user|get_name}}">{{recipient.user|get_name}}</a></span>
+        </li>
+        {% endfor %}
+        </ul>
+	</div>
+	{% endif%}
+    {% if waiters %}
+    <div class="kMsgBar {% if teachers and students %}kBackCol{% else %}{% if not teachers and not students %}kBackCol{% endif%}{% endif%}">
+    	<h3 class="kListType">在线客服</h3>        
+		<ul class="thumbnails">
+            {% for recipient in waiters %}
+        <li class="kListItem">
+        	<a href="{% url user_umessages_history recipient.user.id %}?type=1" class="kthumbnail" rel="namecard" data-uid="{{ recipient.user.pk }}">
+            	<img src="{% media_path recipient.user.get_profile.get_avatar "avatar" %}" alt="" style="width:40px;height:40px;">
+			</a>
+			<span class="kListName"><a href="{% url user_umessages_history recipient.user.id %}?type=1" title="{{recipient.name}}">{{recipient.name}}</a></span>
+        </li>
+        {% endfor %}
+        </ul>
+	</div>
+	{% endif%}
+</div>
+{% include 'umessages/message_right.html' %}
+{% endblock %}

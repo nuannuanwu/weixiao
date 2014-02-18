@@ -1,0 +1,67 @@
+
+{% load pagination_tags kinger_tags i18n%}
+    {% for tile in tiles %}
+    <li id="ti-{{tile.id}}"  class="span3 tile" style=" width: 230px; padding:0 5px; margin:0 0px 10px 0;">
+        <div class="thumbnail"  style="padding: 0; {% if tile.is_report %}  {% endif %} ">
+        {% if tile.is_report %}
+        {% else %}
+           <div class=" actions assess" style=" display:none;  position: absolute; top:5px; right: 10px;"> 
+                <a class="external_link border_r" rel="tile_comment" href="javascript:;" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}&for_comment=1" data-id="{{tile.id}}"><span><i class="pic external"> </i></span> <span>评论</span></a>
+                <a rel="likeable" id="likeable_{{tile.id}}" href="javascript:;" data-href="{% url api_web_tiles_like_rev %}" data-id="{{tile.id}}" data-tips="{{tile.is_tips}}"><span><i class="pic {% if tile|liked_by_user:request.user %}like{% else %}no_like {% endif %}"></i></span ><span class="like_type">{% if tile|liked_by_user:request.user %}取消喜欢{% else %}喜欢{% endif %}</span></a>
+            </div> 
+         {% endif %} 
+            <!-- 杂项类型 -->
+            {% if tile.is_report %}
+            <a href="javascript:;" style=" background-color: #EA7124;" rel="tile_view" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}" data-id="{{tile.id}}" class="kBabyA">
+                    <div style=" padding:0 0 0 0px; width:100%; border:0; border-radius: 2px 2px 0 0;" class="kBabyState kSt_{{ tile.type_id }} kTile-img">
+                        <div class="kSt_Img" ></div>
+                        <div class="kState"><p class="state">{{ tile.title }}</p><p class="info" title="{{ tile.description }}">{{ tile.description|cut_str:5 }}</p></div>
+                    </div>
+                </a>
+                <div class="caption tile_sp_{{ tile.type_id }}">
+                    <p class="caption-date" style="padding: 5px 10px;">{{ tile.pub_time|date:"m-d l"}}</p>
+                </div>
+            {% endif %}
+            <!-- /杂项类型 -->
+            <!--文字内容-->
+            {% if tile.new_type_id == 4 %}
+                <a href="javascript:;" rel="tile_view" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}" data-id="{{tile.id}}">
+                   <div style="margin: 0px 0 0 3px;">
+                       <img src="{{ STATIC_URL }}kinger/img/title_pen.jpg" />
+                   </div>
+                   <div style=" padding:5px 10px; color: #5d5d5d; " class="wrap">
+                       {{tile.content|cut_str:60|code_to_img|safe}}
+                   </div> 
+                </a>
+                 <div class="bottom_describe" style=" display: block; clear: both; background: none; width: 220px;">
+                    <a class="external_content"><i class="ioc ioc_external"></i>&nbsp;<span id="tile_comments_{{tile.id}}">{{tile.n_comments}}</span></a>
+                    <a class="like_content"><i class="ioc ioc_like"></i>&nbsp;<span id="like_conten_{{tile.id}}">{{tile.n_likers}}</span></a>
+                </div>
+            {% endif %}
+            <!--文字内容-->
+            <!--图片内容-->
+            {% if not tile.is_report and not tile.new_type_id == 4 %}  
+                {% out_of_range tile.img "img_middle" 800 as is_out %} 
+                    <a class="kTile-img" href="javascript:;" rel="tile_view" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}" data-id="{{tile.id}}" data-id="{{tile.id}}"><img src="{% media_path tile.img "img_middle" %}" alt="" rel="imgLoad">{% if is_out %}<span class="stop"></span>{% endif %}</a>
+                    <div class="caption">
+                        <p rel="desc_{{tile.id}}" class="caption-title" style="padding: 5px 10px;">{{ tile.description|removetags:"a p span div strong em video"|safe }}</p>
+                    </div> 
+                <div class="bottom_describe" style=" display: block; clear: both; background: none; width: 220px;">
+                    <a class="external_content"><i class="ioc ioc_external"></i>&nbsp;<span id="tile_comments_{{tile.id}}">{{tile.n_comments}}</span></a>
+                    <a class="like_content"><i class="ioc ioc_like"></i>&nbsp;<span id="like_conten_{{tile.id}}">{{tile.n_likers}}</span></a>
+                </div>
+                {% if tile.n_comments > 0 %}
+                <div class="kComments" style="padding: 5px 10px; border-top:1px solid #cccccc; ">     
+                    {% for c in tile.comments %}
+                        {% include "kinger/includes/comment.html" with comment=c %}
+                   {% endfor %}
+                </div> 
+                {% endif %}
+            {% endif %} 
+            <!--图片内容-->
+        </div>
+    </li>
+    {% endfor %}
+    
+
+

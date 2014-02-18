@@ -1,0 +1,78 @@
+{% load i18n kinger_tags oa_tags %} 
+<style type="text/css">
+body {font:13px Microsoft YaHei, Arial, Helvetica, sans-serif;margin:0 auto;padding:0;}
+* {margin:0 auto;padding:0;}
+img {border: none; line-height:0;}
+a {text-decoration: none;color:#000; }
+.clear {clear: both;font-size:0;height:0;line-height:0;}
+ul, li{border: 0;margin: 0;padding: 0;list-style: none;} 
+table {background-color: hsla(0, 0%, 0%, 0); border-collapse: collapse; border-spacing: 0; max-width: 100%;}
+.main .column p {line-height: 25px; margin: 5px 0px;}
+.applie_box { padding: 20px 0; }
+.leveltip_list { margin:10px 0 30px 0px; width:500px; }
+.leveltip_list table { border: 1px solid #DDDDDD; background:#ffffff; margin-bottom: 10px; width: 100%;}
+.leveltip_list table th { background-color:#f8f8f8; text-align:left; padding:0 5px 0 15px; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD;color: #343434; font-size: 13px; font-weight: 100; height: 40px;}
+.leveltip_list table tr { border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; }
+.leveltip_list table tr.bg_color{ background-color:#f8f8f8;}
+.leveltip_list table tr.atr {background-color:#f8f8f8; }
+.leveltip_list table td { font-size: 13px; padding:1px 5px 1px 15px; border-bottom: 1px solid #DDDDDD;  border-right: 1px solid #DDDDDD; line-height:20px; height: 35px;color:#6a6a6a; overflow:hidden;} 
+.leveltip_list table td.font_color { color:#4EABE3; }
+.leveltip_list table td .info-td{ height:35px; line-height:35px; overflow:hidden;white-space:nowrap; text-overflow:ellipsis; padding-right:10px;}
+.leveltip_list table td input ,.list table th input{ margin-right:10px; }
+.leveltip_list table td a:hover { color:#B98600; text-decoration:none; }
+.leveltip_list table td span.no_book { color: #4b8340; }
+.leveltip_list table .not_date { color: #9c9c9c; padding: 200px 0; }
+
+</style>
+<div class="main" style="width: 980px; margin: 0 auto; margin-top:20px;">
+    <div class="column">
+         <div class="file_info" style=" margin: 0 auto; width: 885px; border: 1px solid #DDDDDD; background: #f2f2f2; padding: 10px 20px; min-height:150px;">
+            <p>撰文人:&nbsp;&nbsp;{{doc.sender.profile.realname}}</p>
+            <p>公文类型:&nbsp;&nbsp;{% if doc.type == 1 %}领取{% else %}采购{% endif %}</p>
+            <p>公文级别:&nbsp;&nbsp;{{doc.level|document_level}}</p>  
+            <div style="margin-bottom:5px;"> 
+                <div style="float:left;" >发送对象:</div> 
+                <div style="margin-left:65px;"> {% for r in receivers %}<span style="margin-right:20px;">{{r.user.teacher.name}}({{r.user.teacher.school}})</span>{% endfor %} &nbsp;&nbsp;</div>
+            </div> 
+            <p>发布时间:&nbsp;&nbsp;{{doc.ctime|date:"Y-m-d G:i"}}</p> 
+        </div>
+        <div style=" margin: 0 auto; min-height: 400px; width: 885px; border: 1px solid #DDDDDD; margin-bottom: 30px; margin-top: 30px;  padding:10px 20px">
+            <div class="applie_box">
+                <div style="margin-bottom:5px; color:#434343; font-size:14px;">物资清单:</div>
+                <div class="leveltip_list"> 
+                    {% if applies.count %}
+                    <table>
+                        <tr>
+                            <th>类别</th>
+                            <th>物资名称</th>
+                            <th>数量</th>
+                        </tr>
+                        {% for a in applies %}
+                            <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                                <td>{{a.supply.category.name}}</td>
+                                <td>{{a.supply.name}}</td>
+                                <td>{{a.num}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    {% endif %}
+                </div> 
+                 <div style="margin-bottom:5px; color:#434343; font-size:14px;"> 
+                    <div style="float:left;">备注:&nbsp;&nbsp;</div> 
+                    <div style="margin-left:30px;">{{doc.description}} &nbsp;&nbsp;</div>
+                </div> 
+                <div>{{doc.content|safe}}</div>
+            </div>
+            <div style="overflow:hidden; text-align:center;">
+                <div style="width:280px; float:right;">{{doc.inscribed}}</div>
+                <div style="width:280px; clear:both; float:right; ">{{doc.send_time|date:"Y-m-d"}}</div>
+            </div>
+        </div> 
+    </div>
+</div>
+
+<script type="text/javascript">
+
+</script>
+
+ 

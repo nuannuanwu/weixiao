@@ -1,0 +1,36 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="active-content">
+	<div class="act-c-title recruit-title">
+    	<!--h3><a><img src="{{ STATIC_URL }}oa/site/images/title_9.jpg" /></a></h3-->
+    	<h3>
+        <a href="javascript:;">
+            {% if part.category_id == 9 %}<img src="{{ STATIC_URL }}oa/site/images/title_2_1.jpg" />{% endif %}
+            {% if part.category_id == 19 %}<img src="{{ STATIC_URL }}oa/site/images/title_12_1.jpg" />{% endif %}
+            {% if part.category_id == 18 %}<img src="{{ STATIC_URL }}oa/site/images/title_6.jpg" />{% endif %}
+            {% if part.category_id == 10 %}<img src="{{ STATIC_URL }}oa/site/images/title_4_1.jpg" />{% endif %}
+            {% if part.category_id == 4 %}<img src="{{ STATIC_URL }}oa/site/images/title_14.jpg" />{% endif %}
+        </a>
+    </h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content recruit-content">
+        	<div class="top-bg"></div>
+            <div class="m-c-bg">
+            	<div class="m-c">
+                    <h4 class="teaching-title">{{part.title}}</h4>
+                    <p class="words-info">
+                    	发布者：{{part.creator.name}}&nbsp;&nbsp;&nbsp;&nbsp;发布时间：{{part.ctime|date:"Y-m-d G:i"}}
+                    </p>
+                    <div class="intro-words">
+                        <p>{{part.content|safe}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-bg"></div>
+        </div>  
+    </div>
+</div>
+{% endblock %}
+    

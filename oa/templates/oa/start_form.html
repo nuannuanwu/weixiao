@@ -1,0 +1,52 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<style>
+#item-tab li { float: left; width:90px; }
+#item-tab li a {line-height: 19px;}
+.main .tab li a { float:left; }
+</style>
+<div class="main">
+     <div class="tab">
+        <a href="{{next}}" style="float:right; ">返回</a>
+        <ul class="nav nav-tabs" id="item-tab" style="margin-rigth:100px; ">
+            {% if user.teacher %}
+        	   <li class="active"><a href="{% url oa_star_figure_teacher site.id %}">明星教师</a></li><li><a href="{% url oa_star_figure_student site.id %}">明星宝宝</a></li>
+            {% else %}
+                <li><a href="{% url oa_star_figure_teacher site.id %}">明星教师</a></li><li class="active"><a href="{% url oa_star_figure_student site.id %}">明星宝宝</a></li>
+             {% endif %} 
+        </ul> 
+    </div>
+    <div class="column">
+        <form id="post_form" action="" method="post" enctype="multipart/form-data">
+        	{% csrf_token %}
+            {{form.media}}
+            <div class="form-div">
+            	<label>明星</label>
+                <span>{{user|get_name}}</span>
+            </div>
+            <div class="cbox">
+                <label>介绍文字*</label>
+                {{form.content}}&nbsp;<span id="id_contentTip" class="erro-tips" >{{form.content.errors|striptags}}</span>
+            </div>
+            <div class="form-div">
+            	<span style="display:none;">{{form.is_show}}</span>
+            	<input class="btn btn-success" type="submit" name="" value='{% trans "Save" %}' /> 
+            </div>
+        </form>
+    </div>
+</div>
+<script> 
+   $(document).ready(function(){ 
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             } 
+	});
+ });	 
+</script>
+{% endblock %}

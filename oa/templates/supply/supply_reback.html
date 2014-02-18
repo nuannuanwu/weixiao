@@ -1,0 +1,48 @@
+{% load i18n kinger_tags oa_tags %}
+<tbody>
+    <tr>
+        <th width="180">物资名称</th>
+        <th width="80">类别</th>
+        <th width="80">领取数量</th>
+        <th width="120">退还数量</th>
+        <th width="140">退还登记人</th>
+         
+    </tr> 
+    {% for r in records %} 
+    {% if r.back < r.num %}
+    <tr appid="{{r.id}}" idn="{{forloop.counter}}" class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+        <td>{{r.supply}}</td>
+        <td>{{r.supply.category}}</td>
+        <td>{{r.num}}</td>
+        <td style="overflow: visible;">
+            <div class="remind_num" style="zoom: 1; z-index: 0; o" >
+                <input datatype="nun" errormsg=" " nullmsg=" " id="num_{{forloop.counter}}" class="inputnum" style="width:50px; margin-top:5px;" name="num" type="text" value="{{r|reback_left}}" alt="reback_num"
+                data-path="{%  url oa_supply_reback_supply r.id %}" autocomplete="off" min="0" data-max="{{r|reback_left}}" max="{{r|reback_left}}">
+                <input type="hidden" value="{{r.num}}" alt="record_num">
+                <span id="user_tip" class="Validform_checktip "></span>
+                <div class="boxCapacity clearfix" style=" zoom:1; display:none; height: 30px; font-size:12px; position: absolute; z-index: 1; left:0px; top: 40px; background: #fff6df; border: 1px solid #959595;">
+                    <div style="position:relative; height:30px; line-height:30px; width: 170px; text-align: center;">
+                        <span style=" background:url('{{ STATIC_URL }}oa/images/tip.gif') no-repeat; color:#959595; position: absolute; z-index:2; left:20px; top: -5px; padding:3px 10px;"> </span>
+                        已退还数<span class="tunm"> {{r.back}} </span>,需退还数<span class="sunm">{{r|reback_left}}</span>
+                    </div>
+                </div>
+            </div>
+        </td> 
+        <td>
+            <input datatype="*" errormsg=" " nullmsg=" " name="register" id="register_{{forloop.counter}}" placeholder="请输入登记人" class="inputregister" style="margin-top:5px; width:85px;"  type="text" value="">
+            <span  class="Validform_checktip "></span>
+        </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+</tbody>
+<script type="text/javascript">
+ //提示
+    $(".remind_num").hover(function(){ 
+        $(this).css({position:"relative"});
+        $(this).find(".boxCapacity").show();
+    },function(){ 
+        $(this).find(".boxCapacity").hide();
+        $(this).css({position:""});
+    }); 
+</script>   

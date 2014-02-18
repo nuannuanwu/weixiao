@@ -1,0 +1,30 @@
+{% load i18n kinger_tags oa_tags %}
+<div style="float:left;">其他老师</div>
+	<div style="margin-left:80px;">
+	   <div>
+	       <label  style=" float:left;" class="inline"> 配班老师 </label > 
+	       <label class="checkbox" style=" margin-left:80px;"> 
+	          <input type="checkbox" rel="check_teacher" name="t" value="{{ channel|default:"school" }}" {% if channel == "group" %}checked="checked"{% endif %}/>
+	          <span style="color:#999;">只显示尚未陪班的老师</span>
+	        </label>
+	    </div> 
+	    <div id="class_teachers">
+	    {% for t in class_teachers %}
+		   <label class="checkbox inline" style="vertical-align:top; margin:0 5px 0 0; width:95px;">
+		       <input type="checkbox" name="class_teacher" value="{{t.id}}" {% if group and t|is_class_teacher:group %}checked="checked"{% endif %}/>
+		       {{t.name}}
+		   </label>
+		{% endfor %} 
+	    </div> 
+	    <p style="margin:15px 0 0px 0;">生活老师</p>
+	    <div>
+	         {% for t in teachers %}
+	          <label class="checkbox inline" style="vertical-align:top; margin:0 5px 0 0; width:95px;">
+	            <input type="checkbox" name="guide_teacher" value="{{t.id}}" {% if group and t|is_guide_teacher:group %}checked="checked"{% endif %}> 
+	            {{t.name}}
+	          </label>
+	         {% endfor %} 
+	    </div>
+	</div> 
+
+                               

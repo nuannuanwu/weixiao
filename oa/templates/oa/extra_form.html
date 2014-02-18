@@ -1,0 +1,10 @@
+{% load i18n kinger_tags oa_tags %}
+<p class="show_del" style="padding:0; margin-left: 0; width: 400px">
+    {{form.name|attr:"rel:input-text"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入新分类名称"|attr:"placeholder:新分类名称"}}<strong class="del" style="padding:10px; font-weight: 100;"><a class="del_son" style="color:#C93;" href="javascript:;">删除</a></strong><span class="Validform_checktip"></span>
+</p>
+<div style="display:none; overflow: hidden; height: 5px;">
+    <select style="display:none;" id="id_form-{{order}}-parent" name="form-{{order}}-parent">
+        <option value="{{parent.id}}" selected="selected"></option>
+    </select>
+</div>
+ 

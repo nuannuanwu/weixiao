@@ -1,0 +1,133 @@
+{% load i18n kinger_tags umessages_tags notifications_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <title>{% block meta_title %}{% endblock %}{% if KINGER_TITLE %}{{ KINGER_TITLE }}{% endif %}</title>
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon-weixiao.ico">
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome-ie7.css">
+    <![endif]-->
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/base.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/ipad.css" @media="only screen and (device-width : 768px)">
+    {% block extra_css %}{% endblock %}
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/ie78.css">
+    <![endif]-->
+
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery.hope12580.plugins.min.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/js/base.js"></script>
+    <script src="{{ STATIC_URL }}kinger/js/html5video.js"></script>
+    <script src="{{ STATIC_URL }}kinger/js/spritetimer.js"></script>
+
+    <script type="text/javascript">
+    $(function() {
+        $('.middleinput:text, textarea').addClass('xlarge');
+        $('small[rel=tooltip]').tooltip()
+        $('a[rel=popover]').popover()
+        $('a[rel=namecard]').namecard()
+
+        $('img[rel=imgLoad]').css({ opacity: 0 });
+        $('img[rel=imgLoad]').imagesLoaded(function( $images, $proper, $broken ){
+            $images.each( function() {
+                $(this).not(":animated").animate({ opacity: 1 })
+            });
+        }).progress(function( isBroken, $images, $proper, $broken ){
+            this.animate({opacity: 1})
+        });
+        
+		
+    });
+    </script>
+    {% block extra_js %}{% endblock %}
+
+
+{% block extra_head %}{% endblock %}
+</head>
+
+<body id="{% block body_id %}body{% endblock %}">
+    {% include "ie6.html" %}
+    {% include "main_menu.html" %}
+    {% if request.user.is_authenticated %}
+    <input type="hidden" value="1" id="is_user_login">
+    <script>
+	    uid = '{{request.user.id}}';
+	    function getCookie(objName){//获取指定名称的cookie的值
+	    	var arrStr = document.cookie.split("; ");
+	    	for(var i = 0;i < arrStr.length;i ++){
+	 	        var temp = arrStr[i].split("=");
+	        	if(temp[0] == objName) return unescape(temp[1]);
+	   		}
+		}
+		unread_url = '{% url kinger_unread_list %}';
+    	function unread_list(){
+    		$.get(unread_url,function(result){
+				var con = result.con;
+				if (result.type == 'ok'){
+					if(con.messages){
+						msg_num = getCookie("messages_count_" + uid);
+						if(con.messages!=msg_num){
+							$("#unread_messages [rel=unread_count]").text(con.messages);
+							$("#unread_messages").show();
+						}
+					}
+					if(con.notify_count){
+						num = getCookie("notifications_count_" + uid);
+						if(con.notify_count!=num){
+							$("#unread_notifications [rel=unread_count]").text(con.notify_count);
+							$("#unread_notifications").show();
+						}
+					}
+				}
+			},"json");
+    	};
+    	unread_list();
+        setInterval("unread_list()",240000);
+    </script>
+   {% endif %}
+<div id="nodisplay">
+    <script type="text/javascript">
+		var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+		document.write(unescape("%3Cscript style='dispaly:none' src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcd5f5a0765a379f218e1e274a47cf5a4' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+</div>
+    <div class="container">
+       
+        {% for message in messages %}
+        <script>jNotify("{{ message }}");</script>
+        {% endfor %}
+           
+    </div>
+
+    <div class="container" id="container">
+        {% block tile_bar %}{% endblock %}
+        {% block page-header %}{% endblock %}
+        <div class="row">
+            {% block extra_row_begin %}{% endblock %}
+
+            {% block main %}{% endblock %}
+            {% block content %}{% endblock %}
+
+            {% block extra_row_end %}{% endblock %}
+        </div>
+    </div>
+   <div id="footer" style="z-index: 1;" >
+    	{% block footer %}{% endblock %}
+    	<script>
+    		$('body').change(function(){AutoFoot()})
+    		AutoFoot()
+    	</script>
+		<div class="container">
+    		<span class="pull-left">&copy;2013育明科技</span>
+		</div>
+    </div>
+</body>
+</html>

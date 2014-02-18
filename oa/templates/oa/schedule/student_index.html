@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load pagination_tags kinger_tags i18n%}
+{% block content %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/shedu.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/plugins/chosen/chosen.css">
+<script type="text/javascript" src="{{ STATIC_URL }}kinger/plugins/chosen/chosen.jquery.min.js"></script>
+	<div class="up-kch span12">
+    	<div class="inbox">
+        	<div class="up-title">
+            	<div class="t-zhkb">
+               	  <h3 class="upobj">周课表</h3>
+                  <p class="t-inclass">
+                   	<span>({{group.name}})</span>
+                  </p>
+                </div>
+            </div>
+            <div class="uploadfile-list">
+                {% autopaginate schedules 10 %}
+            	<ul>
+                    {% for s in schedules %}
+                	<li>
+                    	<div class="upfileName">
+                    		<a href="{% url manage_download_schedule s.id %}">{{s.name}}</a>
+                    	</div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div id="pagination" class="">{% paginate %}</div>
+    </div>
+<script type="text/javascript">
+	$(function(){
+		$(".classSelect").chosen();
+	    $(".uploadfile-list > ul > li:even").css("backgroundColor","#fbfbfb");
+		$(".uploadfile-list > ul > li:last").css("border-bottom","0px");	
+	})
+</script>    
+{% endblock %}

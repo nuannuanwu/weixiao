@@ -1,0 +1,31 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n bootstrap %}
+
+{% block content_title %}<h2>{% blocktrans with user.username as username %}Account &raquo; {{ username }}{% endblocktrans %}</h2>{% endblock %}
+
+{% block content %}
+<form action="" method="post" class="form-horizontal">
+  {% csrf_token %}
+  <div class="nav-tabs" style="margin-bottom: 10px">
+ 	<h4 style="display: inline;float: left;">邮箱设置</h4>
+ 	<a href="{% url userena_account_setting %}" class="btn" style="display: inline;float: right;">{% trans "Back" %}</a>
+ </div>
+  <fieldset>
+    {# <legend>{% trans "Change email address" %}</legend> #}
+    {{ form|bootstrap }}
+</fieldset>
+<!--<p style="color:#888; font-size:14px; margin-left:177px;">系统将发送一封确认邮件到您的新邮箱，请注意查收</p>-->
+<div class="form-actions" style="background: none; border: none">
+    <input type="submit" class="btn btn-primary" value="{% trans "Change email" %}" style="margin-left:90px;" />
+    <!--<a href="{% url userena_account_setting %}" class="btn" style="display: inline; margin-left:35px">{% trans "Back" %}</a>-->
+</div>
+</form>
+<!--<div class="Kemail" style="display:none;">
+    <h3 class="set-sv">登录密码修改成功</h3>
+    <div class="prompt-words">
+       <p class="prompt-info">你的电子邮件地址无法被验证…</p>
+       <p class="prompt-info">你可以试试在帐号设置里再更改一次邮件地址。</p>
+    </div>
+    <p class="back-st"><a href="{% url userena_account_setting %}">点击返回帐号设置界面</a></p>
+</div>-->
+{% endblock %}

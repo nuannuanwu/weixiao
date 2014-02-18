@@ -1,0 +1,172 @@
+{% extends 'kinger/base.html' %}
+{% load i18n kinger_tags comments %} 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/dateTime.css">
+<style type="text/css">
+#container{width: 960px;}
+.titleBar{ padding: 30px 0 20px 0}
+.titleBar-date{ font-size: 24px; color: #545454; margin:5px 20px 0 0; }
+.kCal{ margin-right: -21px; zoom:1;}
+.kCal-item{ float: left; width: 108px; height: 138px; margin: 0 6px 12px 7px; padding: 8px; background-color:#FFF; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+.kCal-item .kBody-bg{ top: 0; left: 0; background-color: #FAFAF9; height: 108px; width: 108px;}
+.kItem-head{ height: 30px; font-size: 14px; color: #999; text-align: right; }
+.kItem-head-week{ left: 73px}
+.kItem-body{ margin-right: -10px; zoom:1; }
+.kItem-body a{ line-height:50px;font-size:0;width: 50px; height: 50px; float: left; margin: 0 8px 8px 0; z-index: 2;overflow: hidden;text-align:center;vertical-align:middle; }
+.kItem-body a img{ vertical-align:middle;}
+.kBody-imgBg{ left: 0; top:0; list-style: none; margin: 0;}
+.kBody-imgBg li{ float: left; width: 50px; height: 50px; margin: 0 8px 8px 0; background-color: #EDEDED;}
+.bgGray{background-color: #FEFEFE;opacity:0.6;}
+.tileBar .btn.active, .tileBar .btn:active {color: #B88500;}
+.tileBar .btn {width: 90px;}
+.axis_loading {text-align: center; z-index: 100; position: fixed; left: 42%; _left: 50%; bottom: 50%; width: 200px; padding: 10px; background: #000; opacity: 0.8; color: #FFF;
+    -webkit-border-radius: 10px; -moz-border-radius: 10px; border-radius: 10px; z-index: 10001;} 
+</style>
+{% endblock %}
+{% block content %} 
+<div id="box_tile_view" style=" display: none; position:fixed; left: 0%;top:0%; width:100%; height: 100%; overflow-x: hidden; overflow-y: auto; z-index: 10000;">
+    <div id="tile_view_conent" style="margin: 0 auto; width: 960px; padding:60px 0 60px 17px; "> 
+    </div> 
+</div>
+<div id="box_cookbook_view" class="box_frame" > 
+	<div id="box_cookbook" class="box_content" ></div>
+</div>
+<div id="colse" style="display: none; position: fixed; right: 5%; top: 0; float: left; z-index: 10002; float: left; width: 39px; height: 50px;">
+    <a href="javascript:;"></a>
+</div>
+<div class="tileBoard" style=" position: relative;">
+    <div class="titleBar" style=" overflow: hidden;">
+        <div class="pull-right" style=" width: 215px;">
+            {% include "kinger/revision/includes/pin_or_board.html" %}
+        </div>
+        <div class="btn-group pull-right" style=" margin-top: 3px;">
+            <a class="btn" href="{% url kinger_rev_cal %}?month={{prev_month|date:"Y-m"}}"><i class="icon-chevron-left"></i>&nbsp;</a>
+            <a class="btn" href="{% url kinger_rev_cal %}">{% trans "This Month" %}</a>
+            <a class="btn" href="{% url kinger_rev_cal %}?month={{next_month|date:"Y-m"}}"><i class="icon-chevron-right"></i>&nbsp;</a>
+        </div>
+        <span class="titleBar-date pull-right" style=" margin-top: 7px;">{{cur_month_date.year}}年{{cur_month_date.month}}月</span> 
+        <div style="margin-right:700px;; font-size:24px; font-weight: 100; color: #555;">成长档案</div> 
+    </div> 
+    <div class="kCal cf">
+    	{% if tiles.count == 0 %}
+    	<div class="kNoContent" style="top:35%;left:240px;">
+            <span style="font-size:20px;display:block;margin-top: 50px;">{{cur_month_date.year}}年{{cur_month_date.month}}月，本月暂无数据内容</span>
+    	</div>
+    	{% endif %}
+        {% for week in month_cal %}
+            {% for day in week %}
+            <div class="kCal-item {% if not day %}bgGray{% endif %}">
+                <div class="kItem-head">
+                    <span class="kItem-head-week">
+                        {% if forloop.parentloop.counter == 1 %}
+                            {{forloop.counter|chinese_weekday}}
+                        {% endif %}
+                    </span>
+                    {% if day %}
+                        {{day|zfill:2}}
+                    {% endif %}
+                </div>
+                <div class="kItem-body cf">
+                    {% if day != 0 %} 
+                        {% latest_tiles_by_date cur_month_date.year cur_month_date.month day as tiles %}
+                        <ul class="kBody-imgBg">
+                            {% for tile in tiles %}
+                            <li>
+                                {% if tile.is_report %}
+                                <a href="javascript:;" class="kSt_{{ tile.type_id }}"  rel="popover"   data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"baby"}}" title="{{tile.title|default:tile.new_type}}"
+                                   data-content=
+                                    "
+                                        {% if tile.is_daily %}
+                                            {{tile.title|default:tile.new_type}}
+                                        {% else %}
+                                            {{ tile.description|default:"暂无描述" }}
+                                        {% endif %}                                
+                                    "  
+                                     data-trigger="hover"> 
+                                        <img src="{{ STATIC_URL }}kinger/img/babystate{{ tile.type_id }}.png">
+                                    </a>
+                                {% endif %}
+                                {% if tile.new_type_id == 4 %}
+                                    <a href="javascript:;" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"baby"}}" rel="popover" title="{{tile.title|default:tile.new_type}}" data-trigger="hover" data-content="{{tile.description|default:"暂无描述"}}">
+                                    <img src="{{ STATIC_URL }}kinger/img/write_pic.jpg"></a>
+                                {% endif %}
+                                {% if not tile.is_report and not tile.new_type_id == 4 %}  
+                                <a href="javascript:;" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"baby"}}" rel="popover" title="{{tile.title|default:tile.new_type}}" data-trigger="hover" data-content="{{tile.description|default:"暂无描述"}}">
+                                    <img src="{% media_path tile.img "img_small" %}">
+                                </a>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                            {% if tiles.count < 4 %}
+                                {% for i in 4|subtraction:tiles.count|times %}
+                                <li></li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                    <div class="kBody-bg"></div>
+                    {% endif%}
+                </div>
+            </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+<div class="axis_loading" style="display: none; ">
+    <img alt="Loading..." src="{{ STATIC_URL }}kinger/img/6RMhx.gif">
+    <div>
+        <em>正在加载...</em>
+    </div>
+</div>
+<script src="{{ STATIC_URL }}kinger/js/rev_tile.js" type="text/javascript"></script>
+<script>
+  
+//瓦片详情
+$("a[rel=popover],a[rel=tl_itme]").click(function(){
+    url = $(this).data("href");
+    $('#box_tile_view').modal('toggle');
+    $("body").addClass("body_hide_scroll");
+    $("html").addClass("body_hide_scroll");//ie6/Ie7
+    $("#colse").show();
+    $(".axis_loading").show()
+    $.post(url,{},function(result){
+        data = $.parseJSON(result); 
+        //console.log(data.con);
+        $("#tile_view_conent").html('');
+        $("#tile_view_conent").html(data.con).show();
+        $(".axis_loading").hide();
+    });
+});
+
+//瓦片详情 翻页
+$("a[rel=tile_pre],a[rel=tile_next]").live("click",function(){
+    url = $(this).data("href");
+    $(".axis_loading").show()
+    $.post(url,{},function(result){
+        data = $.parseJSON(result); 
+        $("#tile_view_conent").html('');
+        $("#tile_view_conent").html(data.con).show();
+        $(".axis_loading").hide();
+    });
+})
+
+$("#box_tile_view").live('hide', function () { //弹框关闭监听事件
+    $("#colse").hide();
+    $("body").removeClass("body_hide_scroll");
+    $("html").removeClass("body_hide_scroll");//ie6/Ie7
+    $(".axis_loading").hide();
+});
+$("#colse").live('click',function(){ //弹框关闭按钮
+     $("#box_tile_view").modal('hide');
+     //$("body").removeClass("body_hide_scroll");
+    // $(this).hide();
+    $(".axis_loading").hide();
+});
+$("#box_tile_view").live('hide', function () { //弹框关闭监听事件
+    $("body").removeClass("body_hide_scroll");
+    $("html").removeClass("body_hide_scroll");//ie6/Ie7
+    $(".axis_loading").hide();
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,370 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<style type="text/css">
+#and_uploadfiles {
+  padding: 5px 0px 5px 17px;
+  background: url({{ STATIC_URL }}oa/images/add_files.gif) left no-repeat;
+  cursor: pointer;
+  color: #4eabe3;
+}
+.hidden{ 
+  display: none;
+}
+</style>
+<div class="main">
+      <div class="tab"><span>{% if disk %}修改文档{% else %}新建文档{% endif %}</span><a class="tbbtn" href="{% url oa_disk_index %}">返回</a></div>
+      <div class="column">
+          <div class="form-horizontal form-kPicCon"> 
+              <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                  <input type="hidden" name="school" value="{{school.id}}">
+                    <div class="uers-info"> 
+                      {{form.media}}
+                        <p> 
+                            <label style="width:100px; text-align:left;">所属文档类别*:</label> 
+                            <select id="id_category" name="category" class="span2 Validform_error" datatype="*" errormsg="" nullmsg="请选择文档类型">
+                               <option value="">--选择文档类别--</option>
+                               {% for p in personal_list %}
+                               <option value="{{p.parent.id}}" {% if disk.category.id == p.parent.id or p.parent.id == category_pk %}selected="selected"{% endif %} class="optgroup">{{p.parent.name}}</option>
+                                 {% for s in p.member %}
+                                   <option value="{{s.id}}" {% if disk.category.id == s.id or s.id == category_pk %}selected="selected"{% endif %}>&nbsp;&nbsp;&nbsp;{{s.name}}</option>
+                                 {% endfor %}
+                               {% endfor %}
+                             </select>
+                             &nbsp;<span class="Validform_checktip "></span> 
+                         </p>
+                         <div style="padding:1px 5px;">
+                              <label style="width:100px; font-size: 13px; margin-right: 10px; text-align:left; display:inline-block">显示设置: </label> 
+                              <label style=" display:inline-block; text-align:left; margin:10px 10px 0 0;" >
+                                  <input id="is_share" name="is_share" style=" margin:0px 5px 5px 0; *margin:0px 5px 0px 0; " type="checkbox" {% if disk.subdisks.all.count %}checked="checked"{% endif %}>
+                                  {% if request.user|is_agency_user %}分享到集团文档资源库{% else %}分享到幼儿园文档资源库{% endif %}
+                              </label>
+                              <select id="id_scategory" name="scat" errormsg="" nullmsg="请选择文档类型" style="display:none;" class="span2 Validform_error">
+                                  <option value="">--选择文档类别--</option>
+                                  {% for p in school_list %}
+                                      <option value="{{p.parent.id}}" {% if p.parent.id == disk|share_category_pk %}selected="selected"{% endif %} class="optgroup">{{p.parent.name}}</option>
+                                      {% for s in p.member %}
+                                          <option value="{{s.id}}" {% if s.id == disk|share_category_pk %}selected="selected"{% endif %}>&nbsp;&nbsp;&nbsp;{{s.name}}</option>
+                                      {% endfor %}
+                                  {% endfor %}
+                            </select>&nbsp;<span id="id_scategoryTip" class="Validform_checktip "></span> 
+                          </div>
+                          <p>
+                            <label style="width:100px; text-align:left;">标题*:</label>{{form.title|attr:"class:span5"|attr:"datatype:*"|attr:"errormsg: "|attr:"nullmsg:请输入标题"}}&nbsp;<span class="erro-tips">{{form.title.errors|striptags}}</span>
+                            <span class="Validform_checktip"></span> 
+                          </p>
+                          <div style="display: block; padding:8px 5px; margin-bottom: 10px;">
+                              <label style="font-size: 13px;">内容*:  <input id="content_value" type="hidden"  value="" datatype="*" errormsg="" nullmsg="内容不能为空" ><span class="erro-tips">{{form.content.errors|striptags}}</span> </label> 
+                              <div>
+                              </div>
+                              {{form.content}}
+                              <div style=" margin-bottom:0px; width: 100%; height: 1px;"></div>
+                          </div>
+                          <!-- <div id="ie_uplocad" style=" margin:0  0 10px 0;" class="hidden">
+                              <span id="ie-uploadfiles">添加上传附件</span><span style=" margin-left: 10px;">(文件大可压缩后上传,文件大小不能超过8MB)</span>
+                              {% for f in files %}
+                                  <p style=" padding:3px 0; margin: 0;">{{f.name}} <a class="delectfile" rel="doc_file" alt="{{f.id}}">删除</a></p>
+                              {% endfor %}
+                          </div>  -->
+                          <div id="uplocad_flash"  style=" margin:10px 0;" >
+                              <span id="and_uploadfiles" >上传附件</span><span style="margin-left: 10px;">(文件大可压缩后上传,文件大小不能超过200MB)</span>&nbsp;&nbsp;<span id="onload_tp"></span>
+                              <div id="quoteRequests" style="margin-top:10px;">
+                                  {% for f in disk.files.all %}
+                                      <div class="addinput" style=""><span class="filesname">{{f.name}}</span><a class="dele_doc_file" href="javascript:;" rel="doc_file" alt="{{f.id}}">删除</a></div>
+                                  {% endfor %}
+                              </div> 
+                          </div>
+                      <p style=" margin:30px 0px; "> 
+                         <input class="btn btn-success" id="button_sub" type="button" value="{% trans "Save" %}" >
+                         <!--<input class="btn" style=" margin-left:15px;" type="reset"  value="取 消"/>-->
+                         <a class="btn" href="{% url oa_disk_index %}" style=" margin-left:28px;">取 消</a>
+                         <span id="onLoad_inport" style="display: none; color:#616161; margin-left: 30px;"><img src="{{ STATIC_URL }}oa/images/import.gif" />正在保存请稍等...</span>
+                     </p>
+                     <input id="delete_file" name="delete_file" type="hidden" value=""  >
+             </form> 
+         </div>
+     </div>
+</div>
+</div>
+<!--flash 上传 -->
+<script src="{{ STATIC_URL }}kinger/plupload/js/plupload.js"></script>
+<script src="{{ STATIC_URL }}kinger/plupload/js/plupload.flash.js"></script> 
+<script src="{{ STATIC_URL }}kinger/html5dropbox/md5.js"></script>
+<script src="{{ STATIC_URL }}kinger/js/json3.min.js"></script> 
+<!--/flash 上传 -->
+<script type="text/javascript">
+$(function(){
+  // if ($.browser.msie){ //ie 上传附件
+  //     $("#ie_uplocad").removeClass("hidden")
+  //     $("#containeruplocad").addClass("hidden");  
+  // }else{
+  //     $("#containeruplocad").removeClass("hidden")
+  //     $("#ie_uplocad").addClass("hidden");
+  // }
+  //  //添加input-file
+  // $("#ie-uploadfiles").live('click',function(){  
+  //     var filestar = '<div style=" padding:3px 0; margin: 0;"><span style="margin:0 5px;">附件</span><input type="file" name="files"/> <span style="margin:0 10px;"></span><a href="javascript:;" class="delectiefile">删除</a></div>';
+  //     $("#ie_uplocad").append(filestar); 
+  // });
+  // //删除input-file
+  // $('.delectiefile').live('click',function(){ 
+  //     $(this).parent().remove();
+  // })
+ //删除input-file
+ $('.dele_doc_file').live('click',function(){ 
+      $(this).parent().remove();
+      $("#delete_file").val("1");
+  })
+  //表单验证 
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             },
+             beforeSubmit:function(curform){
+                //在验证成功后，表单提交前执行的函数，curform参数是当前表单对象。
+                //这里明确return false的话表单将不会提交; 
+                $("#button_sub").attr("disabled","disabled");
+                $("#onLoad_inport").show();
+            }  
+  });
+
+  if($("#is_share").is(':checked')){
+     $("#id_scategory").attr("datatype","*");
+     $("#id_scategory").show();
+  }else{
+    $("#id_scategory").removeAttr("datatype");
+    $("#id_scategory").hide();
+    $("#id_scategoryTip").removeClass("Validform_right")
+  }
+  //分享到学园类别
+  $("#is_share").change(function(){
+    if($(this).is(':checked')){
+      $("#id_scategory").attr("datatype","*");
+      $("#id_scategory").show();
+    }else{
+      $("#id_scategory").removeAttr("datatype");
+      $("#id_scategory").hide();
+      $("#id_scategoryTip").removeClass("Validform_right")
+    }
+  });
+ 
+  //提交按钮
+  // $("#button_sub").click(function(){ 
+  //   var content = tinyMCE.get('id_content').getContent(); 
+  //   //$("#post_form").submit(); 
+  // });
+
+  var url = window.location.href; 
+  UploaderFlash.init({'swf':'{{ STATIC_URL }}kinger/plupload/js/plupload.flash.swf','container':'and_uploadfiles','buttonId':'my-uploadfiles', 'url':url});  
+}); 
+
+var UploaderFlash = { 
+        file_hash_list : {},
+        max_index : 0,
+        init: function (settings) { 
+            var url = settings.url; 
+            var file_size_limit = '200mb'; // 10 MB
+            var flash_swf_url = settings.swf;
+            var button = settings.buttonId;
+            var container =settings.container;  
+            var formtoken = $('input[name=csrfmiddlewaretoken]').val(); 
+            var uploadify_settings = {
+                runtimes : 'flash',
+                file_data_name: 'files',
+                browse_button : button,
+                container: container,
+                max_file_size : file_size_limit,
+                max_file_count: 1, // user can add no more then 1 files at a time
+                url : url,
+                unique_names : true,
+                chunk_size : '1mb',
+                //resize : {width : 320, height : 240, quality : 90},
+                flash_swf_url :flash_swf_url ,
+                //unique_names :true,
+                multipart_params : {
+                "csrfmiddlewaretoken" : formtoken,
+                "file_id" : '',
+                "category":'',
+                "is_share":'', 
+                "scat" :'',
+                "title":'',
+                "content":''
+                }, 
+                filters : [
+                    {title : "vidio files", extensions : "*"}
+                ] 
+            }; 
+            var uploader = new plupload.Uploader(uploadify_settings);
+                uploader.unbindAll(); 
+
+            uploader.bind('Init', function(up, params) { 
+                //$('#filelistbox').html("<div>Current runtime: " + params.runtime + "</div>")
+            }); 
+
+            uploader.init(); 
+            //添加文件
+            uploader.bind('FilesAdded', function(up, files) { 
+                var file_index = UploaderFlash.max_index++; 
+                if(up.files.length > 1){ 
+                    alert("一次只能上传1个文件");  
+                }
+                $.each(files, function(n, file) {
+                    if(file.size>200*1024*1024){
+                        up.removeFile(files[n]);
+                    }else{
+                        if((up.files.length-files.length + n)>0){  
+                            uploader.removeFile(file); 
+                        }else{ 
+                            var file_hash = $.md5(file.name + file.size);
+                            if ( JSON.stringify(UploaderFlash.file_hash_list).indexOf(file_hash) > 0 ){
+                                alert('文件 '+file.name+' 已经添加过了'); 
+                                up.removeFile(files[n]); 
+                            }else{   
+                                file_index = UploaderFlash.max_index++;
+                                UploaderFlash.file_hash_list[file_index] = file_hash; 
+                                var fileItme =  '<div id="file_'+ file.id + '"><span class="filesname">'+ file.name +'</span>' + '(' + plupload.formatSize(file.size) + ')&nbsp;<span id="typeid_'+file.id+'" class="types"></span> <a style="margin-left: 5px;" data-did="'+file.id+'" href="javascript:;" class="delectfile1">删除</a></div>';
+                                $("#quoteRequests").append(fileItme);
+                                $(".dele_doc_file").parent().remove();
+                                $("#post_button").removeAttr("disabled");
+                            } 
+                        } 
+                    } 
+                });
+                
+            });
+            //文件上传前
+            uploader.bind('BeforeUpload',function(up,file){ 
+                 if($("#is_share").attr("checked")){  
+                    up.settings.multipart_params.is_share = "1";
+                    up.settings.multipart_params.scat = $("#id_scat option:selected").val();
+                 }
+                 up.settings.multipart_params.category = $("#id_category option:selected").val();
+                 up.settings.multipart_params.scat = $("#id_scategory option:selected").val();  
+                 up.settings.multipart_params.content = tinyMCE.get('id_content').getContent(); 
+                 up.settings.multipart_params.file_id = file.id;
+                 up.settings.multipart_params.title = $('#id_title').val();
+            });
+            //文件上传中
+            uploader.bind('UploadProgress', function(up, file) { 
+                var speed =up.total.bytesPerSec ;
+                var speed2 = parseInt(up.total.bytesPerSec/1024) ;
+                var rapportdownloaded = uploader.total.loaded/uploader.total.size*100 ;
+                var percentdownloaded = ((Math.round(rapportdownloaded*100))/100) ;
+                var bytelefttoupload = uploader.total.size-uploader.total.loaded;
+                var eta = secondeenminute(Math.round(bytelefttoupload/speed));  
+                $("#onload_tp").html( speed2 +'Kb/s,' + percentdownloaded +'% '+ eta); 
+                $("#typeid_"+file.id).html(file.percent + "% "); 
+            }); 
+            //上传错误
+            uploader.bind('Error', function(up, err) {  
+                if(err.code == -600){
+                     alert("您选择的文件:" + err.file.name + "超过了200mb")
+                     $("#tpyeid_"+err.file.id).text('<font style="color:red;">太大了</font>'); 
+                } else if(err.code == -601){
+                     alert("您选择的文件:"+ err.file.name+"格式不对"); 
+                } else if(err.code == -700) { 
+                     alert("您选择的文件:"+ err.file.name+"有问题");
+                     $("#tpyeid_"+err.file.id).text('<font style="color:red;">文件有问题</font>'); 
+                }
+                up.refresh(); 
+            }); 
+
+            uploader.bind('UploadComplete',function(up,file){ 
+                window.onbeforeunload = null;  
+                window.location.href='{% url oa_disk_index %}'; 
+            })
+            //上传成功
+            uploader.bind('FileUploaded', function(up, file, response){ 
+                // var data
+                // try{
+                //     data = response.response;
+                //     var datas = $.parseJSON(data); 
+                // }catch(err){
+                //     alert("上传出错!");
+                //     $("#tpyeid_"+file.id).text("上传出错");
+                //     return false;
+                // } 
+                // if(datas.status){
+                //      //window.location.href='{% url oa_disk_index %}';
+                // }else{ 
+                //     return false; 
+                // } 
+            });
+            
+
+            $('#button_sub').click(function() {
+               var contentVal= tinyMCE.get('id_content').getContent();
+               $("#content_value").val(contentVal);
+                if($("#id_category option:selected").val()==""||$("#id_title").val()==''||tinyMCE.get('id_content').getContent()==""){  
+                      $("#post_form").submit(); 
+                }else if($("#is_share").attr("checked")&&$("#id_scategory option:selected").val()==""){ 
+                      $("#post_form").submit();
+                }else{
+                   if(uploader.files.length > 0){
+                      $("#onLoad_inport").show();
+                      $("#button_sub").attr("disabled","disabled");
+                      uploader.start(); 
+                   }else{
+                      $("#post_file").attr("name","files");
+                      $("#post_form").submit();
+                   }  
+              } 
+                //  if(is_link){  
+                //     $("#post_form").submit();
+                //  }else{ 
+                //     if(uploader.files.length > 1){
+                //         if($('#id_title').val()==""){
+                //             $("#title_R").show();
+                //         }else{ 
+                //             $("#onLoad_inport").show();
+                //             $(".types").html("正在上传..."); 
+                //             $("#post_button").attr("disabled","disabled");
+                //             uploader.start(); 
+                //         }
+                //     }else{ 
+                //          if($("#id_video_url").val()){
+                //                 $("#post_form").submit();
+                //          }else{
+                //              
+                //          } 
+                //     } 
+                // }  
+             });
+             
+             $(".delectfile1").live('click',function(e){
+                 var did =$(this).data("did");
+                 $.each(uploader.files, function(i, file) {
+                    if(did == file.id){
+                        //alert(uploader.files.length); 
+                        uploader.removeFile(file); 
+                        $("#file_"+file.id).remove(); 
+                    }  
+                }); 
+                if(uploader.files.length == 0){
+                    $("#post_button").attr("disabled","disabled"); 
+                }
+             });
+             function secondeenminute(sec) {
+                if ((sec/60)<1) {
+                    return  sec+'sec.' ;
+                } else if ((sec/60)>1 && (sec/3600)<1) {
+                    var min = sec/60;
+                    sec = sec % 60;
+                    return  Math.floor(min)+'min. '+Math.floor(sec)+'sec.' ;
+                } else {
+                    var hou = sec/3600;
+                    var rmin = sec % 3600;
+                    var min = rmin/60;
+                    sec = rmin % 60;
+                    return  Math.floor(hou)+'h. '+Math.floor(min)+'min. '+Math.floor(sec)+'sec.' ;
+                }
+            }
+        }  
+    }
+
+</script>
+{% endblock %}

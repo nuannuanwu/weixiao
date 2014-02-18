@@ -1,0 +1,46 @@
+{% extends 'manage_base.html' %}
+{% block content %}
+    <div class="thumbnail row-fluid" style="padding: 0;">
+    	<div class="gray h50"><div class="kManageTitle">学校管理</div></div>
+    	<div class="kBorder" style="overflow: hidden;">
+    		<div class="w50 h80 pull-left kBorderIn">
+    			<div class="kImgClass pull-left"></div>
+    			<dl class="pull-left">
+    				<dt><a href="{% url manage_class_list %}">班级</a></dt>
+    				<dd>总班级数：{{ group_num }}</dd>
+    			</dl>
+    		</div>
+    		<div class="w50 h80 pull-left kBorderIn">
+    			<div class="kImgCookbook pull-left"></div>
+    			<dl class="pull-left">
+    				<dt><a href="{% url manage_cookbook %}">食谱</a></dt>
+    				<dd>最后录入数据：{{ cookbook_last_modify|date:'Y-m-d'|default:'还未录入'}}</dd>
+    			</dl>
+    		</div>
+    		<div class="w50 h80 pull-left gray kBorderIn">
+    			<div class="kImgStudent pull-left"></div>
+    			<dl class="pull-left">
+    				<dt><a href="{% url manage_student_list %}">学生</a></dt>
+    				<dd>总学生数：{{ student_num }}</dd>
+    			</dl>
+    		</div>
+    		<div class="w50 h80 pull-left gray kBorderIn">
+    			<div class="kImgSendAcc pull-left"></div>
+    			<dl class="pull-left">
+    				<dt><a href="{% url manage_school_send_account %}">发送帐号</a></dt>
+    				<dd>最后操作：{{ cookbook_last_modify|date:'Y-m-d'|default:'还未录入'}}</dd>
+    			</dl>
+    		</div>
+    		<div class="w50 h80 pull-left kBorderIn">
+    			<div class="kImgTeacher pull-left"></div>
+    			<dl class="pull-left">
+    				<dt><a href="{% url manage_teacher_list %}">教师</a></dt>
+    				<dd>总教师数：{{ teacher_num }}</dd>
+    			</dl>
+    		</div>
+    		<div class="w50 h80 pull-left kBorderIn">
+    		</div>
+    	</div>
+    	<div class="h50 gray"></div>
+    </div>
+{% endblock %}

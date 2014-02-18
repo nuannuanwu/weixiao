@@ -1,0 +1,18 @@
+{% load i18n kinger_tags %}
+<div class="form-horizontal form-kPicCon">
+<form id="post_form" action="" method="post">{% csrf_token %}
+     			
+                       <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.name.label }}</span>
+                            {{ form.name }}
+                        </div>  
+                         <div class="controls-tipInput">
+                            <span class="tipInput-tip" id="tip-Tip">{{ form.description.label }}</span>
+                            {{ form.description }}
+                        </div>
+                        
+        <div class="form-actions">
+            <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+        </div>
+    </form>
+</div>

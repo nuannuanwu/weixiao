@@ -1,0 +1,23 @@
+{% extends 'statistical/base.html' %}
+{% block content %}
+<div>
+<h4>班级使用情况表</h4>
+<form action="" method="GET">
+	<select name="school_id" id="school_pk">
+		<option value="">--选择学校--</option>
+		{% for s in schools %}<option value="{{s.id}}" {% if s.id == school.id %}selected="selected"{% endif %}>{{s.name}}</option>{% endfor %}
+	</select>
+	
+	起始日期：<input type="text" name="stime" value="{{stime}}">
+	截至日期：<input type="text" name="etime" value="{{etime}}">
+	<button type="submit" class="btn" style="">统计</button> 
+</form>
+<table>
+  <tr><td>班级</td><td>班主任</td><td>瓦片</td><td>日常记录</td><td>每日活动</td><td>消息</td><td>短信</td></tr>
+  {% for d in data %}
+  <tr><td>{{d.group}}</td><td>{{d.group.headteacher.name}}</td><td>{{d.tile_num}}</td><td>{{d.record_num}}</td><td>{{d.active_num}}</td><td>{{d.msg}}</td><td>{{d.sms}}</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}
+

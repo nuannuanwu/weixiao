@@ -1,0 +1,137 @@
+{% load notifications_tags kinger_tags oa_tags umessages_tags %}
+{% notifications_unread "normal" as unread_notifications_count %}
+<style>
+/*.dropdown-menu {-webkit-border-radius:6px; -moz-border-radius: 6px; border-radius: 6px;  }*/
+.messages_footer { width: 220px; -webkit-border-radius: 0 0 6px  6px; -moz-border-radius:0 0 6px  6px; border-radius: 0 0 6px 6px; text-align: center; padding: 5px 10px; clear: both; background-color:#f8f8f8;  }
+#unread_list{ text-align: left; position:relative; margin-bottom: 3px; top:0; padding: 5px 10px; right: 0; float: left; display: inline-block; width:220px; color: #333333; }
+#unread_list .message_itme { padding: 3px 0; }
+#unread_messages,#unread_notifications{ width: auto; height:auto; line-height:normal; padding-left:0px;  border: none; background-color:#fff; overflow:hidden;}
+#unread_messages a.er_ico,#unread_notifications a.er_ico{ width:11px; height:10px; margin-left:6px; margin-top:9px; background:url('{{ STATIC_URL }}kinger/img/er.png') no-repeat; font-weight:normal; margin-right:5px; line-height:10px; opacity:0.5;}
+#unread_messages a.er_ico:hover,#unread_notifications a.er_ico:hover{ opacity:1; }
+#unread_messages a:hover,#unread_notifications a:hover{ color: #C93; }
+#unread_messages a,#unread_notifications a{ float: right; color: #0473b7;   font-size:13px;}
+#unread_messages a:hover,#unread_notifications a:hover{  color: #C93;  }
+/*#unread_messages a span,#unread_notifications a span{ color:#f00;} */
+#message_menu { z-index: 10; text-align: left; position: absolute; top:25px; right: -10px; -webkit-border-radius:6px; -moz-border-radius: 6px; border-radius: 6px; background-color:#fff; border: 1px solid #d7d7d7; margin: 0; -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2); -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2); box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+/*.nav_ico { display: none; z-index: 11; position: absolute; top: 23px; left: 10px;  padding:5px 10px; background:url('{{ STATIC_URL }}oa/images/wj.png') no-repeat; }*/
+#unead_no_text{ text-align: center; font-size: 14px; display: none;} 
+.dropdown-menu {
+		position: absolute;
+		top: 100%; 
+		z-index: 1000;
+		display: none;
+		float: left;
+		min-width: 160px;
+		padding: 5px 0;
+		margin: 2px 0 0;
+		list-style: none;
+		background-color: #fff;
+		border: 1px solid #ccc;
+		border: 1px solid rgba(0,0,0,0.2);
+		-webkit-border-radius: 6px;
+		-moz-border-radius: 6px;
+		border-radius: 6px;
+		-webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+		-moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+		box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+		-webkit-background-clip: padding-box;
+		-moz-background-clip: padding;
+		background-clip: padding-box;
+}
+</style>
+
+<ul id="message_menu" class="dropdown-menu"    >
+<li>
+	<!-- <div class="nav_ico" ></div> --> 
+	<div id="unread_list">
+		<div id="unread_messages" class="message_itme" style="display:none">
+			{% get_unread_message_count_for request.user as unread_message_count %}
+		    <a href="{% url oa_message_list %}">立即查看</a>
+			<div>您有<span rel="unread_count">{{unread_message_count}}</span>条新消息</div>
+	        <!-- <a href="javascript:;" class="er_ico" onclick="hide_message_box({{unread_message_count}});"></a> -->
+		</div> 
+		<div id="unread_documents" class="message_itme" style="display:none">
+			<a href="{% url oa_supply_my_document %}">立即查看</a> 
+			<div>您有<span rel="unread_count">{{unread_supply_doc}}</span>条未读物资公文</div> 
+	    	<!-- <a href="javascript:;" class="er_ico" onclick="hide_document_box({{unread_notifications_count}})"></a> -->
+		</div>
+		<div id="unread_approves" class="message_itme" style="display:none">
+			<a href="{% url oa_supply_document_need_approval %}">立即查看</a> 
+			<div>您有<span rel="unread_count"></span>条物资公文需审批</div>
+			<!-- <a href="javascript:;" class="er_ico" onclick="hide_supply_approve_box({{unread_notifications_count}})"></a> -->
+		</div>
+		<div id="unread_apps" class="message_itme" style="display:none">
+		    <a href="{% url oa_need_approval %}">立即查看</a>  
+			<div>您有<span rel="unread_count"></span>条公文需审批</div>
+			<!-- <a href="javascript:;" class="er_ico" onclick="hide_message_box({{unread_message_count}});"></a> -->
+		</div>
+		<div id="unread_docs" class="message_itme" style="display:none">
+		    <a href="{% url oa_my_document %}">立即查看</a>  
+			<div>您有<span rel="unread_count"></span>条未读公文</div>
+			<!-- <a href="javascript:;" class="er_ico" onclick="hide_message_box({{unread_message_count}});"></a> -->
+		</div>
+		<div id="unead_no_text">
+			您暂时没有新的提醒
+		</div> 
+	</div>
+	<div  class="messages_footer" >
+		共有<span id="unread_count_total">0</span>条新提醒 
+		<a style=" float:none; display: inline-block; margin-left:10px;" rel="message_changge" href="javascript:;">关闭提醒</a> 
+	</div>
+</li>
+</ul> 
+<script type="text/javascript"> 
+$("[rel=message_changge]").click(function(){ 
+	if($("#message_menu").is(':hidden')){ 
+		$(".message_num").hide();
+		// $(".nav_ico").css({ top: tops +18 + 'px'}).show();
+		// $("#message_menu").show(); 
+	}else{ 
+		if($(".message_num").text()){
+   			$(".message_num").show(); 
+   		}
+		// $(".nav_ico").hide();
+		// $("#message_menu").hide();
+	} 
+});
+$("#dropdown").click(function(){
+	if($("#message_menu").is(':hidden')){  
+   	}else{
+   		if($(".message_num").text()){
+   			$(".message_num").show();
+   		} 
+   		 
+   	} 
+});
+$(document).click(function (e) {
+  	if ($(e.target).eq(0).is($("[rel=message_changge]"))) {   
+	}else{
+		if($(".message_num").text()){
+   			$(".message_num").show();
+   		} 
+	}
+  });
+var uid = {{request.user.id}};
+function SetCookie(name,value)//两个参数，一个是cookie的名子，一个是值
+	{
+	    var Days = 30; //此 cookie 将被保存 30 天
+    	var exp = new Date();
+	    exp.setTime(exp.getTime() + Days*24*60*60*1000);
+	    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString() + "; path=/";
+	}
+function hide_document_box(notify_num){
+    $("#unread_documents").hide();	
+    name = "supply_document_count_" + uid;
+    SetCookie(name,notify_num);
+}
+function hide_message_box(num){
+    $("#unread_messages").hide();
+    name = "messages_count_" + uid;
+    SetCookie(name,num);		
+}
+function hide_supply_approve_box(num){
+    $("#unread_approves").hide();
+    name = "supply_document_approves_" + uid;
+    SetCookie(name,num);		
+}
+</script>  

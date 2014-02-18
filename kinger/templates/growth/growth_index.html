@@ -1,0 +1,439 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,user-scalable=no">
+<meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+<meta name="description" content="{% block meta_description %}{% endblock %}"> 
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}oa/css/kidsBook.css"/>
+<script src="{{ STATIC_URL }}oa/js/growth/jquery-1.9.1.js"></script> 
+<link rel="stylesheet" href="{{ STATIC_URL }}oa/js/growth/jquery-ui.css"> 
+<script src="{{ STATIC_URL }}oa/js/growth/jquery-ui.js"></script> 
+<script src="{{ STATIC_URL }}oa/js/growth/jquery.ui.rotatable.js"></script>
+<script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="{{ STATIC_URL }}oa/js/growth/kidsbook.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}oa/js/growth/jquery.bigcolorpicker.js" ></script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="{{ STATIC_URL }}oa/js/growth/jquery.ui.rotatable.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}oa/js/growth/jquery.bigcolorpicker.css">
+<title>{{moudle_name}}主题书</title>
+<style type="text/css">
+    .target { float: left; cursor: move; } 
+    div.img_block{ 
+      width: 200px; 
+      padding: 5px; 
+      border-radius: 2px; 
+    }
+    div.img_block img{ 
+      width: 100%;
+      height: 100%;
+    }
+    div.font_block{ 
+      width: 200px; 
+      padding: 5px; 
+      border-radius: 2px; 
+      /*border: 1px solid #7dcaeb;*/
+    }
+    div.font_block .input_text{
+      width:100%;
+      height:auto;
+      line-height: 25px;
+      height: 100%; 
+      text-align: center;
+      /*border: 1px solid #7dcaeb;*/
+    }
+</style>
+</head>
+
+<body>
+<div class="body">
+    <div class="header">
+        <img src="{{ STATIC_URL }}oa/images/growth/haeder_title.jpg" width="115" height="34" />
+    </div>
+    <div class="menu">
+        <div class="menu_left">
+            <ul class="clearfix" >
+              <li><a href="javascript:;"><img src="{{ STATIC_URL }}oa/images/growth/add_btn.png" width="28" height="26" /></a></li>
+                <li><a id="piece_infobox" href="javascript:;">文字块</a></li>
+                <li><a id="piece_imgbox" href="javascript:;">图片块</a></li>
+            </ul>
+            <div style="display: inline-table; width: 210px; line-height:52px;float:left; margin-left:10px; ">
+              <div style="display: inline-table; margin-top:3px; ">
+                <div id="slider-range-min" style="display: inline-table; width: 150px;  "></div>
+              </div> 
+              <span id="amount" style=" color:#999999; margin-left:15px; "></span>
+              &nbsp;
+            </div> 
+            
+        </div>
+        <div class="menu_right">
+            <ul class="clearfix">
+              <li><a class="preview_solid_bnt" href="javascript:;">预览</a></li>
+                <li><a href="javascript:;">保存</a></li>
+                <li class="drop_down" > 
+                  <a href="javascript:;" class="more" ><span class="ondowbg"></span>更多 </a>
+                    <div class="drop_down_list" >
+                      <ul>
+                          <li><a href="javascript:;">我的作品</a></li>
+                            <li><a class="taggle_template" href="javascript:;">更换模版</a></li>
+                            <li><a href="javascript:;">导出PDF</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>       
+        </div>
+    </div>
+    <div class="content" style=" position:relative;">
+        <div class="toggle_button" data-toggle="toggle">
+              照片列表 
+              <span class="nav_ioc_r"></span>
+        </div> 
+        <div class="sidebar_left ">
+            <div id="cart" class="template_list"> 
+                  <ol class="clearfix">
+                      <li class="placeholder">
+                          <div class="close_btn_i"></div>
+                          <a href="javascript:;"><img src="{{ STATIC_URL }}oa/images/growth/tmep_min_01.jpg" width="84" height="56" /></a>
+                      </li>
+                      <li class="placeholder">
+                          <div class="close_btn_i"></div>
+                          <a href="javascript:;"><img src="{{ STATIC_URL }}oa/images/growth/tmep_min_01.jpg" width="84" height="56" /></a>
+                      </li>
+                  </ol>
+              </div>
+          </div> 
+        <div class="sidebar_right sidebar_show" >
+          <div class="img_storage_box clearfix"> 
+                <div class="header_box  clearfix" >
+                  <div class="add_img">
+                    <img src="{{ STATIC_URL }}oa/images/growth/add_img.jpg" width="169" height="39" />
+                  </div>
+                    <div class="add_img_box" rel="{% url growth_source_list request.user.student.group.id|default:0 %}">
+                      <a class="add_img_btn" rel="{% url growth_source_list request.user.student.group.id|default:0 %}" href="javascript:;"><img src="{{ STATIC_URL }}oa/images/growth/add_btn.png" width="26" height="26" /></a>
+                    </div>
+                    
+                </div>
+                <div class="img_list clearfix">
+                  <div class="hide_img clearfix">  
+                        <label class="checkbox" for="hide_img_check" style=" margin-bottom:5px;"><input id="hide_img_check" type="checkbox" /> 隐藏已使用的照片</label>
+                    </div>
+                    <ul class="clearfix" style=" margin:0 auto;"> 
+                        <li>
+                            <a href="javascript:;">
+                                <img class="test_img" src="{{ STATIC_URL }}oa/images/growth/test_img.jpg">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">
+                                <img class="test_img" src="{{ STATIC_URL }}oa/images/growth/test_img.jpg">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">
+                                <img class="test_img" src="{{ STATIC_URL }}oa/images/growth/test_img.jpg">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">
+                                <img class="test_img" src="{{ STATIC_URL }}oa/images/growth/test_img.jpg">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">
+                                <img class="test_img" src="{{ STATIC_URL }}oa/images/growth/test_img.jpg">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">
+                                <img class="test_img" src="{{ STATIC_URL }}oa/images/growth/test_img.jpg">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="main">
+          <div id="box_canvas" class="container" style="width:772px; zoom: 100%; position: relative; "> 
+              <div class="target img_block ui-resizable ui-draggable" style="left: 474.686279296875px; top: 99.92724609375px; position: absolute;">
+                  <div class="close_btn"> </div>
+                  <img width="200" src="{{ STATIC_URL }}oa/images/growth/init_img.jpg"  class="">
+              </div>
+              <div class="target font_block ui-resizable ui-draggable" style="-webkit-transform: rotate(336.1418455386954deg); left: 70px; top: 182px;">
+                  <div class="close_btn_1 "></div>
+                  <div class="input_text" contenteditable="true" placeholder="双击编辑文字">双击编辑文字</div>
+                  <div class="font_style_box">
+                    <select class="set_fontStyle_select">
+                        <option vaule="微软雅黑">微软雅黑</option>
+                        <option vaule="微软雅黑雅黑雅黑">微软雅黑雅黑雅黑</option>
+                    </select>
+                    <select class="set_fontSize_select">
+                        <option vaule="8px">8px</option>
+                        <option vaule="10px">10px</option>
+                        <option vaule="12px">12px</option> 
+                        <option selected="selected" vaule="14px">14px</option>
+                        <option vaule="16px">16px</option>
+                        <option vaule="18px">18px</option>
+                        <option vaule="20px">20px</option>
+                        <option vaule="21px">21px</option>
+                        <option vaule="22px">22px</option>
+                        <option vaule="24px">24px</option>
+                        <option vaule="26px">26px</option>
+                        <option vaule="28px">28px</option>
+                        <option vaule="30px">30px</option>
+                        <option vaule="32px">32px</option>
+                        <option vaule="34px">34px</option>
+                        <option vaule="36px">36px</option>
+                    </select>
+                    <div class="block-select">
+                        <a href="javascript:void(0)" class="a-picker-block set_fontColor" ></a>
+                    </div>
+                    <div class="down_fontzip">
+                      <a href="javascript:void(0)" class="">下载字体包</a>
+                    </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+    </div>
+</div> 
+<diV class="html_footer"></diV>
+<input id="hhh" type="hidden" value="{{ STATIC_URL }}"  >
+
+<!-- <div id="preview_box" class="modal preview" style=" width:680px; height:480px; margin-left:-380px; margin-top:50px; ">
+    <div class="header_title">
+        <div class="title">&nbsp;</div>
+        <a class="close_btn" href="javascrpit:;" data-dismiss="modal" aria-hidden="true"></a>
+    </div>
+    <div class="content_box"> 
+        <div class="book_left">
+            <a class="autogeneration" href="javascript:;" data-dismiss="modal" aria-hidden="true">一键成书</a> 
+        </div>
+        <div class="book_right" >
+            <a class="manual_production" href="javascript:;" data-dismiss="modal" aria-hidden="true">手动制作</a>
+        </div> 
+    </div> 
+</div> -->
+
+<div id="template_box" class="modal preview" style=" width:760px; height:565px; margin-left:-400px; margin-top:0px; overflow: initial;">
+    <div class="header_title">
+        <div class="title">选择模版</div>
+        <a class="close_btn" href="javascrpit:;" data-dismiss="modal" aria-hidden="true"></a>
+    </div>
+    <div class="content_box clearfix" style="position: relative; padding: 0 15px; height:440px;">
+        <div class="select_table" style="">
+            <ul>
+                <li rel="itme_type" class="on">童趣</li>
+                <li rel="itme_type" class="">节日</li>
+                <li rel="itme_type" class="">金典</li>
+            </ul> 
+        </div>
+        <!-- 童趣 -->
+        <div id="child_interest" class="template_list" style="display:block;">
+            <ul class="clearfix">
+              <li class="on">
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float" style="display:block;" >222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+            </ul>
+        </div>
+        <!-- /童趣 -->
+        <!-- 节日 -->
+        <div id="festival" class="template_list" style="display:none;">
+            <ul class="clearfix">
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+            </ul>
+        </div>
+        <!-- /节日 -->
+        <!-- 经典 -->
+        <div id="classical" class="template_list" style="display:none;">
+            <ul class="clearfix">
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+              <li>
+                <img src="{{ STATIC_URL }}oa/images/growth/itme_ioc_mm.jpg">
+                <div class="bottom_float">222222</div>
+              </li>
+            </ul>
+        </div>
+        <!-- /经典 -->
+    </div> 
+    <div class="footer" style="padding: 0 30px;">
+        <div class=" " style="float:right; width:80px; height:50px; " >
+            <a class="is_ok_next" href="javascript:;" data-dismiss="modal" aria-hidden="true">确定</a>
+        </div>
+        <div class="page" style="line-height:50px;">
+          <ul>
+              <li><a class="" href="javascript:;"><<</a></li>
+              <li><a class="on" href="javascript:;">1</a></li>
+              <li><a class="" href="javascript:;">2</a></li>
+              <li><a class="" href="javascript:;">>></a></li>
+          </ul>
+          &nbsp;&nbsp;
+        </div> 
+    </div>
+</div>
+<div id="pmaterial_box" class="modal preview" style=" width:760px;   margin-left:-380px; margin-top:50px; overflow: initial;">
+   <div class="header_title">
+        <div class="title">选择素材</div>
+        <a class="close_btn" href="javascrpit:;" data-dismiss="modal" aria-hidden="true"></a>
+    </div> 
+    <div  class="content_box" style="position: relative; padding: 0 10px; min-height:440px;">
+         <div class="pmaterial_select_table" style="">
+            <ul>
+                <li><a rel="itme_type" class="computer_on" href="javascript:;"> </a></li>
+                <li><a rel="itme_type" class="liek" href="javascript:;"> </a></li>
+                <li><a rel="itme_type" class="time" href="javascript:;"> </a></li>
+                <li><a rel="itme_type" class="search" href="javascript:;"> </a></li>
+            </ul> 
+        </div>
+        <div id="source_content" class="pmaterial_list">
+          <ul>
+              <li></li>
+              <li></li>
+              <li></li>
+          </ul>
+        </div> 
+    </div>
+    <div class="footer" style="padding: 0 30px;">
+        <div class=" " style="float:right; width:80px; height:50px;" >
+            <a class="is_ok_next" href="javascript:;" data-dismiss="modal" aria-hidden="true">确定</a>
+        </div>
+        <div class="page" style="line-height:50px;">
+          <ul>
+              <li><a class="" href="javascript:;"><<</a></li>
+              <li><a class="on" href="javascript:;">1</a></li>
+              <li><a class="" href="javascript:;">2</a></li>
+              <li><a class="" href="javascript:;">>></a></li>
+          </ul>
+          &nbsp;&nbsp;
+        </div> 
+    </div> 
+</div>
+<!-- 预览 -->
+<div id="preview_solid_box" class="modal preview" style="width: 960px; margin-left: -480px; height: 560px; overflow: visible;">
+    <div class="header_title">
+        <div class="title">预览</div>
+        <a class="close_btn" href="javascrpit:;" data-dismiss="modal" aria-hidden="true"></a>
+    </div>
+    <div class="content_box">
+        <div class="box_shadow">
+            <div class="book_list">
+                <img src="{{ STATIC_URL }}oa/images/growth/p_01.jpg"> 
+                <img src="{{ STATIC_URL }}oa/images/growth/p_01.jpg"> 
+            </div>
+        </div> 
+    </div>
+    <div  style="height:40px; padding:30px 30px 10px 30px; line-height:40px; margin-left:340px;">
+        &nbsp;
+        <div style=" float:left; width:400px; ">
+          <div style="display:inline-table;"> 
+              <a class="page_bg" href="javascript:;" title="上一页" >&nbsp;</a>
+              <a class="page_bg page_position" href="javascript:;" title="下一页">&nbsp;</a>
+          </div>
+          <div class="select_box" style="">
+              <a href="" style="text-align: center; color:#333333; ">封面</a>
+              <div class="find_list_box" style="display:none;"> 
+                <a href="">大大的</a>
+                <a href=""> 大大的</a>
+              </div>
+          </div> 
+        </div> 
+        <div style=" float:right; ">
+              <a class="button_bg"  href="javascript:;" data-dismiss="modal" aria-hidden="true">退出预览</a>
+        </div>
+    </div> 
+</div>
+<!-- /预览 -->
+<script type="text/javascript">
+$(function(){
+  //$('#preview_box').modal();
+
+  // $(".preview_bnt").click(function(){//预览弹框
+  //     $('#preview_box').modal(); 
+  // });
+  $(".manual_production ,.taggle_template").click(function(){//选择模版
+    $("#template_box").modal();
+  }); 
+  $(".add_img_box ,.add_img_bnt").click(function(){//选择素材
+    var url = $(this).attr("rel");
+    $.get(url,{},function(result){
+           data = $.parseJSON(result);  
+           $("#source_content").empty();
+           $("#source_content").html(data.con);
+        });
+    $("#pmaterial_box").modal();
+  });
+    
+  $(".preview_solid_bnt").click(function(){//预览弹框
+      $('#preview_solid_box').modal(); 
+  });
+    
+  $(".select_box").hover(function(){//预览弹框下的选择宽
+    $(this).find(".find_list_box").show();
+  },function(){
+      $(this).find(".find_list_box").hide();
+  }); 
+ //选择模版
+  $(document).on('click','.template_list li',function(){
+    $(this).siblings('li').removeClass("on");
+    $(this).addClass("on");
+
+  });
+  dropPiece.init(); 
+});
+</script> 
+</body>
+</html>
+
+
+ 
+

@@ -1,0 +1,98 @@
+{% extends 'kinger/pwd_back/base.html' %}
+{% load kinger_tags %}
+
+{% block pwd_back_form %}
+<script type="text/javascript">
+$(function(){
+  $.formValidator.initConfig({formID:"form1",theme:"ArrowSolidBox"});
+
+  $("#{{ form.pwd.auto_id }}").formValidator({
+        onShow:"请输入新密码",
+        onFocus:"请输入新密码",
+        onCorrect:"正确"    
+      })
+    .inputValidator({
+        min:6,
+        max:16,
+        onError:"字符长度为6~16个字符"
+    });
+
+  $("#{{ form.pwd_b.auto_id }}").formValidator({
+          onShow:"输再次输入密码",
+          onFocus:"至少6个长度,跟上边的密码一致",
+          onCorrect:"密码一致"
+      })
+      .inputValidator({
+        min:6,
+        max:16,
+        onError:"字符长度为6~16个字符"
+      })
+      .compareValidator({
+          desID:"{{ form.pwd.auto_id }}",
+          operateor:"=",
+          onError:"2次密码不一致,请确认"
+      });
+})
+</script>
+<form class="form-horizontal" method="post" id="form1">{% csrf_token %}
+  <div class="control-group">
+    <label class="control-label" for="inputEmail">新密码</label>
+    <div class="controls">
+      {{ form.pwd }}  
+      <span class="help-inline">
+        <span id="{{ form.pwd.auto_id }}Tip"></span>
+      </span>  
+
+      {% for error in form.pwd.errors %}
+            <script>
+            $(function() {
+            $('#{{ form.pwd.auto_id }}Tip').html(
+        '<span><span class="onError_top">{{ error }}</span><span class="onError_bot"></span></span>'    
+      )
+      })
+      </script>
+      {% empty %}     
+      {% endfor %}     
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">确认密码</label>
+    <div class="controls">
+      {{ form.pwd_b }}
+      <span class="help-inline">
+        <span id="{{ form.pwd_b.auto_id }}Tip"></span>
+      </span>  
+
+      {% for error in form.pwd_b.errors %}
+            <script>
+            $(function() {
+            $('#{{ form.pwd_b.auto_id }}Tip').html(
+        '<span><span class="onError_top">{{ error }}</span><span class="onError_bot"></span></span>'    
+      )
+      })
+      </script>
+      {% empty %}     
+      {% endfor %}
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">			     
+      <button type="submit" class="btn btn-success">设置密码</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block pwd_back_tips %}
+<div class="kTips">		
+	<hr>		
+	<div class="kTips-body">
+		<h5> 步骤提示 </h5>
+		<ul class="muted">
+			<li>输入您要设置的新密码，两次密码须输入一致</li>
+			<li>密码长度在6~16位，字母区分大小写</li>
+		</ul>
+	</div>
+</div>
+{% endblock %}
+

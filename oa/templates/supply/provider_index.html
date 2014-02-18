@@ -1,0 +1,147 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate providers 10 %}
+<!--<script src="{{ STATIC_URL }}oa/js/site_backstage.js"></script>-->
+<div class="main">
+     <div class="tab"><span>供应商管理</span><a class="btn" href="{% url oa_provider_create %}"><i class="add_btn">&nbsp;</i>添加</a></div>
+     <div class="column"> 
+            <form style="margin:8px 0 5px 5px;"  action="{% url oa_provider_index %}" method="GET">     {% if request.user|is_agency_user %}
+                <select id="school_id" class=" span2 classSelect" style=" font-size: 14px; width: auto;{% if not request.user|is_agency_user %}display:none{% endif %}" value="{{school.id}}" name="sid">
+                    <option value="0"> --所有机构-- </option>
+                    {% for s in schools %}
+                    <option  value="{{s.id}}" {% if sid == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                    {% endfor %}
+               </select>
+               {% endif %}
+                <input style="margin-bottom:10px;" type="text" name="n" id="keyW" class="input-medium " value="{{query}}" placeholder="输入关键字">
+                <button style="margin-bottom:9px; margin-left:10px;" type="submit" class="btn" id="searchB"  >{% trans "Search" %}</button>
+            </form>
+        <form class="form-inline" id="form_post" onsubmit="return check()" action=" " method="POST">{% csrf_token %}
+         <div class="list"> 
+                <table>
+                     <tr align="center">
+                         <th scope="col" width="30"><input type="checkbox" rel="checkall"></th>
+                         <th scope="col">供应商名称</th>
+                         <th scope="col">描述</th>
+                         <th scope="col">联系人</th> 
+                         <th scope="col">联系地址</th>
+                         <th scope="col">联系方式</th>
+                      </tr>
+                      {% if not providers|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="6" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                      {% else %}
+                     {% for p in providers %}
+                    <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td width="30"><input type="checkbox" value="{{p.id}}" rel="role" name="provider_pks"></td>
+                        <td><a href="{% url oa_provider_update p.id %}">{{p.name}}</a></td>
+                        <td>{{p.description}}</td>
+                        <td>{{p.charger|default:""}}</td>
+                        <td>{{p.address}}</td>
+                        <td>{{p.mobile}}</td>
+                    </tr>
+                 {% endfor %}
+                    <tr>
+                        <td><input type="checkbox" rel="checkall"></td>
+                        <td colspan="5">
+                            <select id="select_val" name="attr" style="margin-bottom: 0px; " class="span2">
+                              <option value="0">-- 批量操作 --</option>
+                              <option value="1">删除</option>
+                            </select>
+                            <input type="submit" disabled="disabled" class="btn  btn-success" id="sub_form" name="" value="执行" >
+                        </td>
+                    </tr>
+                 {% endif %}
+                </table> 
+               <div class="pagination" style="text-align:center;">
+               		{% paginate %}
+               </div>
+           </div> 
+        </form>
+     </div>
+</div>
+<script> 
+$("#school_id").change(function(){
+    school_id = $(this).val();
+    url = "{% url oa_school_providers %}"
+    $.get(url,{sid:school_id},function(result){
+        data = $.parseJSON(result); 
+        $("#providers").html('<option value="0"> --所有供应商-- </option>');
+        for(var i=0;i<data.length;i++){
+            $("#providers").append('<option value="' + data[i].id + '">' + data[i].name + '</option>')
+        }
+    });     
+})
+$("#keyW").blur(function(){
+    dissearch();
+})
+var flagType="0";
+$("#select_val").click(function(){
+    flagType=$(this).val();
+});
+
+$("[name=provider_pks]").change(function(){
+	var formChek = $("#form_post"),
+    a = formChek.find('input[name=provider_pks]').length,
+	b = formChek.find('input[name=provider_pks]:checked').length; 
+	if(b==0){
+		$("#sub_form").attr("disabled",true );
+	}else{
+		$("#sub_form").attr("disabled",false);
+		} 
+	if(a==b){
+		$(':checkbox[rel=checkall]').attr("checked","checked");
+		$("#sub_form").attr("disabled",false);
+	}else {
+		$(':checkbox[rel=checkall]').removeAttr("checked");
+	}
+});
+$("input[rel=checkall]:checkbox").change(function(){ 
+        selectAll($(this).attr('checked'));
+		var formSit = $("#form_post");	
+		var a=formSit.find('input[rel=name=provider_pks]:checked').length;
+		if(a>0){
+			$("#sub_form").attr("disabled",false);
+		}else{
+			$("#sub_form").attr("disabled",true);
+		}
+	
+});
+
+function check(){ 
+    var rimndText="";
+   if(flagType == 1){
+       rimndText="是否删除用所选";
+   }else{
+       rimndText="你还没选择操作类型";
+   }  
+    var r=confirm(rimndText);
+    if (r==true) {
+        if(flagType==0){
+           return false; 
+        }
+            //alert("删除成功"); 
+    } else { 
+            return false;//false:阻止提交表单  
+    }  
+}
+
+ 
+function selectAll(checked){
+	var formSit = $("#form_post");
+	var allInput = document.getElementsByTagName("input")
+	var loopTime = allInput.length;
+	for(i = 0;i < loopTime;i++)
+	{
+		if(allInput[i].type == "checkbox")
+		{
+		  allInput[i].checked = checked;
+		}
+	}
+}
+</script>
+{% endblock %}

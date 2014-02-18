@@ -1,0 +1,14 @@
+{% load i18n kinger_tags %}
+
+  <div class="hfbox">
+     <div class="wj"></div>
+     <div class="hf-contentbox">
+        <div class="zw">
+            <h5 class="v-name"><span>{{reply.target_object.user.get_profile.chinese_name_or_username}}</span></h5>
+            <p class="hfct"><span>
+                    {{reply.target_object.comment|code_to_img|safe}}
+            </span></p>
+            <a href="javascript:;" class="hf-butG" name="reply" rel="{{reply.target_object.id}}" uname="{{reply.target_object.user.get_profile.chinese_name_or_username}}" content="{{reply.target_object.comment|code_to_img}}"><span>回复</span></a>
+        </div>
+     </div>
+  </div>

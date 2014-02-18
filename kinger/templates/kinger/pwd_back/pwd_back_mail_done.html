@@ -1,0 +1,36 @@
+{% extends 'kinger/pwd_back/base.html' %}
+{% load kinger_tags %}
+
+{% block pwd_back_form %}
+<style type="text/css">
+.sendedEmail{ font-size: 20px; color: #333; line-height: 28px;}
+.help-inline{ color: #FF6633; margin-left: 20px;}
+</style>
+<form class="form-horizontal">
+  <div class="control-group">
+    <label class="control-label">邮箱帐号</label>
+    <div class="controls">
+      <span class="sendedEmail">{{ email }}</span>
+      <span class="help-inline" >已经发给您一封解释如何重设密码的邮件</span>
+    </div>
+  </div>  
+  <div class="control-group">
+    <div class="controls">           
+      <button class="btn disabled" type="button">发送邮件</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block pwd_back_tips %}
+<div class="kTips">		
+	<hr>		
+	<div class="kTips-body">
+		<h5> 步骤提示 </h5>
+		<ul class="muted">
+			<li>输入您注册时的邮箱帐号，系统将会发送一封包含身份验证的链接邮件到您的邮箱。</li>			
+		</ul>
+	</div>
+</div>
+{% endblock %}
+

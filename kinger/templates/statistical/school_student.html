@@ -1,0 +1,27 @@
+{% extends 'statistical/base.html' %}
+{% block content %}
+<div>
+<h4>家长使用情况表</h4>
+<div>
+<form action="" method="GET">
+	<select name="school_id" id="school_pk">
+		<option value="">--选择学校--</option>
+		{% for s in schools %}<option value="{{s.id}}" {% if s.id == school.id %}selected="selected"{% endif %}>{{s.name}}</option>{% endfor %}
+	</select>
+	<select name="group_id" id="group_pk">
+		{% if group %}<option value="{{group.id}}">{{group.name}}</option>{% else %}<option value="">--选择班级--</option>{% endif %}
+	</select>
+	起始日期：<input type="text" name="stime" value="{{stime}}">
+	截至日期：<input type="text" name="etime" value="{{etime}}">
+	<button type="submit" class="btn" style="">统计</button> 
+</form>
+</div>
+<table>
+  <tr><td>家长账号</td><td>班级</td><td>web访问次数</td><td>文字内容浏览量</td><td>照片内容浏览量</td><td>照片内容回复量</td><td>文字内容回复量</td><td>学习活动(web)</td><td>生活记录(web)</td><td>APP访问次数</td><td>信息回复数</td><td>短信回复数</td><td>发布图片</td><td>发布文字</td></tr>
+  {% for d in data %}
+  <tr><td>{{d.student.user.username}}</td><td>{{d.student.group}}</td><td>{{d.web_num}}</td><td>{{d.word_num}}</td><td>{{d.img_num}}</td><td>{{d.img_comments}}</td><td>{{d.word_comments}}</td><td>{{d.active_num}}</td><td>{{d.record_num}}</td><td>{{d.api_num}}</td><td>{{d.msg}}</td><td>{{d.sms}}</td><td>{{d.imgs}}</td><td>{{d.words}}</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}
+

@@ -1,0 +1,160 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate grows 10 %}
+<div class="layout_main">
+	<div class="growth_header"> 
+      	<div class="title">我的作品</div>
+      	<!-- <select style="width:auto;">
+      		<option>--所有作品--</option>
+      	</select> -->
+      	&nbsp; 
+       <a class="execution_btn btn"  href="javascript:;">新建成长书</a> 
+	</div>
+	<div class="growth_list">
+  		 <ul class="clearfix">
+  		 	<li>
+  		 		<div class="image_box">
+  		 			<button style="padding: 0; margin: 0; width:100%; height:100%; border:0; background:none;">
+              <img  alt=""  src="{{ STATIC_URL }}oa/images/growth/tmep_1.jpg" />
+            </button>
+  		 		</div>
+  		 		<div class="title_name">
+  		 			中一班
+  		 		</div>
+  		 		<div class="operate">
+  		 			<a class="preview_bnt" href="javascript:;">预览</a>
+  		 			<a href="">下载</a>
+  		 			<a href="">删除</a>
+  		 		</div>
+  		 	</li>
+  		 	<li>
+  		 		<div class="image_box">
+  		 			<button style="padding: 0; margin: 0; width:100%; height:100%; border:0; background:none;">
+              <img  alt=""  src="{{ STATIC_URL }}oa/images/growth/tmep_1.jpg" />
+            </button>
+  		 		</div>
+  		 		<div class="title_name">
+  		 			中一班
+  		 		</div>
+  		 		<div class="operate">
+  		 			<a class="preview_bnt" href="javascript:;">预览</a>
+  		 			<a href="">下载</a>
+  		 			<a href="">删除</a>
+  		 		</div>
+  		 	</li>
+  		 	<li>
+  		 		<div class="image_box">
+  		 			<button style="padding: 0; margin: 0; width:100%; height:100%; border:0; background:none;">
+              <img  alt=""  src="{{ STATIC_URL }}oa/images/growth/tmep_1.jpg" />
+            </button>
+  		 		</div>
+  		 		<div class="title_name">
+  		 			中一班
+  		 		</div>
+  		 		<div class="operate">
+  		 			<a class="preview_bnt" href="javascript:;">预览</a>
+  		 			<a href="">下载</a>
+  		 			<a href="">删除</a>
+  		 		</div>
+  		 	</li>
+  		 	<li>
+  		 		<div class="image_box">
+  		 			<button style="padding: 0; margin: 0; width:100%; height:100%; border:0; background:none;">
+              <img  alt=""  src="{{ STATIC_URL }}oa/images/growth/tmep_1.jpg" />
+            </button>
+  		 		</div>
+  		 		<div class="title_name">
+  		 			中一班
+  		 		</div>
+  		 		<div class="operate">
+  		 			<a class="preview_bnt" href="javascript:;">预览</a>
+  		 			<a href="">下载</a>
+  		 			<a href="">删除</a>
+  		 		</div>
+  		 	</li>
+  		 </ul>
+  		 <div class="clear" style=" width:100%; height:20px;"> </div>
+	</div> 
+  	<div class="pagination " style=" text-align:center;">
+    	{% paginate %}
+  	</div>
+    
+</div>
+<div id="preview_box" class="modal preview" style="width: 960px; margin-left: -480px; height: 560px; overflow: visible;">
+    <div class="header_title">
+        <div class="title">预览</div>
+        <a class="close_btn" href="javascrpit:;" data-dismiss="modal" aria-hidden="true"></a>
+    </div>
+    <div class="content_box">
+        <div class="box_shadow">
+            <div class="book_list">
+                <img src="{{ STATIC_URL }}oa/images/growth/p_01.jpg"> 
+                <img src="{{ STATIC_URL }}oa/images/growth/p_01.jpg"> 
+            </div>
+        </div>
+          
+    </div>
+    <div  style="height:40px; padding:30px 30px 10px 30px; line-height:40px; margin-left:340px;">
+        &nbsp;
+        <div style=" float:left; width:400px; ">
+          <div style="display:inline-table;"> 
+              <a class="page_bg" href="" title="上一页" >&nbsp;</a>
+              <a class="page_bg page_position" href="" title="下一页">&nbsp;</a>
+          </div>
+          <div class="select_box" style="">
+              <a href="" style="text-align: center; color:#333333; ">封面</a>
+              <div class="find_list_box" style="display:none;"> 
+                <a href="">大大的</a>
+                <a href=""> 大大的</a>
+              </div>
+          </div> 
+        </div> 
+        <div style=" float:right; ">
+              <a class="button_bg"  href="javascript:;" data-dismiss="modal" aria-hidden="true">退出预览</a>
+        </div>
+    </div> 
+</div>
+<div id="execution_box" class="modal preview" style=" width:680px; height:480px; margin-left:-340px; margin-top:50px; ">
+    <div class="header_title">
+        <div class="title">&nbsp;</div>
+        <a class="close_btn" href="javascrpit:;" data-dismiss="modal" aria-hidden="true"></a>
+    </div>
+    <div class="content_box"> 
+        <div class="book_left" style=" ">
+            <a class="autogeneration button_bg" href="javascript:;" data-dismiss="modal" aria-hidden="true">一键成书</a>
+            <div style="margin-top:30px;">
+              <img src="{{ STATIC_URL }}oa/images/growth/self-motion.jpg">
+            </div> 
+        </div>
+        <div class="book_content" style="">
+          <span style=" font-size:18px; margin-top:20px; display: inline-table; width: 60px; padding: 10px 0; background: #fff;">或者</span>
+        </div>
+        <div class="book_right"style="">
+            <a class="manual_production button_bg" target="_blank" href="{% url growth_index %}" >手动制作</a>
+            <div style="margin-top:30px;">
+              <img src="{{ STATIC_URL }}oa/images/growth/manual_operation.jpg">
+            </div>
+        </div> 
+    </div> 
+</div>  
+<script type="text/javascript">
+$(function(){ 
+  $(".preview_bnt").click(function(){//预览弹框
+      $('#preview_box').modal(); 
+  });
+  $(".execution_btn").click(function(){ //制作主题弹框
+      $('#execution_box').modal(); 
+  });
+  $(".manual_production").click(function(){ //关闭弹框
+      $('#execution_box').modal('hide');
+  });
+  $(".select_box").hover(function(){
+      $(this).find(".find_list_box").show();
+  },function(){
+      $(this).find(".find_list_box").hide();
+  });
+ 
+});
+</script>
+{% endblock %}

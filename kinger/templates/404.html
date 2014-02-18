@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load i18n kinger_tags umessages_tags %}
+{% block content %}
+<style>
+	.thumbnail{height: 250px;line-height:250px;}
+	.thumbnail img{display:inline;margin-left:30px;}
+	h1{display:inline;margin-left:80px;}
+</style>
+<div class="thumbnail">
+	<h1>404&nbsp;&nbsp;</h1>
+	<span>您访问的页面不存在&nbsp;或者&nbsp;已被移除</span>
+	<span>如果您觉得这是个错误，您可以给我们</span>
+	<a href="{% waiter_url %}">客服留言</a>
+	<img src="{{ STATIC_URL }}kinger/img/404.png" alt="" />
+</div>
+{% endblock %}

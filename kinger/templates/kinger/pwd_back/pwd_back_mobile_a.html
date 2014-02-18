@@ -1,0 +1,205 @@
+{% extends 'kinger/pwd_back/base.html' %}
+{% load kinger_tags %}
+
+{% block pwd_back_form %}
+<script type="text/javascript">
+$(function(){
+  var Validator = {
+    init:function(){
+      $.formValidator.initConfig({formID:"form1",theme:"ArrowSolidBox"});
+      $.formValidator.initConfig({validatorGroup:"2", theme:"ArrowSolidBox"});
+
+      this.mobileCon = {
+        input:{
+            min:11,
+            max:12,
+            onError:"手机号码必须是11~12位，请确认。"
+        },
+        reg:{
+            regExp:regexEnum.mobile,
+            onError:"请输入正确的手机号码。"
+        }
+      }
+    },
+    run:function(){
+      this.init()
+      //手机号码
+      $("#{{ form.mobile.auto_id }}").formValidator({
+            onShow:"请输入您的手机号码",
+            onFocus:"请输入您的手机号码",
+            onCorrect:"正确"
+          })
+        .inputValidator(this.mobileCon.input).regexValidator(this.mobileCon.reg);
+
+      $("#{{ form.mobile.auto_id }}").formValidator({
+          validatorGroup:"2",
+          onShow:"请输入您的手机号码",
+          onFocus:"请输入您的手机号码",
+          onCorrect:"正确"
+      })
+      .inputValidator(this.mobileCon.input).regexValidator(this.mobileCon.reg);
+
+      //验证码
+      $("#{{ form.vcode.auto_id }}").formValidator({
+            onShow:"请输入您收到的手机验证码，由 0-9 构成的六位数组成",
+            onFocus:"请输入您手机收到的验证码",
+            onCorrect:"正确"   
+          })
+        .inputValidator({
+            min:6,
+            max:6,
+            onError:"验证码为6位数，请确认。"
+        })
+        .regexValidator({
+            regExp:regexEnum.vcode,
+            onError:"验证码格式不对。"
+        });
+    }
+  }
+
+  Validator.run()
+
+
+  var Tips = {
+    set_focus:function(name,content){
+      $('#'+ name +'Tip').html(
+            '<span><span class="onFocus_top">'+ content +'</span><span class="onFocus_bot"></span></span>'    
+      )
+    },
+    set_error:function(name,content){
+      $('#'+ name +'Tip').html(
+            '<span><span class="onError_top">'+ content +'</span><span class="onError_bot"></span></span>'    
+      )
+    }
+  }
+
+
+  var GetVcode = {
+    is_active:true,
+    url:'{% url kinger_pwd_back_mobile_get_vcode %}',
+    get:function(){
+      var mobile = $('#id_mobile').val()
+      $.get(this.url, 
+        {mobile: mobile},
+        function(rs){        
+            // jNotify(rs.message);
+            code = rs.code
+            message = rs.message
+
+            if ([0,100].indexOf(code) >=0 ){
+              Tips.set_error('{{ form.mobile.auto_id }}',message);
+              GetVcode.set_active()
+            }else{
+              time = rs.con.time;        
+              GetVcode.set_unactive_state(time)
+            }
+        },"json");
+    },
+    set_unactive:function(){
+      this.is_active = false;
+    },
+    set_active:function(){
+      this.is_active = true;
+    },
+    set_unactive_state:function(time){
+      var time = time || 60;     
+      var btn = $('.kBtnGet');
+      btn.addClass('kBtnGet_disabled');
+      var is_set = false;
+
+      var s = setInterval(function(){
+        if (time > 0){
+          if (!is_set){
+            is_set = true;
+            Tips.set_focus('{{ form.mobile.auto_id }}','验证码已经发送，请注意查收');
+          }
+          btn.text(time.toString() + '秒后可重新发送')
+        }else{
+          GetVcode.is_active = true;
+          btn.text('获取验证码');
+          Tips.set_focus('{{ form.mobile.auto_id }}','如未收到验证码，请再次点击获取');
+          btn.removeClass('kBtnGet_disabled');
+          clearInterval(s);
+        }
+        time --; 
+      }, 1000);
+    }
+  }
+
+
+  $('.kBtnGet').click(function(){
+      if (GetVcode.is_active){
+        rs = $.formValidator.pageIsValid("2")
+        if (rs){
+          GetVcode.get();
+          GetVcode.set_unactive();
+        }
+      }         
+  });
+})
+</script>
+<style type="text/css">
+.kBtnGet_disabled{ border-color: #CCC; background-color: #EEE; font-size: 12px; color: #3F3F3F !important; cursor: default; }
+</style>
+<form class="form-horizontal" method="post" id="form1">{% csrf_token %}
+  <div class="control-group">
+    <label class="control-label" for="{{ form.mobile.auto_id }}">手机号码</label>
+    <div class="controls">
+      {{ form.mobile }}
+      <a class="kBtnGet">获取验证码</a>
+      <span class="help-inline">
+        <span id="{{ form.mobile.auto_id }}Tip"></span>
+      </span>      
+      {% for error in form.mobile.errors %}
+            <script>
+            $(function(){
+                      $('#{{ form.mobile.auto_id }}Tip').html(
+                  '<span><span class="onError_top">{{ error }}</span><span class="onError_bot"></span></span>'    
+                )
+            })
+            </script>
+      {% empty %}     
+      {% endfor %}
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="{{ form.vcode.auto_id }}">输入验证码</label>
+    <div class="controls">
+      {{ form.vcode }}     
+      <span class="help-inline">
+        <span id="{{ form.vcode.auto_id }}Tip"></span>
+      </span>  
+
+      {% for error in form.vcode.errors %}
+            <script>
+            $(function() {             
+            $('#{{ form.vcode.auto_id }}Tip').html(
+        '<span><span class="onError_top">{{ error }}</span><span class="onError_bot"></span></span>'    
+      )
+      })
+      </script>
+      {% empty %}     
+      {% endfor %}
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">			     
+      <button type="submit" class="btn btn-success">下一步</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block pwd_back_tips %}
+<div class="kTips">		
+	<hr>		
+	<div class="kTips-body">
+		<h5> 步骤提示 </h5>
+		<ul class="muted">
+			<li>输入手机号码后, 点击“获取验证码“</li>
+			<li>然后, 输入手机接收到的验证码</li>
+		</ul>
+	</div>
+</div>
+{% endblock %}
+

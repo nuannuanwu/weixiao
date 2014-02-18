@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+{% block title %}未登录用户短信| Django 站点管理员{% endblock %}
+{% load i18n %}
+{% load url from future %}
+{% load admin_urls %}
+
+{% block breadcrumbs %}
+<ul class="grp-horizontal-list">
+        <li><a href="/admin/">首页</a></li>
+        <li><a href="/admin/kinger/">Kinger</a></li>
+        <li><a href="/admin/kinger/sms/">Sms</a></li>
+        <li>not_logged_in</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>未登录用户短信</h1>
+	<div id="grp-content-container">        
+    <div class="g-d-c grp-object-history">
+            <table id="grp-change-history">
+                <thead>
+                    <tr>
+                        <th scope="col">接收者</th>
+                        <th scope="col">手机</th>
+                        <th scope="col">发送时间</th>
+                        <th scope="col">短信内容</th>
+                        <th scope="col">发送者</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  	{% for m in msgs %}
+					<tr>
+						<td>{{m.receiver}}</td><td>{{m.mobile}}</td><td>{{m.send_time|date:"Y年m月d日 H:i:s"}}</td><td>{{m.content}}</td><td>{{m.sender}}</td>
+					</tr>
+					{% endfor %}	
+                </tbody>
+            </table>    
+    </div>
+	</div>
+</div>
+<footer class="grp-module grp-submit-row grp-fixed-footer">
+    <header style="display:none"><h1>Submit Options</h1></header>
+    <ul>
+        <li><a class="grp-button" href="/admin/kinger/sms/">返回</a></li>
+    </ul>
+</footer>
+{% endblock %}

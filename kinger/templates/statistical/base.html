@@ -1,0 +1,24 @@
+{% load i18n kinger_tags umessages_tags notifications_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+</head>
+<body>
+{% block content %}{% endblock %}
+<script>
+$("#school_pk").change(function(){
+	school_id = $(this).val();
+    url = "{% url oa_get_school_class %}"
+    $.get(url,{sid:school_id,ty:'1'},function(result){
+        data = $.parseJSON(result); 
+        $("#group_pk").html("<option value=''>--选择班级--</option>");
+        for(var i=0;i<data.length;i++){
+            $("#group_pk").append('<option value="' + data[i].id + '">' + data[i].name + '</option>')
+        }
+    });     
+})
+</script>
+</body>
+</html>
+

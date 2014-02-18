@@ -1,0 +1,47 @@
+{% extends 'manage_base.html' %}
+{% block content %}
+
+{% load pagination_tags kinger_tags i18n %}
+{% autopaginate students 24 %}
+
+<div class="page-header">
+    <div class="pull-right" style="margin-right:5px;">
+        <a class="btn btn-primary" data-toggle="modal" href="#import-student-modal" >{% trans "Import" %}</a>
+        <a class="btn btn-primary" href="{% url manage_student_create %}"><i class="icon-plus-sign"></i>&nbsp;{% trans "Create" %}</a>
+    </div>
+    <h1><a href="{% url manage %}">学校管理</a><i class="icon-chevron-right"></i><a href="{% url manage_student_list %}">学生管理</a></h1>
+</div>
+
+<div class="well">
+    <form class="form-inline" method="GET">
+        <select class="span2" name="c">
+            <option value="" {% if c == "" %}selected{% endif %}>全部</option>
+            <option value="wait" {% if c == "wait" %}selected{% endif %}>未分班</option>
+            <option value="done" {% if c == "done" %}selected{% endif %}>已分班</option>
+        </select>
+        <input type="text" name="q" class="input-medium search-query" value="{{query}}" placeholder="{% trans "Student name" %}">
+        <button type="submit" class="btn">{% trans "Search" %}</button>
+    </form>
+</div>
+<ul class="thumbnails kPicList kPicList-mini">
+    {% for student in students %}
+    <li>
+        <div class="thumbnail">            
+            <a href="{% url manage_student_view student.id %}" title="{{ student.description }}">
+                <img src="{% media_path student.user.get_profile.get_avatar "avatar" %}" alt="">
+            </a>
+            <div class="caption">
+                <a class="kListLink" href="{% url manage_student_view student.id %}" title="{{ student.name }}">{{ student.name }}</a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<div class="pagination">
+    {% paginate %}
+</div>
+
+{% include "manage/includes/student_import.html" %}
+
+{% endblock %}

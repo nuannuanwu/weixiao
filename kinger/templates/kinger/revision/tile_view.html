@@ -1,0 +1,293 @@
+{% extends 'kinger/base.html' %}
+{% load i18n kinger_tags comments pagination_tags %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/dateTime.css"> 
+{% endblock %}
+{% block content %}
+<div id="tile" style="background-color: white;"> 
+     <div class="box_sidebar" style="zoom:1; height: auto; overflow: hidden; ">
+         <div class="sidebar_content" style="position: relative;">
+            {% include "kinger/revision/includes/comment_form.html" %} 
+         </div>
+           <!--评论列表-->
+            <div id="faceBG_tile" class="faceBG_W" style=" ">
+               <div class="facebox">
+                   <div class="facej facej_2"></div>
+                   <ul>
+                       {% for key, value in emo_config.items %}
+                        <li rel="emo" title="{{value.title}}"><img src="{{value.url}}" width="28" height="28"/></li> 
+                       {% endfor %}
+                   </ul>
+               </div>
+            </div>
+    </div>
+    <div class="box_main" style=" position: relative; background-color: #f1f1f1; padding: 10px 20px;"> 
+        <div  style=" position: relative; background-color: #efefef;">
+            <!--标题-->
+            {% if channel != "baby" %}
+            <div class="comment" style=" padding: 5px 20px; background: #f1f1f1; ">  
+               <div class="theme_title"><span>[{{tile.new_category.name}}]</span>{{tile.title}}</div>
+               <div>
+                   <span style="float: left; margin-right: 5px;">来自</span> 
+                   <a style="float: left; margin-right: 5px;" rel="namecard" data-uid="{{tile.creator_id}}" href="javascript:;"> {{tile.creator.get_profile.chinese_name_or_username}}</a >
+                   <span>{{ tile.pub_time|date:"Y年m月d日 G:i" }}</span> 
+               </div> 
+           </div>
+            {% endif %}
+           <!--/标题-->
+            <div class="pic_box" style="position: relative; min-height: 500px;"> 
+                <!--评语等内容--> 
+                <div class="kDetail-record" style="" >
+                    {% if tile.is_report %}
+                    <div class="kDailyItems cf">
+                        <span class="kDailyItem-date">
+                            {{tile.pub_time.day}}
+                        </span>
+                        <div class="kDailyItem cf">
+                            <div class="kDailyItem-icon kSt_{{tile.type_id}}">
+                                <span class="kSt_Img"></span>
+                            </div>
+
+                            <div class="kDailyItem-con" >
+                                <h2>{{tile.title}}</h2>
+                                <p>{{tile.description}}</p>
+                            </div>
+                        </div>
+                    </div> 
+                    {% endif %}
+                    <!--评语等内容-->
+                    <!--文字内容--> 
+                    {% if tile.new_type_id == 4 %}
+                    <div class="tell_box">
+                        <div class="tell_conent">
+                            {{tile.content|code_to_img|safe}}
+                        </div>
+                    </div> 
+                    {% endif %}
+                    <!--文字内容-->
+                    <!--图片内容-->
+                    {% if not tile.is_report and not tile.new_type_id == 4 %}  
+                        {% if channel != "baby" %}
+                           <img src="{% media_path tile.img "img_large" %}" alt="" > 
+                        {% else %}
+                            <div style="min-height:400px; ">
+                                <img src="{% media_path tile.img "img_large" %}" alt="" > 
+                            </div>
+                       {% endif %}
+                    {% endif %}
+                    <!--图片内容-->
+                     <!-- 翻页工具条 -->
+                        <div class="kToolbar" style="position: absolute; top:50%; left:0; width: 100%;" > 
+                            <div class="kToolbar-turn">
+                                {% if yesterday %}
+                                <a href="{% url axis_tile_view yesterday.id %}?channel={{channel|default:"edu"}}" class="left-btn" data-href="{% url axis_tile_view yesterday.id %}?channel={{channel|default:"edu"}}" rel="tile_pre" data-title="{% trans "Previous" %}">&nbsp;</a>
+                                {% endif %}
+                                {% if next_day %}
+                                <a href="{% url axis_tile_view next_day.id %}?channel={{channel|default:"edu"}}" class="right-btn1" data-href="{% url axis_tile_view next_day.id %}?channel={{channel|default:"edu"}}" rel="tile_next" data-title="{% trans "Next" %}">&nbsp;</a>
+                                {% endif %} 
+                            </div>
+                         </div>
+                    <!-- /翻页工具条 -->
+                </div>
+                {% if not tile.is_report %}
+                <div class="assess" style=" display: none; position: fixed; top:80px; right:40%;z-index: 1;"> 
+                    <a class="external_link border_r" rel="comment_input" href="javascript:;" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}&for_comment=1"><span><i class="pic external"> </i></span> <span>评论</span></a>
+                    <a rel="likeable" href="javascript:;" data-href="{% url api_web_tiles_like_rev %}" href="javascript:;" data-id="{{tile.id}}" data-tips="{{tile.is_tips}}"><span><i class="pic {% if tile|liked_by_user:request.user %}like{% else %}no_like {% endif %}"></i></span ><span class="like_type">{% if tile|liked_by_user:request.user %}取消喜欢{% else %}喜欢{% endif %}</span></a>
+                </div>
+                {% endif %}
+                {% if channel == "baby" %}
+                <div class="comment" style=" margin: 10px 0px; padding-left: 10px;">  
+                    <div style="text-align: left;">
+                        <span style="  margin-right: 5px;">来自</span> 
+                         <a rel="namecard" data-uid="{{tile.creator_id}}" href="javascript:;"> {{tile.creator.get_profile.chinese_name_or_username}}</a >
+                     </div>
+                    <div class="pic_comment" style="text-align: left; height: auto;" rel="picComment" >
+                        {% if not tile.is_report %}
+                            <div id="divinput_text" class="" rel="{% if tile.new_type_id != 4 %}{{tile.description|safe}}{% endif %}">{% if tile.new_type_id != 4 %}{{tile.description|safe}}{% endif %}</div>
+                         {% endif %}
+                    </div> 
+                    {% if tile.new_type_id != 4 %}
+                        <div style="text-align: left; position: relative; clear: both;"> 
+                            <span>{{ tile.pub_time|date:"Y年m月d日 G:i" }}</span>
+                            {% if tile.creator_id == request.user.id %} 
+                            &nbsp;<a rel="delete_tile" href="javascript:;" data-href="{% url axis_delete_tile tile.id %}">删除</a><span>&nbsp;|&nbsp;</span>
+                            <a id="upDatecomment" href="javascript:;">修改</a>
+                            <a id="serverDatecomment" style="display: none;" href="javascript:;" rel="{{tile.id}}" data-href="{% url axis_edit_tile_description %}">保存</a>
+                            <span style="display: none;" class="line_nav">&nbsp;|&nbsp;</span>
+                            <a id="resetComment" style="display: none;" href="javascript:;">取消</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %} 
+                <div class="kpicInfo-pic" style=" padding:0 20px 10px 0px; margin-bottom: 0; margin-left: 35px;">
+                     {% if tile.is_tips != 0 %}
+                        {% if tile.is_content %}
+                            {{tile.content|code_to_video|safe}}
+                        {% endif %}
+                    {% endif %} 
+                </div>
+            </div> 
+        </div>
+    </div>
+    <!--推荐主题-->
+    <div class="pinned_title">你可能还喜欢</div>
+    <div class="pinned_to" style=" float: left; overflow: hidden; clear: both; margin:10px 0px 10px 0px; padding: 0; ">
+        <ul style="margin: 0px; padding: 0;">
+            {% for t in recommend_tiles %}
+            <li rel="tl_itme" class="t_itme" style="{% if forloop.last %} margin-right:0; {% endif %}">
+                <div>
+                    <a class="btn_box" href="{% url axis_tile_view t.id %}?channel={{channel|default:"edu"}}">
+                       <button class="img_box_btn"><img src="{% media_path t.img "img_middle" %}"/></button>
+                    </a>
+                </div> 
+                <div class="assess" style=" display: none; position: absolute; top:5px; right:5px;"> 
+                    <a class="external_link border_r" rel="tile_comment" href="{% url axis_tile_view t.id %}?channel={{channel|default:"edu"}}&for_comment=1"><span><i class="pic external"> </i></span> <span>评论</span></a>
+                    <a rel="likeable"  data-href="{% url api_web_tiles_like_rev %}" href="javascript:;" data-id="{{t.id}}" data-tips="{{t.is_tips}}"><span><i class="pic {% if t|liked_by_user:request.user %}like{% else %}no_like {% endif %}"></i></span ><span class="like_type">{% if t|liked_by_user:request.user %}取消喜欢{% else %}喜欢{% endif %}</span></a>
+                </div>
+                <div style=" padding: 5px 10px; height: 30px; ">{{t.description|truncatestr:":12"}}</div>
+                <div class="bottom_describe" style=" display: block; clear: both; background: none; width: 220px;">
+                    <a class="external_content"><i class="ioc ioc_external"></i>&nbsp;<span id="tile_comments_{{t.id}}">{{t.n_comments}}</span></a>
+                    <a class="like_content"><i class="ioc ioc_like"></i>&nbsp;<span>{{t.n_likers}}</span></a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul> 
+    </div>
+    <div style=" height:120px; width: 100%; overflow: hidden; ">
+    </div>
+    <!--/推荐主题-->
+     
+    <div class="pic_ico"  style="z-index: 1; border-top:1px solid #535252; width: 100%; height: 85px; padding: 0; position: fixed; bottom: 0px; left:0%; background: #3a3939;">
+        <div id="pic_ico" style="width: 960px; height: 50px; padding: 5px 0; margin: 0 auto;">
+            {% include "kinger/revision/axis_tile_page.html" %}
+        </div>
+    </div>  
+</div>
+<script src="{{ STATIC_URL }}oa/site/js/videoplay/flowplayer-3.2.12.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}oa/site/js/jquery.jcarousel.pack.js"></script>
+<script type="text/javascript">
+    //video上下滚动
+    $(document).ready(function() {
+        $("#footer").hide();
+        $("#id-comments").focus(); 
+        $("#player").jcarousel({
+            vertical: true,
+            scroll: 4
+        });
+        flowplayer("a.video-player", "{{ STATIC_URL }}oa/site/js/videoplay/flowplayer-3.2.16.swf",{ 
+              clip: {
+                autoPlay: false,  
+                autoBuffering: true  
+              } 
+            }
+        );
+         
+        $("a[rel=pic_ico]").live("click",function(){
+            url = $(this).data("href");
+            $.post(url,{},function(result){
+                data = $.parseJSON(result); 
+                $("#pic_ico").html('');
+                $("#pic_ico").html(data.con).show();
+            });
+        }) 
+        
+        //设置喜欢
+        $("a[rel=likeable]:not(.disabled)").click(function(e){  
+            $btn_like = $(this);
+            url = $btn_like.data("href");
+            id = $btn_like.data("id");
+            $i = $btn_like.find("i"); 
+            $btn_like.addClass("disabled");
+            $.post(url,{"id": id},function(data, status){ 
+                if(status != "success")
+                    return false;
+                if (data.liked) {
+                    $i.removeClass("no_like");
+                     $i.addClass("like");;
+                    $btn_like.find('.like_type').html("取消喜欢");
+                } else {
+                    $i.removeClass("like");
+                    $i.addClass("no_like");
+                    $btn_like.find('.like_type').html("喜欢");
+                }
+                $btn_like.removeClass("disabled");
+                $btn_like.parent().siblings('.bottom-assess').find(".like_content").find("span").text(data.n_likers);
+                $btn_like.parent().siblings('.bottom_describe').find(".like_content").find("span").text(data.n_likers);
+            },"json");
+        });
+        
+         //鼠标移上显示评论、喜欢按钮
+        $("[rel=tiles],.t_itme,.box_main,.img_box_btn").live("mouseover",function(e){ 
+                e.stopPropagation();
+                e.preventDefault();
+               $(this).find('.assess').show();
+        }).live("mouseout", function(e){
+                e.stopPropagation();
+                e.preventDefault();
+               $(this).find('.assess').hide();
+        });
+        
+         //删除瓦片
+        $("a[rel=delete_tile]").click(function(){
+            url = $(this).data("href");
+            document.location.href = url;
+        })
+        
+        //瓦片描述修改
+        $("#upDatecomment").click(function(){  
+            $('#divinput_text').attr("contenteditable","true");
+            $('#divinput_text').addClass("test_box");
+            $("#divinput_text").focus(); 
+            $(this).hide();
+            $("#serverDatecomment,#resetComment,.line_nav").show();
+            
+        })
+        
+        //取消修改 
+        $('#resetComment').click(function(){ 
+//            text = $(this).attr("placeholder");
+//            $("[rel = picComment]").find("span").show();
+//            //$("[rel = picComment]").append(text);
+//            $("[rel = picComment]").removeClass("addborder");
+//            //$(".input_textarea").hide();
+//            $("#upDatecomment").show();
+//            $("#serverDatecomment,.line_nav,#resetComment,.input_textarea").hide();
+//            $(".input_textarea").val('');
+            $('#divinput_text').removeClass("test_box");
+            //$("[rel = picComment]").removeClass("addborder");
+            //$(".input_textarea").hide();
+            $('#divinput_text').removeAttr("contenteditable");
+            $("#upDatecomment").show();
+            $("#serverDatecomment,.line_nav,#resetComment,.input_textarea").hide();
+            $("#divinput_text").text($("#divinput_text").attr("rel"));
+        })
+        
+        //保存修改
+        $("#serverDatecomment").click(function(){
+            url = $(this).data("href");
+            value = $("#divinput_text").text();
+            $("#divinput_text").attr("rel",value);
+            $('#divinput_text').removeClass("test_box"); 
+            $('#divinput_text').removeAttr("contenteditable");
+            $("#upDatecomment").show();
+            $("#serverDatecomment,.line_nav,#resetComment,.input_textarea").hide();
+            tid = $(this).attr("rel");
+            $('[rel=desc_'+tid+']').text(value);
+            $.post(url,{"tid":tid,"desc":value},function(result){
+                 data = $.parseJSON(result); 
+                 if(data.status){
+                    // $("[rel = picComment]").find("span").text(data.desc);
+                 }
+                 //$('#resetComment').click();
+            })
+        })
+        
+        //获取评论框的焦点
+        $("[rel=comment_input]").click(function(){
+            $("#id-comments").focus();
+        })  
+    })
+    
+</script>
+{% endblock %}

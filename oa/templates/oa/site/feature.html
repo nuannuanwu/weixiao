@@ -1,0 +1,62 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="active-content">
+	<div class="act-c-title recruit-title">
+    	<h3><img src="{{ STATIC_URL }}oa/site/images/title_15.jpg" /></h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content recruit-content">
+        	<div class="top-bg"></div>
+            <div class="m-c-bg">
+            	<div class="m-c">
+                    <!--h4 class="teaching-title">办学特色</h4-->
+                    <!--p class="words-info">
+                    	发布者：张老师&nbsp;&nbsp;&nbsp;&nbsp;发布时间：2013-05-16 15:53
+                    </p-->
+                    <div class="intro-words">
+                        <p>{{features.0.content|safe}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-bg"></div>
+        </div>  
+    </div>
+</div>
+<script type="text/javascript">
+	
+	$(".intro-words > p img").load(function(){
+		DrawImage(this);
+	})
+	//等比例缩放图片
+	
+	function DrawImage(ImgD){ 
+		var flag=false; 
+		var image=new Image(); 
+		image.src=ImgD.src; 
+		if(image.width>0 && image.height>0){ 
+			flag=true; 
+			//if(image.width/image.height>= 180/145){ 
+				if(image.width>830){ 
+					ImgD.width=830; 
+					ImgD.height=(image.height*830)/image.width; 
+				}else{ 
+					ImgD.width=image.width; 
+					ImgD.height=image.height; 
+				} 
+				ImgD.alt=image.width+"x"+image.height; 
+			//} 
+			/*else{
+				if(image.height>145){ 
+					ImgD.height=145; 
+					ImgD.width=(image.width*145)/image.height; 
+				}else{ 
+					ImgD.width=image.width; 
+					ImgD.height=image.height; 
+				} 
+				ImgD.alt=image.width+"x"+image.height; 
+			} */
+		} 
+	} 
+</script>
+{% endblock %}

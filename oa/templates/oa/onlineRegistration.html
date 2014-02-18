@@ -1,0 +1,249 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate regists 10 %}
+<div class="main">
+    <div class="tab"><span>在线报名</span></div>
+    <div class="column">
+        <form id="form_post_select" method='get' action="">
+       <div class="inquire">
+        <select name="school">  
+            <option value="-1">-所有学园-</option> 
+            {% for s in schools %}
+              <option value="{{s.id}}" {% if sid == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+            {% endfor %}
+         </select>
+         <select name="status"> 	
+            <option value="-1">-所有状态-</option> 
+            <option value="0" {% if status == 0 %}selected="selected"{% endif %}>待录取</option>
+            <option value="1" {% if status == 1 %}selected="selected"{% endif %}>未获录取</option>
+            <option value="2" {% if status == 2 %}selected="selected"{% endif %}>已录取</option>
+            <option value="3" {% if status == 3 %}selected="selected"{% endif %}>过期</option>
+            <option value="4" {% if status == 4 %}selected="selected"{% endif %}>待面试</option>
+         </select>
+        <span>提交时间：</span>
+        <input class="input-medium" id="mediumFor" type="text"  name="st" value="{{st}}" placeholder="开始时间" />
+        <span>至</span>
+        
+        <input class="input-medium" id="mediumTo"  type="text" name="et" value="{{et}}" placeholder="结束时间"/> 
+        <input class="btn" id="ser" type="button" value="搜索"  />
+        <a href="javascript:;" id="advSeacher" class="search_more nav_br">高级搜索</a>
+      </div>
+      <div class="inquire hide" id="inquire">
+          <select name="gid" style=" width: auto;"> 	
+            <option value="-1">-所有年级-</option> 
+            {% for grade in grades %}
+              <option value="{{grade.id}}" {% if grade.id == gid %}selected="selected"{% endif %}>{{grade.name}}</option>
+            {% endfor %}
+         </select>
+         <select name="sex" style=" width: auto;"> 	
+            <option value='-1'>-所有性别-</option> 
+            <option value='1' {% if sex == 1 %}selected="selected"{% endif %}>男</option>
+            <option value='2' {% if sex == 2 %}selected="selected"{% endif %}>女</option>
+         </select>
+         <span style="margin-right:0px;">出生日期：</span>  
+        <input class="input-medium" id="bs" type="text"  placeholder="2013-3-05" name="bs" value="{{bs}}"/>
+        <span>至</span>
+        <input class="input-medium" id="be" type="text"  placeholder="2013-5-20" name="be" value="{{be}}"/>
+        <input class="input-medium-xh" type="text"  placeholder="序号" name="rid" value="{% if rid == -1 %}{% else %}{{rid}}{% endif %}"/> 
+        <input class="btn" id="advser" type="button" value="搜索"  />
+        <!--input class="btn" type="button" value="搜索" style="margin-right:0px;" /-->
+      </div>
+    </form>
+      <div class="list">
+    <form id="form_post" method='post' action="" onsubmit="return check()">{% csrf_token %} 
+     <table width="100%" >
+         <tr>
+          <th width="25" scope="col"><input rel="checkall" type="checkbox" /></th>
+          <th width="30" scope="col">序号</th>
+          <th width="90" scope="col">姓名</th>
+          <th width="35" scope="col">性别</th> 
+          <th width="75" scope="col">出生年月</th>
+          <th width="90" scope="col">联系方式</th> 
+          <th width="60" scope="col">状态</th>
+          <th width="75" scope="col">报名时间</th>
+          <th scope="col">学园</th> 
+        </tr>
+        {% if documents|is_empty_list %}
+                <tr>
+                    <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                        <h4 class="not_date"> 暂无数据</h4>
+                    </td>
+                </tr>
+                {% else %}
+        {% for r in regists %}
+        <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+           <td scope="col"><input rel="role" type="checkbox" value="{{r.id}}" name="regist_pks"/></td>
+           <td>{{ r.id }}</td>
+           <td><a href="{% url oa_regist_apply_detail r.id %}">{{r.name|truncatestr:":5"}}</a></td>
+           <td>{% if r.gender == 1 %}男{% endif %}{% if r.gender == 2 %}女{% endif %}</td>
+           <td>{{r.birth_date}}</td>
+           <td>{{r.guardians.all.0.mobile}}</td> 
+           <td>{{r.status|get_regist_status}}</td>
+           <td title="{{r.ctime|date:"Y-m-d H:i"}}">{{r.ctime|date:"Y-m-d"}}</td>
+           <td>{{r.school}}</td>
+        </tr>
+       {% endfor %}
+       {% endif %}
+        <tr class="bg_color atr">
+           <td scope="col"><input rel="checkall" type="checkbox"  /></td> 
+           <td colspan="8" align="left" >
+                <select class="bottom-select pull-left " name="attr" >
+                    <option value="-1">-批量操作-</option> 
+                    <option value="0">待录取</option>
+                    <option value="1">未获录取</option>
+                    <option value="2">已录取</option>
+                    <option value="3">过期</option>
+                    <option value="4">待面试</option>
+                </select> 
+           	<input style=" margin-left: 20px; margin-top: 5px;" disabled="disabled" class="btn btn-success "  id="sub_form" type="submit" value="执行"  />
+           </td> 
+        </tr>
+      </table>
+    </form>
+       <div class="pagination" style="text-align:center;">
+            {% paginate %}
+       </div>
+     </div>
+    
+  </div>
+</div>
+<script>
+  
+$(".list tr:even").addClass("bg_color");
+$(".list tr").hover(
+    function(){ 
+        $(this).toggleClass("atr");
+    },
+    function(){ 
+        $(this).toggleClass("atr");
+});
+$("#ser,#advser").click(function(){
+    var rid = $("[name=rid]").val();  
+    if(rid==""){
+        // $("[name=rid]").val(0); 
+    }
+    $("#form_post_select").submit();
+})
+   //高级搜索
+   $("#advSeacher").click(function(e){
+        e.preventDefault()
+        //e.stopPropagation()
+	   var adv = $("#inquire");
+	   if(adv.is(":visible")){
+		    adv.hide();
+                    $("#ser").show(); 
+		} else {
+                    $("#ser").hide();
+                    adv.show(); 
+		}
+	});
+	$(".input-medium").datepicker({dateFormat: 'yy-mm-dd'});
+	$("#bs").datepicker({ 
+		buttonText: 'Choose',
+		defaultDate: "+1w",
+		changeMonth: true,
+		numberOfMonths: 1,
+		minDate: '+1m +1w', 
+		onClose: function(selectedDate) {
+			$("#be").datepicker("option", {dateFormat: 'yy-mm-dd'}, "minDate", selectedDate);
+		}
+	}); 
+	$("#be").datepicker({
+	   // minDate: 2012-05-09,
+		buttonText: 'Choose',
+		defaultDate: "+1w",
+		changeMonth: true,
+		numberOfMonths: 1,
+		onClose: function(selectedDate) {
+			$("#bs").datepicker("option", {dateFormat: 'yy-mm-dd'}, "maxDate", selectedDate);
+		}
+	});
+	$("#mediumFor1").datepicker({ 
+		buttonText: 'Choose',
+		defaultDate: "+1w",
+		changeMonth: true,
+		numberOfMonths: 1,
+		minDate: '+1m +1w', 
+		onClose: function(selectedDate) { 
+                        $("#mediumTo1").datepicker("option", {dateFormat: 'yy-mm-dd'}, "minDate", selectedDate);
+                        alert($("#mediumTo1").val())                
+        $("#mediumTo").val($("#mediumTo1").val());
+		}
+	}); 
+	$("#mediumTo1").datepicker({
+	   // minDate: 2012-05-09,
+		buttonText: 'Choose',
+		defaultDate: "+1w",
+		changeMonth: true,
+		numberOfMonths: 1,
+		onClose: function(selectedDate) { 
+                        $("#mediumFor1").datepicker("option", {dateFormat: 'yy-mm-dd'}, "maxDate", selectedDate);
+        alert($("#mediumFor1").val())                 
+       
+		}
+	});
+        
+ $(':checkbox[rel=checkall]').change(function(){
+	$(':checkbox[rel=role]').attr('checked',this.checked);
+	$(':checkbox[rel=checkall]').attr('checked',this.checked);
+	chekck();
+})
+
+$(':checkbox[rel=role]').change(function(){
+	var flag = true;
+	$(':checkbox[rel=role]').each(function() {
+        if(!this.checked){
+		flag = false;
+		}
+    });
+	$(':checkbox[rel=checkall]').attr('checked',flag);
+	chekck();
+})
+
+function chekck(){
+	var formChek = $("#form_post"),
+	checkedlen = formChek.find('input[rel=role]:checked').length; 
+	if(checkedlen){
+		$("#sub_form").attr('disabled',false);
+	}else{
+		$("#sub_form").attr('disabled',true);
+	}
+}
+
+function check(){ 
+    var type= $('[name=attr] option:selected').val();
+    if(type == -1){
+        alert("请选择操作类型！");
+       return false; 
+    }else{
+        var r = confirm("是否进行此操作？");
+        if (r == true) { 
+        } else { 
+         return false;  
+        } 
+    }
+    
+     
+}  
+//输入数字输入框
+    $("[name=rid]").keyup(function(){ 
+        var inputTmp =$(this);
+        isNumber(inputTmp);  
+    });
+    //输入数字判断添加数据
+    function isNumber(events){  
+        //var maxnum = event.data('max') 
+        var id = events.attr("id"); 
+        var inputnum = events.val(); 
+        if(inputnum){ 
+            var examNumbIds = /^[0-9]*[1-9][0-9]*$/; 
+            if(examNumbIds.test(inputnum)){  
+            }else{ 
+                events.val("0"); 
+            } 
+        } 
+    }          
+</script>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+/************************************************************************
+*
+*    description         : ie7&8下的效果美化
+*    create              : 2012-10-16  Renz
+*
+*
+*************************************************************************/
+/*.container{
+	width:960px;
+}*/
+.navbar{ _overflow:hidden;}
+.kTiles .tile .thumbnail, .kCal-item, .btn,#tileView .main,#tileView .sidebar{
+	border-top:1px solid #dedcdd;
+	border-left:1px solid #c9c7c8;
+	border-right:1px solid #c9c7c8;
+	border-bottom:2px solid #c9c7c8;
+}
+.kCal-cookbook{
+	border:2px solid #999;
+}
+.navbar .nav li a{
+	_display:block;
+	_width:auto;
+  	_float: right;
+  	_padding: 10px 15px 10px;
+  	_color: #777777;
+  	_text-decoration: none;
+  	_text-shadow: 0 1px 0 #ffffff;
+}
+.navbar .nav li.dropdown .dropdown-toggle #caret-ico{
+	
+	}
+.pull-right .dropdown #kA-img{ _vertical-align:middle;}
+.kTileBar{ _width:925px; _height:45px;}
+.kspan8 .span3{ _float:right;}
+.kBox_r{ _width:220px; _position:none;}
+.kCategory h3{ _width:293px;}
+.kCategory .Citem .cateAllHover a i{_margin:6px 10px 0px 7px;}
+.kCategory .Citem .cateAllHover a:hover i{_margin:6px 10px 0px 7px;}
+.kCategory .Citem .cateAll a i{_margin:6px 10px 0px 7px;}
+.kCategory .Citem .cateAll a:hover i{_margin:6px 10px 0px 7px;}
+.lb-items ul{ _width:100%; _height:40px;}
+.lb-items{ _width:945px;}
+.kTileBar .btn-group,.kTileBar .kPtab,.kTileBar .down-btn{ _display:block;}
+.btn-group .btn{ _margin-left:-2px;}
+/*.kTileBar .down-btn{ _margin-top:-23px;*margin-top:-23px;}*/
+.thumbnails.kPicList.kPicList-normal li,.thumbnails.kPicList.kPicList-mini li{ _float:left; _margin-bottom:20px; _margin-left:20px;}
+.thumbnails.kPicList.kPicList-normal,.thumbnails.kPicList.kPicList-mini{ _margin-left:-40px;}

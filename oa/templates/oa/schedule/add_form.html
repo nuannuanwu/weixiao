@@ -1,0 +1,127 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags umessages_tags %}
+{% block content %}
+<style type="text/css">
+
+</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/shedu.css">
+	<div class="main">
+    	<div class="tab">
+        	<span>添加新课表</span>
+            <a href="{% url oa_schedule_teacher %}?sid={{group.school_id|default:'-1'}}&gid={{group.id|default:'-1'}}" style="color:#4eabe3;">返回</a>
+        </div>
+    	<!--div class="toback">
+            <a href="{% url manage_schedule_teacher %}?class_id={{group.id}}" class="tbbtn"><span>返回</span></a>
+        </div-->
+        <div class="column">
+        	<form class=" registerform upForm " action="{% url oa_create_schedule %}" method="post" enctype="multipart/form-data" id="id_form" style="margin:5px">
+            	{% csrf_token %} 
+                   {% if request.user|is_agency_user %}
+                   <p><label>所属学园*</label>
+                       <select id="school_id" name="sid" style=" width:140px; margin:5px 0 0 0;" value="{{school.id}}" class="Validform_error" datatype="*" errormsg="" nullmsg="请选择所属学园">
+                           <option  value="">--请选择--</option>
+                        {% for s in schools %}
+                            <option  value="{{s.id}}" {% if s.id == school.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                        {% endfor %}
+                    </select>
+                    </p>
+                    {% endif %}
+                    <p ><label>所属班级*</label>
+                    <select id="group_id" name="gid" style="width:140px; margin:5px 0 0 0;" vlaue="{{group.id}}" class="Validform_error" datatype="*" errormsg="" nullmsg="请选择所属班级">
+                        <option  value="">--请选择--</option>
+                        {% if not request.user|is_agency_user or request.user.teacher|user_is_school_admin %}
+                            {% if group_count > 1 %}
+                            {% endif %}
+                            {% for g in groups %}
+                            <option  value="{{g.id}}" {% if g.id == group_id %}selected="selected"{% endif %}>{{g.name}}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    </p>
+                <div class="fliebox" id="fliewrap" style="height: 35px; margin:10px 0 0 0;">
+                    <label>选择文件*</label>
+                    <input type="file" style=" top:3px; width: 270px; left: 85px; font-size: 14px;  height:30px;" value="" class="uplfilebtn" id="id_src" name="src" onchange="txt.value=this.value; return checkfr();" datatype="flieExl" errormsg="文件格式不正确" nullmsg="请选择文件">
+                    <input type="hidden" value="{{request.user.id}}" name="user">
+                    <input type="hidden" value="{{group_id}}" name="group" id="id_group">
+                    <input type="text" style=" margin-top:5px; float:left; padding-right: 5px;"  class=" " id="txt">
+                    <input type="button" value="浏 览" class="btn" id="id_file" style="float:left; top:5px; left: 290px;"> 
+                    <span style="float:left; _margin-bottom:10px; margin-left: 65px;" class="Validform_checktip"></span>
+                </div>
+                <span class="help-inline" id="id_src_error">
+                	小提示：文件类型必须是doc,wps,docx中的一种。
+                </span>
+                <div class="flshbtn">
+                    <input type="button" value="上&nbsp;传" class="btn btn-success" onclick="checkForm()">
+                    <!--<input type="button" value="取 消" class="btn" id="qx" />-->
+                    <a class="btn" href="{% url oa_schedule_teacher %}?sid={{group.school_id|default:'-1'}}&gid={{group.id|default:'-1'}}" style=" margin-left: 28px; color:#666;">取 消</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script type="text/javascript">
+      //表单验证 
+  $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "flieExl": /^.*(([.][d][o][c])|[.][w][p][s]|[.][d][o][c][x])$/  
+             } 
+	});
+}); 
+    if($.browser.mozilla){
+            $("#id_mugshot").css({right:"550px",top:"-1px"})
+	    $(".btn").css({paddingTop:"6px",paddingBottom:"6px"})
+        }else if(navigator.userAgent.toLowerCase().match(/chrome/)!=null){
+            $("#id_src").addClass("uplfilebtn-webkit").removeClass("uplfilebtn")
+        }	
+   
+    function checkForm(){
+        f = document.getElementById('id_src').value;
+        if(!/\.(doc|wps|docx)$/i.test(f)){
+            $("#id_src_error").addClass("redwords");
+             $("#id_form").submit();
+            return false;
+        }else{
+	    $("#id_src_error").removeClass("redwords");
+            $("#id_group").val($("#group_id").val());
+            $("#id_form").submit();
+        }
+    }
+	function checkfr(){
+        f = document.getElementById('id_src').value;
+        if(!/\.(doc|wps|docx)$/i.test(f)){
+            $("#id_src_error").addClass("redwords");
+        }else{
+            $("#id_src_error").removeClass("redwords");
+        }
+    }
+	$("#qx").click(function(){
+            $("#id_src_error").removeClass("redwords");
+	})
+
+    $("#group_id").change(function(){
+        $("#id_group").val($(this).val())
+    })
+
+
+$("#school_id").change(function(){
+    school_id = $(this).val();
+    user_type = "{{request.user|is_agency_user}}";
+    is_admin = "{{ request.user.teacher|user_is_school_admin }}";
+    if(user_type == "False" || is_admin == "True"){
+        url = "{% url oa_get_school_class %}"
+        $.get(url,{sid:school_id},function(result){
+            data = $.parseJSON(result); 
+            $("#group_id").html("");
+            for(var i=0;i<data.length;i++){
+                $("#group_id").append('<option value="' + data[i].id + '">' + data[i].name + '</option>')
+            }
+        });     
+    }
+})
+</script>  
+
+{% endblock %}  

@@ -1,0 +1,394 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate documents 10 %}
+<div class="main">
+    <div>
+        {% include "supply/document_url_menu.html" %}
+    </div>
+    <div class="column">
+        <div>
+        <form class="form-inline" method="GET" id="search-form-box"> 
+            <div id="slimp-seatch" class="pull_left w_175">
+                <input type="text" name="q" id="keyW" class="input-medium"  value="{{query}}" placeholder="标题">
+            </div> 
+            <div id="adv-search" class="hide">
+                <input type="text" placeholder="开始时间" id="from" name="st" class="shijainduan w_80" value="{{st}}" />
+                &nbsp;&nbsp;至&nbsp;&nbsp;
+                <input type="text" placeholder="结束时间" name="et" value="{{et}}" id="to" class="shijainduan w_80" />&nbsp;&nbsp;
+            </div>
+            <button class="searchB btn" id="searchB">{% trans "Search" %}</button>
+            <a href="javascript:;" id="adv-search-btn" class="show">高级搜索</a>
+            
+        </form>
+        </div>
+        <div class="list"> 
+            <table>
+                <tr align="center">
+                    <th scope="col" width="50">级别</th>
+                    <th scope="col" width="130">状态</th>
+                    <th scope="col" width="50">操作</th> 
+                    <th scope="col" width="135">标题</th>
+                    <th scope="col" width="60">申请类型</th>
+                    <th scope="col" width="85">发布时间</th>  
+                    <th scope="col" width="80">发布者</th>
+                    <th scope="col" width="50">操作</th>
+                </tr>
+                 {% if not documents|is_empty_list %}
+                <tr>
+                    <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                        <h4 class="not_date"> 暂无数据</h4>
+                    </td>
+                </tr>
+                {% else %}
+                    {% for a in documents %}
+                        <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}"> 
+                            <td width="50">{{a.level|document_level}}</td>
+                            <td width="150">{{a|material_status|safe}}</td>
+                            <td width="45">
+                                {% if a|can_cancel_mat:request.user %}
+                                   <a href="{% url oa_supply_cancel_document a.id %}">撤回</a>
+                                {% else %}
+                                   无
+                                {% endif %}
+                            </td>
+                            <td width="100"><a target="_blank" href="{% url oa_supply_document_detail a.id %}">{{a.title}}</a></td>
+                            <td width="70">{{a.type|type_name}}</td>  
+                            <!-- <td>{{a|mat_read_num:"read"}}/{{a|mat_read_num:"total"}}</td>  -->
+                            <td title="{{a.ctime|date:"Y-m-d H:i"}}">{{a.ctime|date:"Y-m-d "}}</td>
+                            <td>{{a.sender.profile.realname}}</td>
+                            <td>
+                                <a rel="doc_document" relid="rel_{{a.id}}" data-id="{{a.id}}" href="javascript:;">查看</a>
+                            </td>
+                        </tr>
+                        <tr id="id_{{a.id}}" class="detail_info" style="display:none;">
+                            <td style=" background-color:#fff; mmargin: 0; padding: 0;" colspan="8"> 
+                                        <table class="form-table">
+                                        {% if a.type == 0 %} 
+                                            <!--录入列表-->
+                                            <tr style="border-top: 1px solid #DDDDDD;">
+                                                <th width="140">物资名称</th>
+                                                <th width="100">申请数/录入数</th>
+                                                <th width="80">类别</th>
+                                                <th width="130">供应商</th>
+                                                <th width="60">操作</th>
+                                            </tr>
+                                            {% for ap in a.applies.all %} 
+                                            <tr> 
+                                                <td>
+                                                    <!-- <input ty="checkbox" data-boxid="{{ap.id}}" type="checkbox"/> -->
+                                                    {{ap}}
+                                                </td>
+                                                <td>{{ap.num}}/{{ap.deal}}</td>
+                                                <td>{{ap.supply.category}}</td>
+                                                <td>{{ap.supply.provider|default:''}}</td> 
+                                                <td>
+                                                {% if a.is_approvaled  and request.user|has_permission:"manage_supply_manager" %}
+                                                    {% if ap|apply_undeal > 0 %}
+                                                        <a rel="popenter" href="javascript:;" data-id="{{ap.id}}">
+                                                            录入
+                                                        </a>
+                                                    {% else %}
+                                                        已录入
+                                                    {% endif %}
+                                                {% else %}
+                                                录入
+                                                {% endif %}
+                                                </td>  
+                                            </tr>
+                                            {% endfor %}
+                                            <!--/录入列表-->
+                                            <tr>
+                                                <td style=" background-color:#fff; height:45px;" colspan="6">
+                                                    <!-- <label style="display: inline-block;"><input  rel="all_checked" data-boxid="{{r.id}}" type="checkbox"/>批量</label> -->
+                                                    批量录入
+                                                    {% if a.is_approvaled  and request.user|has_permission:"manage_supply_manager" %}  
+                                                        {% if a|doc_apply_undeal > 0 %}
+                                                            <input class="btn btn-success" rel ="enter_btn" type="button" data-boxid="{{a.id}}" style=" padding:3px 8px;" value=" 执行 " />
+                                                        {% else %}
+                                                            <input class="btn btn-success"  type="button" style=" padding:3px 8px;" value=" 执行 " disabled="disabled" />
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <input class="btn btn-success"  type="button" style=" padding:3px 8px;" value=" 执行 " disabled="disabled" />
+                                                    {% endif %} 
+                                                </td>
+                                            </tr>
+                                            {% else %}
+                                            <!--领取列表-->
+                                             <tr style="border-top: 1px solid #DDDDDD;">
+                                                <th width="180">物资名称</th>
+                                                <th width="100">申请数/领取数</th>
+                                                <th width="80">类别</th>
+                                                <th width="100">登记人</th>
+                                                <th width="60">操作</th>
+                                            </tr>
+                                            {% for ap in a.applies.all %}
+                                            <tr>
+                                                <td>
+                                                    <!-- <input ty="checkbox" data-boxid="{{ap.id}}" type="checkbox"/> -->
+                                                    {{ap}}
+                                                </td>
+                                                <td>{{ap.num}}/{{ap.deal}}</td>
+                                                <td>{{ap.supply.category}}</td>
+                                                <td></td>
+                                                <td>
+                                                {% if a.is_approvaled  and request.user|has_permission:"manage_supply_manager" %}
+                                                    {% if ap|apply_undeal > 0 %}
+                                                        <a rel="popback" href="javascript:;" data-id="{{ap.id}}">领取</a>
+                                                    {% else %}
+                                                        已领取
+                                                    {% endif %}
+                                                {% else %}
+                                                    领取
+                                                {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            <!--领取列表--> 
+                                            <tr rel="{{a|doc_apply_undeal}}">
+                                                <td style=" background-color:#fff; height:45px;" colspan="6">
+                                                    <!-- <label style="display: inline-block;"><input  rel="all_checked" data-boxid="{{r.id}}" type="checkbox"/>批量</label> -->
+                                                    批量领取
+                                                     {% if a.is_approvaled  and request.user|has_permission:"manage_supply_manager" %} 
+                                                        {% if a|doc_apply_undeal > 0 %} 
+                                                            <input class="btn btn-success" rel ="get_btn" type="button" data-boxid="{{a.id}}" style="padding:3px 8px;" value=" 执行 " />
+                                                        {% else %}
+                                                            <input class="btn btn-success"  type="button" style=" padding:3px 8px;" value=" 执行 " disabled="disabled" />
+                                                        {% endif %} 
+                                                    {% else %}
+                                                        <input class="btn btn-success"  type="button" style=" padding:3px 8px;" value=" 执行 " disabled="disabled" />
+                                                    {% endif %}  
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                            
+                                        </table> 
+                                </td>  
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+            <div class="pagination" style="text-align:center;">
+                {% paginate %}
+            </div>
+       </div>
+    </div>
+</div>
+<div class="modal" id="enterModal" style=" display:none; width: 860px; margin-left: -430px;"
+data-path="{% url oa_supply_supply_entry %}?q={{query}}&st={{st}}&et={{et}}&page={{page}}">
+</div> 
+<div class="modal" id="getModal" style=" display:none; width:700px; margin-left: -340px;" data-path="{% url oa_supply_supply_entry %}?q={{query}}&st={{st}}&et={{et}}&page={{page}}">
+</div> 
+<script type="text/javascript">
+    $(function(){
+        //展开操作列表
+        var listDataId = {{tar|default:0}};
+        if(listDataId){ 
+            $("#id_"+listDataId).show();
+            $('[relid=rel_'+listDataId+']').addClass("nav_brss");
+        }
+        //验证表单
+        $(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            postonce:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "nun" : /^[1-9]*[1-9][0-9]*$/
+             } 
+        });
+    });
+    //删除操作
+    $("[rel= delDate]").click(function(){ 
+        var href = $(this).data("href");
+        if(confirm('确认删除吗?')){ 
+            window.location = href;
+        }
+    });
+    //查看 
+    $("[rel=doc_document]").click(function(){
+        var id = $(this).data("id");
+        if($("#id_"+id).is(':visible')){ 
+            $(this).removeClass("nav_brss")
+            $(".detail_info").hide();
+        }else{ 
+            $(".detail_info").hide(); 
+            $('[rel=doc_document]').removeClass("nav_brss")
+            $(this).addClass("nav_brss")
+            $("#id_"+id).show();
+        } 
+    }); 
+
+    //录入物资弹框 
+    $("[rel=popenter]").click(function(){ 
+        var id = $(this).data("id");
+        url = "{% url oa_supply_document_applies %}" + "?pk=" + id;
+        $.get(url,function(result){
+            data = $.parseJSON(result);
+            if(data.con){
+                $('#enterModal').html(data.con);
+                $('#enterModal').modal('toggle');
+            }
+        });
+    });
+
+     //领取物资弹框 
+    $("[rel=popback]").click(function(){ 
+        var id = $(this).data("id");
+        url = "{% url oa_supply_document_applies %}" + "?pk=" + id;
+        $.get(url,function(result){
+            data = $.parseJSON(result);
+            if(data.con){
+                $('#getModal').html(data.con);
+                $('#getModal').modal('toggle'); 
+            }
+        });
+    });
+
+    //批量录入弹框
+    $("[rel=enter_btn]").click(function(){ 
+        var id = $(this).data("boxid");
+        url = "{% url oa_supply_document_applies %}" + "?did=" + id;
+        $.get(url,function(result){
+            data = $.parseJSON(result);
+            if(data.con){
+                $('#enterModal').html(data.con);
+                $('#enterModal').modal('toggle');
+            }
+        });
+    });
+
+    //批量领取弹框
+    $("[rel=get_btn]").click(function(){ 
+        var id = $(this).data("boxid");
+        url = "{% url oa_supply_document_applies %}" + "?did=" + id;
+        $.get(url,function(result){
+            data = $.parseJSON(result);
+            if(data.con){
+                $('#getModal').html(data.con);
+                $('#getModal').modal('toggle');
+            }
+        });
+    });
+
+    //录入保存
+    $("#server_enter").live('click',function(){
+        var inputnum = $('#enterModal #levetable tr input[name=num]');
+        var events = $("#enterModal #levetable tr");
+        var str = supplyStrEnter(events);//物资信息
+        var url = $("#enterModal").data("path");
+        $("#post_data").val(str);
+        $("#channel").val('send'); 
+        $("#post_form").attr("action",url); 
+        if(inputnum.length>1){
+            inputnum.each(function(e,v){
+                var value = v.getAttribute("value");
+                var max =v.getAttribute("max");
+                if(value>max){
+                    $(this).value(max);
+                }
+            });
+            $("#post_form").submit();
+        }else if(inputnum.length==1){ 
+            max = inputnum.attr("max");
+            value = inputnum.attr("value");
+            if(value>0&&value<=max){ 
+                $("#post_form").submit(); 
+            }else{ 
+                $("#no_supply_remind").show();
+            } 
+        } 
+    });
+
+    //领取保存
+    $("#server_get").live('click',function(){
+        var inputnum = $('#getModal #levetable tr input[name=num]');
+        var events = $("#getModal #levetable tr");
+        var str = supplyStrGet(events); //物资信息 
+        var url = $("#enterModal").data("path");
+        $("#post_data").val(str); 
+        $("#channel").val('send');
+        $("#post_form").attr("action",url);
+        inputnum.each(function(e,v){
+             var value = v.getAttribute("value");
+             var max =v.getAttribute("max");
+             if(value>max){
+                $(this).value(max);
+                alert(max + $(this).html());
+             }
+        });
+        if(inputnum.length>1){ 
+           // $("#post_form").submit();
+        }else if(inputnum.length==1){ 
+            max = inputnum.attr("max");
+            if(max>0){ 
+                //$("#post_form").submit(); 
+            }else{ 
+                $("#no_supply_remind").show();
+            } 
+        } 
+    });
+      
+    
+    //循环读取数据
+    function supplyStrEnter(events){
+        var str = '',strs = ''; 
+        events.each(function(e,v){ 
+            var idn = v.getAttribute("idn");
+            var appid =v.getAttribute('appid');
+            //var idtype = v.getAttribute("idtype");
+            var pname = $('[idn='+idn+']').find(".inputpname").val(); 
+            var sname = $('[idn='+idn+']').find(".inputsname").val(); 
+            var num = $('[idn='+idn+']').find(".inputnum").val();
+            var regist = $('[idn='+idn+']').find(".inputregister").val();
+            if(idn !=null){
+                if(str){ str += "," ; } 
+                str +='"'+idn+'":{"app_id":"'+appid+'","pname":"'+pname+'","sname":"'+sname+'","num":'+num+',"regist":"'+regist+'"}'; 
+            } 
+        }) 
+        strs = '{' + str + '}'  
+        return strs; 
+    }
+    //循环读取数据
+    function supplyStrGet(events){
+        var str = '',strs = ''; 
+        events.each(function(e,v){ 
+            var idn = v.getAttribute("idn");
+            var appid =v.getAttribute('appid');
+            //var idtype = v.getAttribute("idtype"); 
+            var num = $('[idn='+idn+']').find(".inputnum").val();
+            var regist = $('[idn='+idn+']').find(".inputregister").val();
+            if(idn !=null){
+                if(str){ str += "," ; } 
+                str +='"'+idn+'":{"app_id":"'+appid+'","num":'+num+',"regist":"'+regist+'"}'; 
+            } 
+        }) 
+        strs = '{' + str + '}'  
+        return strs; 
+    }
+
+    //输入数字输入框
+    $(".inputnum").live('keyup',function(){
+        var inputTmp =$(this);
+        isNumber(inputTmp);  
+    });
+    //输入数字判断添加数据
+    function isNumber(event){  
+        var maxnum = event.data('max')
+        var id = event.attr("id"); 
+        var inputnum = $("#"+id).val(); 
+        if(inputnum){ 
+            var examNumbIds = /^[1-9]*[1-9][0-9]*$/; 
+            if(examNumbIds.test(inputnum)){ 
+                if(parseInt(inputnum) >parseInt(maxnum)){ 
+                    $("#"+id).val(maxnum); 
+                } 
+            }else{ 
+                $("#"+id).val("0"); 
+            } 
+        } 
+    }
+     
+</script> 
+{% endblock %}

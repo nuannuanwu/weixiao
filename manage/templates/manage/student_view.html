@@ -1,0 +1,53 @@
+{% extends 'manage_base.html' %}
+{% load i18n kinger_tags %}
+{% block content %}
+<style type="text/css">
+._tip{ font-size: 16px; color: #444;}
+</style>
+<div class="page-header">
+    <div class="pull-right" style="margin-right:5px;">
+        <a href="{% url manage_student_update student.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
+    </div>
+    <div class="pull-right" style="margin-right:5px;">
+        <a href="{% url manage_student_list %}" class="btn">{% trans "Back" %}</a>
+    </div>
+    <h1><a href="{% url manage %}">学校管理</a><i class="icon-chevron-right"></i><a href="{% url manage_student_list %}">学生管理</a><i class="icon-chevron-right"></i>学生详情</h1>
+</div>
+
+<div class="form-horizontal form-kPicCon">
+    <div class="control-group">
+        <label class="control-label">
+            <div class="thumbnail">
+                <img src="{% media_path student.user.get_profile.get_avatar "normal" %}"/>
+            </div>
+        </label>
+        <div class="controls form-kPicCon-show">
+            <h2>{{student}}</h2>
+            <p>
+                <span>所属班级：</span>
+                {{ student.group }}
+            </p>
+            <p>
+                <span>家长电话：</span>
+                {{student.user.get_profile.mobile}}
+            </p>
+            <p>
+                <span>生日:</span>
+                {{student.birth_date|date:"Y-m-d"}}
+            </p>
+            <p>
+                <span>{% trans "Gender" %}:</span>
+                {{student.get_gender_display}}
+            </p>
+        </div>
+    </div>
+    <div class="control-group _tip">
+            {{ student.description }}
+    </div>
+    <div class="control-group control_separate_short">
+        <a href="{% url manage_student_send_account student.id %}?redir={% url manage_student_view student.id %}" data-title="下发帐号，会重新生成用户的密码，确认吗？"class="a_confirm_link btn btn-inverse">{% trans "Send" %} {% trans "Account" %}</a>
+    </div>
+</div>
+{% endblock %}
+
+

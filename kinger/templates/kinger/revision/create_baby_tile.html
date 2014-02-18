@@ -1,0 +1,322 @@
+{% load pagination_tags kinger_tags i18n %}
+{% if request.user.is_authenticated %} 
+<style>
+    #release_box_view {display: none; position:fixed; left: 0%;top:0%; width:100%; height: 100%; overflow-x: hidden; overflow-y: auto; z-index: 10000;}
+    #release_box { background: #fff; margin: 0 auto; width: 720px; min-height: 430px; margin-top: 60px; margin-bottom: 100px; } 
+    textarea.placeholdersjs , input[type="text"].placeholdersjs { color: #999; } 
+    .release { }
+    .release .table_cad { overflow: hidden;  }
+    .release .create_title { background: url('{{ STATIC_URL }}kinger/img/cereate_title_bg.png') no-repeat; text-align: center;  float: left;  }
+    .release .title_bg_show { background-position: 0 0;  }
+    .release .title_bg_hide { background-position: -360px 0;  background: none;}
+    .release .create_title a {  font-size: 18px; color: #666262;  float: left; height: 47px; line-height: 47px; width: 360px; text-decoration: none;}
+    .release .create_title a.on { color: #ffffff;}
+    .release .create_title a:hover {  } 
+    .release .create_box { /*padding-top: 40px;*/ padding-bottom:20px;  }
+    .release .form_box { margin: 40px auto 0; width:615px; /*min-height:350px;*/   }
+    .release .form_box .text_box { width:612px;  margin: 0 auto; min-height:250px; }
+    #id_content { box-shadow: none; overflow: hidden; overflow-y: auto; -moz-resize: vertical;-webkit-resize: vertical;resize: vertical; padding: 5px;  width:600px; height: 190px; border: 1px solid #ccc; border-radius:0; box-shadow: none; margin: 0;}
+    .textarea { border-width: 1px; border-style: solid; word-break: break-word; word-wrap: break-word; outline: none; cursor: text;}
+    .release .footer_btn { text-align: center; margin: 20px;}
+    .release .footer_btn input { margin:0; padding: 0; color: #666666; border: none; background: url('{{ STATIC_URL }}kinger/img/btn_cereate.png') no-repeat; width: 105px; height: 40px; text-align: center; line-height: 40px; font-size: 16px;   }
+    .release .footer_btn input.severbtn { background-position: 0 -55px; color: #f3f9fc;  margin-right: 20px;}
+    /*.release .footer_btn input:hover { filter: alpha(opacity=80);-moz-opacity: 0.8; opacity: 0.8; }*/
+    .release a.button{
+        background: url('{{ STATIC_URL }}kinger/img/btn_cereate.png') no-repeat;
+        color: #666666;
+        display: inline-block; 
+        width: 105px; 
+        height: 40px;  
+        line-height: 40px;
+        font-size: 16px;
+        text-align: center;
+        border-radius: 4px; 
+        text-decoration: none; 
+        margin-right: 0px;
+    }
+     .release a.button:hover { filter: alpha(opacity=80);-moz-opacity: 0.8; opacity: 0.8;  }
+    .box_wrapper { text-align: center; }
+    .release a.fleft{ float: left; }
+    .release a.fleft:hover{color: #f63}
+    .release a.fright{ background-position: 0 -55px; color: #fff; }
+    .release a.fright:hover{ filter: alpha(opacity=80);-moz-opacity: 0.8; opacity: 0.8; }
+    .release a.disabled, .release a.disabled:hover{color:#999; background: #ccc; cursor: default;}
+    
+    .dropbox_wrapper{/*display: none;*/}
+    .uploadify{width: 670px !important; margin: 0px auto 10px;}
+    .imageHolder .loading, .imageHolder .error, .uploadError .loading, .uploadUploading .uploading{display: none;} 
+    .imageHolder .loading{ color: #999; }
+    .imageHolder .error{ color: #f63; }
+    .uploadError .error, .uploadUploading .uploading{display: block}
+    .uploadUploading .uploading{background: url('{{ STATIC_URL }}kinger/html5dropbox/uploading.png') center center no-repeat;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+    #not_html5 { margin: 0 auto; margin-left: 40px; text-align: center; height: 200px; display: none;  }
+    #create_box_1 .uploadify-button {border:none; Unknown property name.-moz-border-radius: 30px;-webkit-border-radius:0;border-radius: 0px; }
+    #create_box_1 .uploadify { float: left; margin: 0 auto;  width: 100px!important;  }
+    #create_box_1 .upfileBtn_box { height: 30px; padding: 5px 0; margin-top: 20px; margin-left: 20px;  line-height: 30px;  }
+    #create_box_1 .upfileBtn_box span { font-size: 14px; color: #4a4a4a; }
+    #colsew a { display: inline-block; width:44px; height: 44px; background: url('{{ STATIC_URL }}kinger/img/colse.png'); }
+    #colsew a:hover { text-decoration: none; background: url('{{ STATIC_URL }}kinger/img/colse_hover.png'); }
+
+</style> 
+<div class="release">
+    <div class="table_cad">
+            <div rel="1" class="create_title">
+                <a class="on" rel="1" href="javascript:;" >发布图片</a>
+            </div>
+            <div rel="2" class="create_title title_bg_hide">
+                <a class="" href="javascript:;">发布文字</a> 
+            </div>
+            <!--<a class="close" style=" position: absolute; right: 0; top:10px; font-size: 32px; " title="关闭" data-dismiss="modal">×</a>-->
+        </div> 
+        <!-- 图片记录 -->
+        <div id="create_box_1" style="display: none; position: relative;" class="create_box">
+            <div id="uploader_box" style="max-height: 300px; overflow-y: auto; overflow-x: hidden; position: relative;">
+                <!--html5-拖动上传 -->
+                <div id="dropbox" class="dropbox_wrapper dropbox" style=" display: none; position: relative; zoom: 1;" >
+                    <span class="message">拖放图片到这里上传 <br /><i>支持jpg,gif,png或bmp格式(每次最多 12 张/ 单张不超过 5MB)</i></span>
+                 </div>
+                <div id="not_html5">
+                   该浏览器不支持html5 拖放上传,请切换flash上传
+                </div> 
+                <!-- /html5-拖动上传 -->  
+                <!-- flash上传 --> 
+                <div id="flashbox" class="dropbox_wrapper flashbox" style=" margin-top: 30px; position: relative; zoom: 1;" >
+                    <form id="post_form2" class="" action="{% url kinger_rev_create_baby_tile %}" method="post"  enctype="multipart/form-data">{% csrf_token %}
+                        <div id="post_form_content"></div>
+                        <!--<div id="filelisttype">No runtime found.</div>-->
+                        <input id="flash_cealr" type="hidden" />
+                    </form> 
+                    <div id="dorop_remind" style=" display: none;  z-index: 100; position: absolute; left: 50%; top:50%; z-index: 1;">
+                        <img src="{{ STATIC_URL }}kinger/img/logding.gif"/> 
+                    </div>
+                </div> 
+                <!-- /flash上传 -->
+            </div>
+            <div  class="upfileBtn_box" style=" ">
+                <input name="img" value="选择文件" file-size-limit="5MB" datatype="*" file-type-exts="*.jpg;*.png;*.jpeg;*bmp" type="button" id="pickfiles" class="flashbox"> 
+                <!--<a id="pickfiles" href="javascript:;">选择文件</a>-->
+                <span>jpg,gif,png或bmp格式,单张图片不超过5MB.</span>            
+            </div>
+            <!--提交按钮-->
+            <div class="box_wrapper footer_btn" style=" margin-bottom: 20px;">
+                <a class=" fleft" id="uploader_switch" href="javascript:void(0)" style="display:none;">切换上传方式</a>
+                <div id="box_footer" style="clear: both; margin-left:10px;" >
+                    <!--<a class="button fright" id="html5_post_data" href="javascript:void(0)"  style="display:none">发布</a>-->
+                    <input id="html5_post_data" class="severbtn btn" type="button" name="" disabled="disabled" value="发布" />
+                    <!--<a class="button fright" id="flash_post_data" href="javascript:void(0)" style="display:none">发布</a>-->
+                    <input id="flash_post_data" class="severbtn btn" type="button" name="" disabled="disabled" value="发布" />
+                    <a id="hide_box" style="display: none;" data-dismiss="modal" href="javascript:;"></a>
+                    <input id="html5_post_rest" style=" display: none; margin:0 20px;" type="button" value="取消"  >
+                    <input id="flash_post_rest" style=" display: none; margin:0px;"  type="button" value="取消"  > 
+                </div>
+            </div>
+            <!--/提交按钮--> 
+        </div>
+        <!-- /图片记录 --> 
+        <!-- 文字记录 -->
+        <div id="create_box_2" class="create_box" style=" position: relative;">
+            <form id="post_form" class="" action="{% url kinger_rev_create_baby_tile %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <input name="new_type" type="hidden" value="4">
+                <input name="ty" type="hidden" value="word_type">
+                <div class="form_box">
+                    <!--<label for="id_content">内容:</label>-->
+                    <div class="text_box controls" >
+                        <div id="id_content" class="textarea" rel="create_form" contenteditable="true"> 
+                        </div>
+                        <textarea id="id_contents"style=" display: none;" rows="10" cols="40" name="content" placeholder="今天想记录点什么..."></textarea>
+                        <div id="facewB" rel="facewB" class="facew face-ico rpico" alt="0" style=" position: relative; margin-left: 0; margin-top: 10px;">
+                            <div id="faceBG_tile" class="faceBG_C" style="left: -24px; bottom: 35px; ">
+                                {% get_emo_config as emo_config %}
+                                <div class="facebox" style="display: block;">
+                                    <div class="facej facej_1"></div>
+                                    <ul>
+                                      {% for key, value in emo_config.items %}
+                                       <li rel="emopic" title="{{value.title}}"><img src="{{value.url}}" width="28" height="28"/></li> 
+                                      {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                         </div> 
+                    </div> 
+                    <div class="footer_btn" style=" mragin:10px 10px;">
+                        <input class="severbtn btn" rel="severText" type="button" name="" disabled="disabled" value="发布" />
+                        <input class="" data-dismiss="modal" type="reset" name="" value="取消" />
+                    </div>
+                </div> 
+            </form>
+        </div>
+        <!-- /文字记录 --> 
+</div>
+ 
+<script>
+    $(".create_title").live('click',function(){
+        var rel = $(this).attr('rel');
+        $(this).addClass("title_bg_hide");
+        $(this).find("a").removeClass("on");
+        $(this).siblings().removeClass("title_bg_hide");
+        $(this).siblings().find("a").addClass("on");
+        $(".create_box").hide();
+        $("#create_box_"+rel).show(); 
+    })
+</script> 
+
+<!-- 拖放上传文件 --> 
+<!--<script src="{{ STATIC_URL }}oa/js/placeholders.jquery.min.js" type="text/javascript" charset="UTF-8"></script>-->
+<script src="{{ STATIC_URL }}kinger/plupload/js/plupload.js"></script>
+<script src="{{ STATIC_URL }}kinger/plupload/js/plupload.flash.js"></script>
+<script src="{{ STATIC_URL }}kinger/html5dropbox/md5.js"></script>
+<script src="{{ STATIC_URL }}kinger/js/json3.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/html5dropbox/jquery.filedrop.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/html5dropbox/styles.css"> 
+<script src="{{ STATIC_URL }}kinger/html5dropbox/jquery.base64.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/html5dropbox/script.js"></script>
+
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<!-- /拖放上传文件 --> 
+<!--<script src="{{ STATIC_URL }}oa/js/uploadify/jquery.uploadify.min.js"></script>-->
+<!--<link rel="stylesheet" href="{{ STATIC_URL }}oa/js/uploadify/uploadify.css">-->
+
+<script> 
+var html5_uploader_init;
+var flash_uploader_init;
+
+$(function(){
+//    $("#id_content").keyup(function(){//输入框键盘事件
+//	var len = $(this).text();
+//	if(len.length>0){
+//		$("#post_bnt").attr('disabled',true);
+//	}else{
+//		$("#post_bnt").attr('disabled',false);
+//	}
+//    });
+   $("#id_content").focus(function(){ 
+        var _this = $(this);
+        tt = setInterval(function(){_this.keyup()},100);
+    }).blur(function(){
+        clearInterval(tt);
+    }); 
+    // document click
+      $("#release_box").click(function (e) {
+          if ($(e.target).eq(0).is($("[rel=facewB]"))) { 
+              $(".faceBG_C").show(); 
+          } else {
+              $(".faceBG_C").hide();
+          }
+      });
+      // end document click 
+      // 表情
+      $("[rel='emopic']").live('click', function (){ 
+        $("#id_content").append('[' + $(this).attr("title") + ']');
+        $("#faceBG_tile").hide();
+        $("[rel=create_form]").keydown(); 
+        $("[rel=create_form]").keyup();
+      }) 
+      //输入框获取焦点和失去焦点事件
+      $("[rel=create_form]").focus(function(){
+          $(this).css("border","1px solid #44a6cd");
+      }).blur(function(){
+          $(this).css("border","1px solid #ccc");
+      });
+      
+     //判断提交字数
+     $("[rel=create_form]").keyup(function(){  
+         lucene_objInput = $(this); 
+         var str = lucene_objInput.text().trim().length;
+         if(str>0){
+             $("[rel = severText]").removeAttr("disabled");
+         }else{
+             $("[rel = severText]").attr("disabled","disabled"); 
+         }
+     }) 
+    //文字提交
+    $("[rel = severText]").click(function(){
+//        alert($("#id_content").text())
+        var strs =$("#id_content").text().trim(); 
+        $("#id_contents").val(strs);
+        $("#post_form").submit();
+        $(this).attr("disabled","disabled"); 
+    });
+     
+    //切换上传方式
+    function switch_uploader(flash_enable){
+        if (flash_enable) {
+            $('.flashbox').show();
+            $('#id_video').show();
+            $('.dropbox').hide();
+            $('#html5_post_data').hide();
+            $('#flash_post_data').show();
+            $('#html5_post_rest').hide();
+            $('#flash_post_rest').show();
+            $('.upfileBtn_box').show();
+        }else{
+            $('.dropbox').show();
+            $('#id_video').hide();
+             $('.upfileBtn_box').hide();
+            $('.flashbox').hide();
+            $('#html5_post_data').show();
+            $('#flash_post_data').hide();
+            $('#html5_post_rest').show();
+            $('#flash_post_rest').hide();
+        }
+    }
+
+    function uploader_init(force_flash){
+        // check html5 file API support
+        //var button_img = "{{ STATIC_URL }}kinger/img/post_btn.jpg",
+            //button_class = "uploadify-button", 
+            var url = "{% url upload_tile_image %}",
+            redirect_url = "{% url kinger_rev_time_axis %}"
+        if (force_flash ) {
+            switch_uploader(1);
+            if (!flash_uploader_init) {
+                //UploaderFlash.init({'swf':'{{ STATIC_URL }}oa/js/uploadify/uploadify.swf','buttonImage':button_img,'url':url,'buttonClass':button_class,'redirect_url':redirect_url});
+                UploaderFlash.init({'swf':'{{ STATIC_URL }}kinger/plupload/js/plupload.flash.swf','container':'create_box_1','buttonId':'pickfiles', 'url':url, 'redirect_url':redirect_url});
+            };
+        }else{
+            switch_uploader(0)
+            if (!html5_uploader_init) {
+                UploaderHTML5.init({'redirect_url':redirect_url});
+            }
+        }
+    }
+     uploader_init(1);   // 默认显示: 1=flash, 0=html5
+     if( window.FormData !== undefined ){
+         if($.browser.msie){//若是ie浏览器
+             //ie10以下的ie浏览器:$.browser.version返回是string(字符串,用parseInt转成number(数值)类型)
+            if(eval(parseInt($.browser.version))<10){ 
+                $("#uploader_switch").hide();
+            }
+        }else if($.browser.mozilla){//若是firefox浏览器
+            $("#uploader_switch").show(); 
+        }else if($.browser.safari){//若是chrome浏览器
+            $("#uploader_switch").show();   
+        }else if($.browser.opera){//若是opera浏览器
+            $("#uploader_switch").show();  
+        } 
+     }
+
+    $('#uploader_switch').click(function(e) {  
+        if ( $('#dropbox').is(':visible')) { 
+             uploader_init(1);
+             $(".flash").show(); 
+        }else{ 
+             uploader_init(0);
+             $(".flash").hide(); 
+        }
+    });
+}); 
+  String.prototype.trim = function(){  
+        // 用正则表达式将前后空格  
+        // 用空字符串替代。  
+        return this.replace(/(^\s*)|(\s*$)/g, "");  
+   }
+</script>
+{% endif %}
+

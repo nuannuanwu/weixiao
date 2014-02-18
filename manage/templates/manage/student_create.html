@@ -1,0 +1,32 @@
+{% extends 'manage_base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+
+<div class="page-header">
+	<div class="pull-right">
+        <a href="{% url manage_student_list%}" class="btn">{% trans "Back" %}</a>
+    </div>
+    <h1><a href="{% url manage %}">学校管理</a><i class="icon-chevron-right"></i><a href="{% url manage_student_list %}">学生管理</a><i class="icon-chevron-right"></i>创建学生</h1>
+</div>
+
+{% url manage_student_create as create_url %}
+{% include "manage/includes/student_form.html" with action_url=create_url %}
+
+{% endblock %}
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/plugins/formValidator-4.1.3.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/plugins/formValidatorRegex.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.formValidator.initConfig({formID:"id_form",theme:"ArrowSolidBox"});
+		$("#id_name").formValidator({onFocus:"请输入学生姓名"}).inputValidator({min:1,onError:"不能为空"});
+		$("#id_mobile").formValidator({onFocus:"请输入学生手机"}).inputValidator({min:1,onError:"不能为空"});
+		$("#id_description").formValidator({onFocus:"请输入学生简介"}).inputValidator();
+		$("#id_group").formValidator({onFocus:"请输入学生班级",onCorrect:"谢谢你的配合"}).inputValidator();
+		$("#id_gender").formValidator({onFocus:"请输入学生性别",onCorrect:"谢谢你的配合"}).inputValidator();
+		$("#id_birth_date").formValidator({onShow:"请输入的学生出生日期",onFocus:"请输入的出生日期，格式为YYYY-MM-DD",onCorrect:"你输入的日期合法"}).inputValidator({min:"1900-01-01",type:"string",onError:"日期须大于\"1900-01-01\""});
+	})
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'umessages/base_message.html' %}
+{% load i18n kinger_tags umessages_tags %}
+{% block message_right_link %}
+	<div class="pull-right" style="margin-right:5px; margin-top:-5px;">
+        <a class="btn btn-primary" data-toggle="modal" href="{% url userena_umessages_quick_contact %}" >联系人</a>
+    </div>
+{% endblock %}
+{% block content_title %}
+{% get_unread_message_count_for user as unread_message_count %}
+<h2>{% trans "My Messages" %} <small>{% blocktrans %}{{ unread_message_count }} new messages.{% endblocktrans %}</small> </h2>{% endblock %}
+{% block content %}
+<div class="private_lists kspan8 kthumbnail">
+    {% for message in message_list %}    	
+		{% if message.from_user_id == user.id %}            	
+			{% include 'umessages/message_contact.html' with message=message opposite_user=message.to_user user=user %}
+		{% else %}
+			{% include 'umessages/message_contact.html' with message=message opposite_user=message.from_user user=user %}
+		{% endif %}
+	{% empty %}
+		<div class="knoList">暂无消息，联系导师可到<a href="{% url userena_umessages_quick_contact %}">导师页面</a></div>
+    {% endfor %}
+</div>
+{% include 'umessages/message_right.html' %}
+<script>
+function delMsgList(event,obj){
+	stopBubble(event);
+	var self = $(obj);
+        url = self.attr('href');
+        message = '确认执行此操作吗？';
+		Bconfirm({
+			message: message,
+			handler: function(){
+                location.href=url;
+			}
+		});
+		return false;
+}
+</script>
+{% endblock %}

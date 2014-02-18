@@ -1,0 +1,109 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+ <div class="main">
+      <div class="tab"><span>添加班级</span><a href="{% url oa_class_list %}?sid={{school.id}}">返回</a></div>
+      <div class="column">
+              <form id="post_form" class="registerform" action="{% if group %}{% url oa_class_update group.id %}{% else %}{% url oa_class_create %}{% endif %}" method="post">
+                   {% csrf_token %}
+                   <div class="uers-info">
+                       <p>
+                           <label> 所属机构* </label>
+                           <select id="id_school" style=" font-size: 14px; margin:5px 10px 0 0;" name="school" class="input-medium " datatype="*" errormsg="" nullmsg="请选择机构">
+                               <option selected="selected" value="" >------</option>
+                                {% for s in schools %}
+                                <option value="{{s.id}}" {% if s.id == school.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                                {% endfor %}
+                           </select><span id="id_schoolTip" class="erro-tips">{{form.school.errors|striptags}}</span>
+                         </p>
+                       <p>
+                           <label> 班级名称* </label>
+                           <!--<input id="id_name" name="name" class="input-medium" type="text" value="大一班" />-->
+                           {{ form.name|attr:"class:input-medium"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入班级名" }}
+                           &nbsp;<span id="id_nameTip" class="erro-tips">{{form.name.errors|striptags}}</span>
+                       </p>
+                       <p>
+                        <label> 班级类型* </label>
+                        {{ form.type|attr:"class:input-medium"|attr:"class:Validform_error"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请选择班级类型"}}
+                        <span id="id_typeTip" class="erro-tips">{{form.type.errors|striptags}}</span>
+                       </p>
+                       <p>
+                           <label> 所属年级* </label>
+                            {{form.grade|attr:"class:input-medium"|attr:"class:Validform_error"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请选择年级"}}
+                            <span id="id_gradeTip" class="erro-tips">{{form.type.errors|striptags}}</span>
+                       </p>
+                       <p>
+                           <label> 班主任 </label>
+                           {{ form.headteacher|attr:"class:input-medium" }} 
+                       </p>
+                   </div>
+                   <div class="uers-info {% if not group %}hide{% endif %}" id="teacher_info">
+                    {% if group %}{% include "oa/class_check_teachers.html" %}{% endif %}
+                  </div>
+                  <p>
+                    <label>&nbsp;</label>
+                    <input class="btn btn-success" type="submit" name="" value=" 保 存 " >
+                    <!--<input class="btn" style=" margin-left:25px;" type="reset" name="" value="取 消" >-->
+                    <a href="{% url oa_class_list %}?sid={{school.id}}" class="btn" style=" margin-left:28px;">取 消</a>
+                 </p> 
+              </form>
+       </div>  
+</div>
+   
+<script> 
+$(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             } 
+	});
+}); 
+$("#id_school").change(function(){
+  school_id = $(this).val();
+  if(school_id){
+    $("#teacher_info").show();
+     group_id = {{group.id|default:0}};
+     url = "{% url oa_class_check_teachers %}";
+    var is_check = $(':checkbox[rel=check_teacher]').attr('checked');
+    if(is_check){
+      type = "group";
+    }else{
+      type = "school";
+    }
+    $.post(url,{sid:school_id,channel:type,gid:group_id},function(result){
+        data = $.parseJSON(result);  
+        $("#teacher_info").html(data.con);
+    });
+
+    url = "{% url oa_class_get_school_teacher %}"
+    $.get(url,{sid:school_id},function(result){
+        data = $.parseJSON(result); 
+        $("#id_headteacher").html('<option selected="selected" value="">---------</option>');
+        for(var i=0;i<data.teachers.length;i++){
+            $("#id_headteacher").append('<option value="' + data.teachers[i].id + '">' + data.teachers[i].name + '</option>')
+        }
+    });     
+  }
+})
+
+$(':checkbox[rel=check_teacher]').live('click',function(){
+    var is_check = $(':checkbox[rel=check_teacher]').attr('checked');
+     group_id = {{group.id|default:0}};
+     school_id = $("#id_school").val();
+     url = "{% url oa_class_check_teachers %}";
+    if(is_check){
+      type = "group";
+    }else{
+      type = "school";
+    }
+    $.post(url,{sid:school_id,channel:type,gid:group_id},function(result){
+        data = $.parseJSON(result);  
+        $("#teacher_info").html(data.con);
+    });
+});
+</script>
+{% endblock %}

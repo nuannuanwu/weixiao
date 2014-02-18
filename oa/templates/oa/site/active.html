@@ -1,0 +1,29 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="active-content album-photos">
+	<div class="act-c-title">
+        <h3>{% if cty == 17 %}
+                <img src="{{ STATIC_URL }}oa/site/images/title_1.jpg" />
+            {% else %}
+                <img src="{{ STATIC_URL }}oa/site/images/title_6.jpg" />
+            {% endif %}
+        </h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content">
+        	<ul class="act-show">  
+                {% for a in albums %}
+            	<li>
+                    <a href="{% url_site oa_album_photos a.id %}">
+                        <img src="{% if a|get_last_photo %}{% media_path a|get_last_photo "small" %}{% else %}{{ STATIC_URL }}oa/site/images/default_min.png{% endif %}" width="100" height="80" />
+                    </a>
+                    <p>{{a.name}}</p>
+                </li>
+                {% endfor %} 
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+       

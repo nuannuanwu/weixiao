@@ -1,0 +1,11 @@
+<uwsgi>
+    <socket>127.0.0.1:8630</socket>
+    <chdir>/data0/htdocs/kinger</chdir>
+    <module>django_wsgi:application</module>
+    <master>True</master>
+    <pidfile>/tmp/project-master.pid</pidfile>
+    <vacuum>True</vacuum>
+    <max-requests>5000</max-requests>
+    <daemonize>/data0/uwsgi/baby.log</daemonize>
+    <processes>4</processes>
+</uwsgi>

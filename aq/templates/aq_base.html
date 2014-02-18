@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <title>{% block meta_title %}{% endblock %}{% if settings.SITE_TITLE %} | {{ settings.SITE_TITLE }}{% endif %}</title>
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico">
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome.css">
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}aq/css/common.css">    
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome-ie7.css">
+    <![endif]-->
+    <style type="text/css">
+    body
+    {
+        padding-top: 60px;
+    }
+    </style>
+    <script>
+    	var aq_save_message= '{% url aq_save_message %}';
+    	var aq_add_track= '{% url aq_add_track %}';
+    	var aq_cancle_track= '{% url aq_cancle_track %}';
+        var aq_update_unread_message = '{% url aq_update_unread_message %}';
+    </script>
+    {% block extra_css %}{% endblock %}
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+    <script src="{{ STATIC_URL }}aq/js/django_csrf.js"></script>
+    <script src="{{ STATIC_URL }}aq/js/jquery.query-2.1.7.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery.imagesloaded.min.js"></script>
+
+    {% block extra_js %}{% endblock %}
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    {% block extra_head %}{% endblock %}
+</head>
+<body id="{% block body_id %}body{% endblock %}">
+	{% include "aq_nav.html" %}
+    {% include "ie6.html" %}
+    <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" data-alert="alert">
+            <a class="close" href="#" onclick="$(this).parent().fadeOut('fast'); return false;">×</a>{{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="container">        
+        {% block content %}{% endblock %}       
+    </div>
+    <footer></footer>
+</body>
+</html>

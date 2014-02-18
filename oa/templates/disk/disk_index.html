@@ -1,0 +1,232 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate disks 10 %}
+<style>
+<!--
+#file_tab li a { 
+    background:#f0efef; 
+    color:#6a6a6a; 
+    line-height:17px;
+ }
+  
+#file_tab li a:hover { 
+    background:#FFF; 
+    line-height:19px; 
+    border: 1px solid #ddd;
+    border-bottom:0px;
+    z-index:10;
+}
+#file_tab li a.on{ 
+  color: #555;
+  cursor:default;
+  background:#FFF; 
+  line-height:19px; 
+  border: 1px solid #ddd;
+  border-bottom:none;
+  z-index:10; 
+}
+.book_ioc{ 
+    background:url('{{ STATIC_URL }}oa/images/book_ico.png') no-repeat center; 
+    padding:6px 5px; margin-right:5px;
+}
+#item-tab li a {line-height: 20px;}
+.main .tab li a { float:left; }
+-->
+</style>
+<div class="main">
+    <div class="tab"> 
+      {% if ty != "school" and ty != "agency" %}
+      <a style="float:right; color:#6a6a6a; " href="{% url oa_disk_create %}" class="btn"><i class=" ">&nbsp;</i>新建文档</a>
+      {% endif %}
+      {% if ty == "agency" %}
+        <a style="float:right; color:#6a6a6a; " href="{% url oa_disk_category %}?ty=2" class="btn"> 集团类别设置</a>
+      {% endif %}
+      {% if ty == "school" %}
+        {% if request.user|can_visit_plate:"manage_school_disk" %}
+        <a style="float:right; color:#6a6a6a; " href="{% url oa_disk_category %}?ty=1&sid=" class="btn"> 幼儿园类别设置</a>
+        {% endif %}
+      {% endif %}
+      {% if ty != "school" and ty != "agency" %}
+        <a style="float:right; color:#6a6a6a; " href="{% url oa_disk_category %}?ty=0" class="btn"> 个人类别设置</a>
+      {% endif %}
+      <ul id="file_tab" class="nav nav-tabs" style="padding-bottom: opx; border-bottom:none; height:37px; line-height:30px; padding-bottom:0 ;margin:0; margin-right:100px;  ">
+        <li><a href="{% url oa_disk_index %}" class="{% if ty != "school" and ty != "agency" %}on{% endif %}">个人文档</a></li>
+        <li><a href="{% url oa_disk_index %}?ty=school" class="{% if ty == "school" %}on{% endif %}">幼儿园文档</a></li> 
+        {% if request.user|is_agency_user %}
+        <li><a href="{% url oa_disk_index %}?ty=agency" class="{% if ty == "agency" %}on{% endif %}">集团文档</a></li>
+        {% endif %}
+      </ul>
+    </div>
+     <div class="column">  
+         <form class="form-inline" style="margin:10px 0 15px 0px;"  action="" method="GET" id="search_form"> 
+            {% if ty == "school" and request.user|is_agency_user %}
+            <select id="school_id" class=" span2 classSelect" style=" float:left; margin-right:10px; font-size: 14px; width: auto;" value="{{sid}}" name="sid"><option value="0"> --所有机构-- </option>
+              {% for s in schools %}
+              <option  value="{{s.id}}" {% if sid == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+              {% endfor %}
+            </select> 
+            {% endif %}
+            <div id="adv-search" class="" style="width:235px; *width:245px; margin-right:0px;  ">
+                <input type="text" placeholder="开始时间" id="from" name="st" class="shijainduan w_80" value="{{st}}" />
+                &nbsp;&nbsp;至&nbsp;&nbsp;
+                <input type="text" placeholder="结束时间" name="et" value="{{et}}" id="to" class="shijainduan w_80" />&nbsp;&nbsp;
+            </div>
+            <div id="slimp-seatch" class="pull_left w_175">
+                <input type="text" name="q" id="keyW" class="input-medium"  value="{{query}}" placeholder="关键字">
+            </div>
+            <input type="hidden" name="ty" value="{{ty}}">
+            <button style=" margin-left:0px;" type="button" class="btn" id="searchB"  >{% trans "Search" %}</button>
+            </form>
+        
+         <div class="list">
+            <form class="" action="" method="post"  id="form_post" onsubmit="return check();">{% csrf_token %}
+                <table>
+                     <tr align="center">
+                        {% if ty != "school" or request.user|is_agency_user or request.user|can_visit_plate:"manage_school_disk" %}<th width="25"> </th>{% endif %}
+                        <th width="225" scope="col">标题</th>
+
+                        {% if ty != "school" and ty != "agency" %}
+                        <th scope="col">个人文档类别</th>
+                        {% endif %}
+
+                        {% if ty == "school" %}
+                        <th scope="col">所属机构</th>
+                        {% endif %}
+
+                        {% if ty != "school" and ty != "agency" %}
+                            {% if request.user|is_agency_user %}
+                                <th scope="col">集团共享类别</th>
+                            {% else %}
+                                <th scope="col">幼儿园共享类别</th>
+                            {% endif  %}
+                        {% else %}
+                            {% if ty == "agency" %}
+                                <th scope="col">集团共享类别</th>
+                            {% else %}
+                                <th scope="col">幼儿园共享类别</th>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if ty == "school" or ty == "agency" %}
+                        <th scope="col">分享人</th>
+                        {% endif %}
+
+                        <th scope="col">最后发表时间</th>
+
+                        {% if ty != "school" and ty != "agency" %}
+                        <th scope="col">操作</th>
+                        {% endif %}
+
+                      </tr>
+                     {% for d in disks %}
+                    <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                      {% if ty != "school" or request.user|is_agency_user or request.user|can_visit_plate:"manage_school_disk" %}
+                        <td><input rel="role" name="disks" type="checkbox" value="{{d.id}}"/> </td>
+                      {% endif %}
+                        <td><a href="{% url oa_sdisk_detail d.id %}" target="_blank">{{d.title}}</a></td>
+                        {% if ty == "school" %}
+                        <td scope="col">{{d.school}}</td>
+                        {% endif %}
+
+                        {% if ty != "school" and ty != "agency" %} 
+                            <td>{{d.category}}</td> 
+                            <td> 
+                                {{d.subdisks.all.0.category|default:"无"}} 
+                            </td> 
+                        {% else %} 
+                            <td>{{d.category}}</td>
+                        {% endif %}
+
+                        {% if ty == "school" or ty == "agency" %}
+                            <td scope="col">{{d.creator|get_name}}</td>
+                        {% endif %}
+                        <td>{{d.mtime|date:"Y-m-d H:i"}}</td>
+                        {% if ty != "school" and ty != "agency" %}
+                        <td>
+                          <a href="javascript:;" data-path="{% url oa_sdisk_update d.id %}" rel="update_disk">修改</a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                  {% endfor %}
+                  <input type="hidden" value="{{ty}}" name="ty">
+                  {% if ty != "school" or request.user|is_agency_user or request.user|can_visit_plate:"manage_school_disk" %}
+                    <tr>
+                        <td><input type="checkbox" rel="checkall"></td>
+                        <td {% if ty != "school" %}colspan="6"{% else %}colspan="5"{% endif %}>
+                            <input class="btn btn-success" disabled="disabled" id="sub_form" type="submit" name="" value="删除所选" >
+                        </td> 
+                     </tr>
+                  {% endif %}
+                </table> 
+             </form>
+             <div class="pagination" style="text-align:center;">
+                  {% paginate %}
+               </div>
+           </div>
+     </div>
+</div>
+<script type="text/javascript">
+$(function(){
+    //搜索
+    $("#searchB").click(function(){
+        var fromv = $("#from")[0].value,
+        tov =  $("#to")[0].value,
+        keyW = $("#keyW")[0].value;
+        if(fromv=="开始时间"){ 
+          $("#from").val("");
+        }
+        if(tov=="结束时间"){ 
+          $("#to").val(""); 
+        } 
+        if(keyW=="关键字"){ 
+          $("#keyW").val("");
+        } 
+        $("#search_form").submit();
+    });
+
+    //修改
+    $("[rel=update_disk]").click(function(){
+      url = $(this).data("path");
+      $("#search_form").attr("action",url);
+      //alert($("#search_form").attr("action") );
+      $("#search_form").submit();
+    })
+    //全选
+    $(':checkbox[rel=checkall]').change(function(){
+      $(':checkbox[rel=role]').attr('checked',this.checked);
+      $(':checkbox[rel=checkall]').attr('checked',this.checked);
+      chekck();
+    })
+    //单选
+    $(':checkbox[rel=role]').change(function(){
+        var flag = true;
+        $(':checkbox[rel=role]').each(function() {
+              if(!this.checked){
+            flag = false;
+        }
+    });
+    $(':checkbox[rel=checkall]').attr('checked',flag);
+      chekck();
+    }) 
+});
+    function chekck(){
+      var formChek = $("#form_post"),
+      checkedlen = formChek.find('input[rel=role]:checked').length;
+      if(checkedlen){
+        $("#sub_form").attr('disabled',false)
+      }else{
+        $("#sub_form").attr('disabled',true)
+      }
+    } 
+    function check(){  
+        var r=confirm("是否删除所选项？");
+      if (r) {
+        // $("#form_post").submit();
+        //alert("删除成功");
+      } else { 
+        return false;//false:阻止提交表单  
+      }  
+    } 
+</script>
+{% endblock %}

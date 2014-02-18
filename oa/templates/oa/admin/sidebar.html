@@ -1,0 +1,37 @@
+{% load i18n kinger_tags oa_tags %}
+	<div class="sidebar">
+		{% get_site site as site_id %}
+		<ul>
+			{% is_select_tag "site_nav" as site_nav_select %}
+			{% if site_nav_select %}
+			<li><a href="{% url oa_part_nav_grove site_id %}?cid=5" class="{% oa_activer grove %}">园所介绍</a></li>
+			<li><a href="{% url oa_part_nav_feature site_id %}?cid=2" class="{% oa_activer feature %}">特色展现</a></li>
+			<li><a href="{% url oa_part_nav_recruit site_id %}?cid=3" class="{% oa_activer recruit %}">招生专栏</a></li>
+			<li><a href="{% url oa_part_teache site_id %}" class="{% oa_activer teache %}">教学教研</a></li>
+			{% endif %}
+
+			{% is_select_tag "part_all" as part_all_select %}
+			{% if part_all_select %}
+			<li><a href="{% url oa_part_con_anc_list site_id %}" class="{% oa_activer part_admin %}">常规内容管理</a></li>
+			<li><a href="{% url oa_star_figure_teacher site_id %}" class="{% oa_activer figure %}">明星博客</a></li>
+			<li><a href="{% url oa_album_school_list site_id %}" class="{% oa_activer school_album %}">学园相册</a></li>
+			<li><a href="{% url oa_article_list site_id %}" class="{% oa_activer article %}">精彩文章</a></li>
+			<li><a href="{% url oa_link_list site_id %}" class="{% oa_activer link %}">友情链接管理</a></li>
+			{% endif %}
+		
+			{% is_select_tag "school_mail" as school_mail_select %}
+			{% if school_mail_select %}
+			<li><a href="{% url oa_mailbox site_id %}" class="{% oa_activer mailbox %}">园长信箱</a></li>
+			<!--li><a href="{% url oa_permission_designate_role %}" class="{% oa_activer role_design %}">在线报名(已外置)</a></li-->
+			{% endif %}
+
+			{% is_select_tag "site_setting" as site_setting_select %}
+			{% if site_setting_select %}
+			<li><a href="{% url oa_website_update site_id %}" class="{% oa_activer website_update %}">网站信息</a></li>
+			<li><a href="{% url oa_template_list site_id %}" class="{% oa_activer template %}">更换模板</a></li>
+			<li><a href="{% url oa_website_admins site_id %}?ty=1" class="{% oa_activer site_admin %}">站点管理员设置</a></li>
+			{% endif %}
+		</ul>
+	</div>
+         
+ 

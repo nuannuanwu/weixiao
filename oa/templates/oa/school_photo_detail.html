@@ -1,0 +1,29 @@
+{% load i18n kinger_tags oa_tags pagination_tags %}
+<div class="modal add-modal" style="top:10%; left:60%;">
+      <div class="modal-header">
+        <a class="close closed" data-dismiss="modal">×</a>
+        <h3>照片详情</h3>
+      </div>
+    <div class="modal-body" id="content" style="padding:0px 15px 10px 15px;" >
+    	<div class="p-form-div">
+          上传人:
+          {{photo.creator.profile.realname}}&nbsp;&nbsp;&nbsp;&nbsp;
+          <span>{{photo.ctime|date:"Y-m-d G:i"}}</span>
+          <div style="display:none">{{form.img}}</div>
+        </div>  
+        <form class="form-inline" action="{% url oa_album_update_photo photo.id %}" method="POST">
+            {% csrf_token %}
+          	<div class="pic-box"><img src="{% media_path photo.img "album_standard" %}"></div>
+          	{{form.description}}
+            <div class="modal-footer" style=" margin-top: 10px;">
+          	<input class="btn btn-success" id="sev" type="submit" name="" value=" 保 存 " >
+                <a class="btn closed" data-dismiss="modal" id="clo" href="javascript:;"> 取消 </a> 
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+	$(".closed").live('click',function(){
+		$("#viewPhotoBox").modal('hide');
+	})
+</script>

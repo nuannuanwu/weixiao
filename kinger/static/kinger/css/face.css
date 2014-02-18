@@ -1,0 +1,24 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2013-8-28, 16:10:18
+    Author     : heting
+*/
+
+/* 表情样式*/
+.controls .face-ico{ background-position:0px -76px;}
+.controls .Qface-ico{ background-position:0px -128px;} 
+.controls .facew{ margin-left:5px; width:24px; height:24px; overflow:hidden; position:relative; overflow:visible; cursor:pointer; overflow:visible;}
+.cf .hf-but{ display:none; position:absolute; right:35px; bottom:10px;}
+#faceBG_tile{ z-index: 1; width:330px; height:143px; background-color:#fff; border:#e7e7e7 solid 4px; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; position:absolute; bottom:53px; *bottom:33px; left:-14px; display:none;}
+#faceBG_tile .facebox{ width:312px; height:125px; border:#BCBCC7 solid 1px; padding:8px; position:relative;}
+#faceBG_tile .facebox ul{ width:310px; height:124px; list-style:none; padding:0px; margin:0; border:#EAEAEA solid 1px;}
+#faceBG_tile .facebox ul li{ float:left; border-bottom:#EAEAEA solid 1px; border-right:#EAEAEA solid 1px; padding:1px;  width:28px; height:28px; overflow:hidden;}
+/*#faceBG_tile .facebox ul li img{ width:28px; height:28px;}*/
+#faceBG_tile .facej{  width:21px; height:14px; overflow:hidden; position:absolute;}
+#faceBG_tile .facej_1 { background:url(../img/facej.gif) no-repeat;  bottom:-13px; left:20px;}
+#faceBG_tile .facej_2{ background:url(../img/facej_1.gif) no-repeat; top:-13px; left: 20px; }
+ 

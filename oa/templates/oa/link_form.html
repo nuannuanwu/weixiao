@@ -1,0 +1,35 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="main">
+    <div class="tab">
+    	<span>友情链接</span>
+        <a href="{% url oa_link_list site.id %}">返回</a>
+    </div>
+    <div class="column">
+        <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div class="form-div">
+            	<label>标题文字* </label>
+            	{{form.title|attr:"datatype:*"|attr:"errormsg:"|attr:"nullmsg:请填写标题"}}&nbsp;<span id="id_titleTip" class="erro-tips">{{form.title.errors|striptags}}</span>	
+            </div>
+            <div class="form-div">
+            	<label>链接地址*</label>
+            	{{form.url|attr:"datatype:url"|attr:"errormsg:"|attr:"nullmsg:请填写链接地址"}}&nbsp<span id="id_urlTip" class="erro-tips">{{form.url.errors|striptags}}</span>	      
+            </div>
+            <div class="form-div mar-l-75">
+                <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+            </div>
+        </form>
+	</div>
+</div>
+<script type="text/javascript">
+ //表单验证 
+  $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true
+	});
+}); 
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% load pagination_tags kinger_tags i18n%}
+    
+    {% for d in data %}
+    <li class="tile" style=" padding-left: 10px; border-left: 1px solid #e5e5e5;" >
+    <div>
+        <div style="position: relative;"><span class="date_day " id="datepicker" style=" position: absolute; left: -32px; top:-40px;">{{d.date|date:"m-d"}}</span></div>
+        <ul class="pic_itme record">
+            <!--日常记录-->
+            <li class="walink"> 
+                <ul class="datefie"> 
+                    <li rel="record_all" alt="0" date="{{d.date|date:"Y-m-d"}}"><a><img src="{{ STATIC_URL }}kinger/img/record.png"/></a></li>
+                    {% for c in d.records %}
+                    <li rel="record_child" alt="{{forloop.counter}}" date="{{d.date|date:"Y-m-d"}}">
+                        <a>
+                            <em class="icobg {{c.id|category_img:c.tiles}}"></em>
+                            <span>{{c.name}}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                    <li><a></a></li>
+                 </ul>
+            </li>
+            <!--日常活动-->
+            <li rel="active_all" date="{{d.date|date:"Y-m-d"}}">
+               <a>
+                   <div><img src="{{ STATIC_URL }}kinger/img/study.png"/></div>
+                   <div>
+                    {% if d.actives.0.description %}
+                        {% daily_setting d.actives.0.description as settings %}
+                        {% if settings.events %}
+                            {{settings.events.0.content|escape|replace_n|safe|cut_str:70}}
+                            <p>标签:{{settings.events.0.type.name}}</p>
+                        {% else %}
+                            暂无活动
+                        {% endif %}
+                    {% else %}
+                        暂无活动
+                    {% endif %}
+                   </div>
+               </a>  
+            </li>
+            <!--明日食谱-->
+            <li rel="cookbook_all" date="{{d.date|date:"Y-m-d"}}">
+                <a>
+                    <div><img src="{{ STATIC_URL }}kinger/img/dietary.png"/></div>
+                    <div>
+                    {% if d.cookbooks %}
+                        {% for c in d.cookbooks|cook_book_item %}
+                            {% if c.content %}
+                                <div>{{c.cname}}:{{c.content|escape|replace_n|safe}}</div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        暂无数据
+                    {% endif %}
+                    </div>
+                </a>  
+            </li>
+            <!--每日瓦片-->
+            {% for tile in d.tiles %}
+            {% if forloop.counter <= 8 %}
+            <li style="position: relative;" class="masonry-brick" rel="tiles"> 
+                <div class="assess" style=" display: none;  position: absolute; top:5px; right: 5px;"> 
+                    <a class="external_link border_r" rel="tile_comment" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"baby"}}&for_comment=1"><span><i class="pic external"> </i></span> <span>评论</span></a>
+                    <a rel="likeable" id="likeable_{{tile.id}}" data-href="{% url api_web_tiles_like %}" data-id="{{tile.id}}"><span><i class="pic {% if tile|liked_by_user:request.user %}like{% else %}no_like {% endif %}"></i></span ><span class="like_type">{% if tile|liked_by_user:request.user %}取消喜欢{% else %}喜欢{% endif %}</span></a>
+                </div>
+                <a href="javascript:;" rel="tile_view" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"baby"}}">
+                    <img class="img" width="210px" height="210px" src="{% media_path tile.img "img_axis" %}"/>
+                </a> 
+                <div class="bottom-assess" style="">
+                    <a class="external_content"><i class="ioc ioc_external"></i>&nbsp;<span>{{tile.n_comments}}</span></a>
+                    <a class="like_content"><i class="ioc ioc_like"></i>&nbsp;<span>{{tile.n_likers}}</span></a>
+                </div>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if d.tiles.count > 8 %}
+            <li>
+                <a rel="more_tile" alt="{{d.date}}">
+                    更多<input type="hidden" value="1" rel="tile_page">
+                </a>  
+            </li>
+            {% endif %}
+        </ul> 
+    </div>
+    </li> 
+    {% endfor %}

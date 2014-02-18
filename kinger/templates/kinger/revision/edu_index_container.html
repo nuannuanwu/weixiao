@@ -1,0 +1,47 @@
+{% load pagination_tags kinger_tags i18n%} 
+<style>
+   .tilebox { 
+        -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        border-radius: 2px 2px;
+        border: none;
+        -webkit-border-radius: 2px; 
+        background-color: #ffffff; 
+        width: 230px;
+        margin-bottom: 5px;
+    } 
+</style>
+
+{% if tiles %}
+    {% for tile in tiles %}
+    <li id="ti-{{tile.id}}" class="span3 tile" style=" width: 230px; padding: 0 5px; margin: 0 0 10px 0;">
+        <div class="tilebox">
+            {% if request.user.is_authenticated %} 
+            <div class=" actions assess" style="  position: absolute; top:5px; right: 10px;"> 
+                <a class="external_link border_r" rel="tile_view" href="javascript:;" data-id="{{tile.id}}" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}&for_comment=1"><span><i class="pic external"> </i></span> <span>评论</span></a>
+                <a rel="likeable" id="likeable_{{tile.id}}" href="javascript:;" data-href="{% url api_web_tiles_like_rev %}" data-id="{{tile.id}}" data-tips="{{tile.is_tips}}"><span><i class="pic {% if tile|liked_by_user:request.user %}like{% else %}no_like {% endif %}"></i></span ><span class="like_type">{% if tile|liked_by_user:request.user %}取消喜欢{% else %}喜欢{% endif %}</span></a>
+            </div>
+            {% endif %}
+            
+
+            {% out_of_range tile.img "img_middle" 800 as is_out %} 
+            
+
+            <a class="kTile-img" href="javascript:;" rel="tile_view" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}" data-id="{{tile.id}}"><img src="{% media_path tile.img "img_middle" %}" alt="" rel="imgLoad">{% if is_out %}<span class="stop"></span>{% endif %}</a>
+            <div class="caption">
+                <p class="caption-title" style=" margin:0 10px;">{{ tile.description|removetags:"a p span div strong em video"|safe }}</p>
+            </div>
+            {% if tile.n_comments > 0 %}
+             <div class="kComments" style="border-top: 1px solid #cccccc; overflow: hidden; padding: 5px 10px;">     
+                {% for c in tile.comments %} 
+                 {% include "kinger/revision/includes/comment.html" with comment=c %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div> 
+    </li>
+    {% endfor %}
+{% endif %}
+    
+
+

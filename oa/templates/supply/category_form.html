@@ -1,0 +1,134 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags  %}
+{% block content %}
+<div class="main">
+      <div class="tab"><span>物资类别设置</span></div>
+      <div class="column"> 
+          <p style=" margin-left:0; margin-bottom:15px; "> 
+            {% if request.user|is_agency_user %}
+              <select id="school_id" class=" span2 classSelect" style=" font-size: 14px; width: auto;" value="{{school.id}}" name="sid">
+              {% for s in schools %}
+              <option  value="{{s.id}}" {% if school.id == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+              {% endfor %}
+            </select>
+            {% endif %}
+          </p> 
+		      <form  id="form_horzt" class="registerform" style="width:500px; min-height:500px; display:block;" action="{% url oa_supply_category %}?sid={{school.id}}" method="post" enctype="multipart/form-data" >{% csrf_token %} 
+            {{ form.management_form }}
+            {% for f in form %}
+              <div class="box_content" styel="width:480px;">
+                  <div class="show_del" rel="{{categorys|obj_pk:forloop.counter0}}" style="margin-bottom:10px;" > 
+                      {% if f.parent.value %}
+                      <div id="son_content_{{categorys|obj_pk:forloop.counter0}}" style="padding-left:45px; width:450px; margin:0;" class="box_son show_del" >
+                      {{f.name|attr:"rel:input-text"}}
+                          <span class="del" style="padding:10px; cursor:pointer;">
+                            {% if categorys|obj_pk:forloop.counter0|default:0|belong_supply %}
+                            <a style=" display: none;" href="javascript:;" onclick="if(confirm('确认删除吗?')) window.location='{% url oa_supply_delete_category categorys|obj_pk:forloop.counter0|default:0 %}?sid={{school.id}}'" rel="doc_category">删除</a>
+                            {% endif %}
+                          </span>
+                      </div>
+                      {% else %}{{f.name|attr:"rel:input-text"}}{% endif %} 
+                      {% if not f.parent.value %} 
+                           <a style=" margin-left:5px 10px;" href="javascript:;" rel="{{categorys|obj_pk:forloop.counter0}}" att="add_son"> 添加子目录</a>
+                          <span class="del" style="padding:10px; cursor:pointer;">
+                            {% if categorys|obj_pk:forloop.counter0|default:0|belong_supply %}
+                           <a style=" display: none;" href="javascript:;" onclick="if(confirm('确认删除吗?')) window.location='{% url oa_supply_delete_category categorys|obj_pk:forloop.counter0|default:0 %}?sid={{school.id}}'" rel="doc_category">删除</a>
+                           {% endif %}
+                          </span> 
+                      {% endif %}
+                   </div>
+                   <div id="son_content_{{categorys|obj_pk:forloop.counter0}}" style="padding-left:40px;" class="box_son" >
+                   </div>
+                </div>
+              	<p style="display:none">{{f.parent}}  <span>{{f.name.errors}}</span> </p>
+                
+            {% endfor %}
+            <div id="parent_content"> 
+            </div>
+            <p style="p"><!--<input id="pearten" type="text" value="新分类名称">--><a class="btn" title="添加分类" href="javascript:;" id="add_parent"><i class="icon-plus"></i>添加新分类</a></p>
+            <div id="parent_content"></div>
+            <p style="margin-top:20px;">
+                <a id="server_add" style="color:#fff;" href="javascript:;" class="btn btn-success"> 保 存 </a> 
+                <!-- <input class="btn" style="margin-left:15px;" type="reset" value=" 取 消 " /> -->
+            </p>
+           </form>  
+      </div>
+</div>
+<script type="text/javascript">
+  $(".registerform").Validform({
+              tiptype:2,
+              showAllError:true,
+              datatype:{//传入自定义datatype类型 ;
+                  "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                  "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                  "nun" : /^[0-9]*[1-9][0-9]*$/
+               } 
+    });
+    var FormNum = Number($("#id_form-TOTAL_FORMS").val());
+    //添加分类
+    $("#add_parent").click(function(){ 
+      url = "{% url oa_supply_category_extra %}"
+      $.post(url,{order:FormNum},function(result){
+          data = $.parseJSON(result);
+          $("#parent_content").append(data.con);
+          FormNum = FormNum + 1;
+          $("#id_form-TOTAL_FORMS").val(FormNum);
+         // alert($("#id_form-TOTAL_FORMS").val());
+        });
+    });
+  //$("#add_parent").click();
+   //添加子类
+    $("[att=add_son]").click(function(){
+	   var relSon=$(this).attr('rel');
+      url = "{% url oa_supply_category_extra %}"
+      pid = $(this).attr("rel");
+      $.post(url,{order:FormNum,parent_id:pid},function(result){
+          data = $.parseJSON(result);
+          $("#son_content_"+relSon).append(data.con);
+          FormNum = FormNum + 1;
+          $("#id_form-TOTAL_FORMS").val(FormNum);
+          //alert($("#id_form-TOTAL_FORMS").val());
+        });
+    });
+  //显示删除按钮
+  $(".show_del").hover(function(){ 
+		$(this).find('[rel=doc_category]').show();
+	},
+	function(){ 
+		$(this).find('[rel=doc_category]').hide();
+	});
+	//先删除子类
+	$(".del_son").live('click',function(){
+		$(this).parents('p').remove();
+		 FormNum= FormNum-1;
+              $("#id_form-TOTAL_FORMS").val(FormNum);
+	});
+  
+  //保存      
+	$("#server_add").live('click',function(){ 
+            $("#form_horzt").submit();
+	});
+
+  $("#school_id").change(function(){
+    sid = $(this).val();
+    window.location = "{% url oa_supply_category %}?sid=" + sid;
+  })
+	
+	/*function subBtn(){ 
+		 var formHorzt=$("#form_horzt");
+		formHorzt.find('input[rel=input-text]').each(function(k,v){ 
+			boxId = v.getAttribute('id'); 
+			$mmbox = $("#"+boxId); 
+			if($mmbox.val()=="")
+			{   
+				$(this).val("不能为空");
+				return false;
+			}else{
+				return true;
+			}
+			
+	 }); 
+	 
+	}*/
+</script>
+{% endblock %}

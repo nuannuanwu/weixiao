@@ -1,0 +1,186 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate students 50 %}
+<style>
+   button.expert { margin-top: 5px; }
+</style>
+<div class="main">
+    <div class="tab"><span>学籍管理<i style="font-style:normal" title="查询总数">({{count}})</i></span><a class="btn" href="{% url oa_student_create %}"><i class="add_btn">&nbsp;</i>添加</a><a class="btn" href="{% url oa_student_batch_import %}">批量导入</a></div> 
+      <div class="column">
+          <p>
+              <form class="form-inline" action="{% url oa_student_list %}" method="GET">
+                    <select class="span2" style="width:auto; font-size: 14px;" name="s" value="{{s}}" id="school_id">
+                        <option {% if not s %} selected="selected" {% endif %} value="0"> --所有学园-- </option>
+                        {% for school in schools %}
+                            <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">{{school.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <select style="width:auto; font-size: 14px;"   name="g" value="{{g}}" id="group_id">
+                        <option {% if not s %} selected="selected" {% endif %} value="0"> --所有班级-- </option>
+                        {% for group in groups %}
+                            <option {% if group.id == g %} selected="selected" {% endif %} value="{{group.id}}">{{group.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <select style="width:115px; font-size: 14px;"   name="t" value="{{t}}">
+                        <option {% if t == -1 %}selected="selected"{% endif %} value="-1"> --所有状态-- </option>
+                        {% for status in states %}
+                            <option {% if status.0 == t %} selected="selected" {% endif %} value="{{status.0}}">{{status.1}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="n" id="keyW" class="input-medium" style="width:95px;" value="{{n}}" placeholder="姓名">
+
+                    <input type="text" name="p" id="keyW" class="input-medium" style=" width:110px; display:none;" value="{{p}}" placeholder="电话号码">
+
+                      <input type="text" name="a" id="keyW" class="input-medium " style=" width:95px; display:none; " value="{{a}}" placeholder="登录帐号">
+                      <button rel="btn" type="submit" class="btn" />{% trans "Search" %}</button>
+                       <a class="search_more" id="search_more" href="javascript:;">高级搜索</a>
+                </form>
+            </p>
+            <div class="list">
+                <form class="form-inline" onsubmit="return check()" id="form_post" action="" method="POST">{% csrf_token %}
+                <table>
+                     <tr align="center">
+                         <th width="120" scope="col">姓名</th>
+                         <th width="120" scope="col">学园</th>
+                         <th width="80" scope="col">年级</th> 
+                         <th width="80" scope="col">班级</th>
+                         <th width="90" scope="col">登录帐号</th>
+                         <th width="90" scope="col">手机</th>
+                         <th width="40" scope="col">状态</th>
+                       </tr>
+                       {% if not students|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="7" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                      {% else %}
+                     {% for s in students %}
+                    <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td>
+                            <input type="checkbox" value="{{s.id}}" rel="role" name="start_pks">
+                            <a href="{% url oa_student_update s.id %}">{{s.name}}</a>
+                        </td>
+                        <td>{{s.school}}</td>
+                        <td>{{s.group.grade}}</td>
+                        <td>{{s.group|default:""}}</td>
+                        <td>{{s.user.username}}</td>
+                        <td>{{s.getMobile}}</td>
+                        <td> {{s.state}}</td>
+                    </tr>
+            	    {% endfor %}
+                    {% endif %}
+                    <tr>
+                        <td colspan="7">
+                           <input type="checkbox" rel="checkall"> 
+                           <select id="commit_type" name="operate" style="margin-bottom: 0;" class="span2">
+                               <option value="-1">--批量操作--</option>
+                               <option value="2">删除所选</option>
+                               <option value="0">在园</option>
+                               <option value="1">离园</option>
+                           </select>
+                           <input class="btn btn-success" disabled="disabled" id="sub_form" type="submit" name="" value="执行" >
+                       </td>
+                   </tr>
+                </table>
+                </form>
+                <!--div class="pagination" style="text-align:center;">
+                      <ul>
+                            <li><a href="#"><<</a></li>
+                            <li><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#">>></a></li>
+                      </ul>
+                </div-->
+                <div class="pagination" style="text-align:center;">
+                	{% paginate %}
+                </div>
+           </div> 
+      </div>
+</div>           
+ 
+<script>
+// 搜索
+$("#search_more").click(function(e){ 
+      e.preventDefault()
+	$("[name=p]").toggle();
+	$("[name=a]").toggle();
+	$("#searchB").toggleClass("show_1");
+	$(this).toggleClass('nav_br');
+        if($("[name=a]").is(":visible")){
+            $("[rel=btn]").addClass("expert");
+        }else{
+            $("[rel=btn]").removeClass("expert"); 
+        }
+          
+}); 
+//班级修改
+$("#school_id").change(function(){
+    school_id = $(this).val();
+    if(school_id){
+      url = "{% url oa_get_school_class %}"
+      $.get(url,{sid:school_id,ty:'all'},function(result){
+          data = $.parseJSON(result); 
+          $("#group_id").html("");
+          for(var i=0;i<data.length;i++){
+              $("#group_id").append('<option value="' + data[i].id + '">' + data[i].name + '</option>')
+          }
+          $("#group_id").prepend('<option value="0" selected="selected">- 所有班级 -</option>')
+      });     
+    }
+})
+
+//选择操作类型
+var flagType="-1";
+$("#commit_type").change(function(){
+    flagType=$(this).find('option:selected').val();
+});
+//全选
+$(':checkbox[rel=checkall]').change(function(){
+	$(':checkbox[rel=role]').attr('checked',this.checked);
+	$(':checkbox[rel=checkall]').attr('checked',this.checked);
+	chekck();
+})
+//单选
+$(':checkbox[rel=role]').change(function(){
+	var flag = true;
+	$(':checkbox[rel=role]').each(function() {
+        if(!this.checked){
+            flag = false;
+        }
+    });
+    $(':checkbox[rel=checkall]').attr('checked',flag);
+    chekck();
+})
+
+function chekck(){
+    var formChek = $("#form_post"),
+    checkedlen = formChek.find('input[rel=role]:checked').length; 
+    if(checkedlen){
+            $("#sub_form").attr('disabled',false);
+    }else{
+            $("#sub_form").attr('disabled',true);
+    }
+}
+function check(){  
+   var rimndText=""; 
+   if(flagType == "-1"){
+       rimndText="你还没选择操作类型";
+   } else  {
+        rimndText="是否执行当前操作";
+   } 
+    var r = confirm(rimndText);
+    if (r) {
+        if(flagType=="-1"){
+            return false;
+        } //alert("删除成功");
+    } else { 
+            return false;//false:阻止提交表单  
+    }  
+}   
+</script>
+{% endblock %}

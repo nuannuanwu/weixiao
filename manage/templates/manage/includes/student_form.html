@@ -1,0 +1,118 @@
+{% load i18n kinger_tags %}
+<div class="form-horizontal form-kPicCon">
+<form action="{{action_url}}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} id="id_form">{% csrf_token %}
+        <div class="control-group">
+            <div class="control-label hidden-clean-label">
+            	{% if student %}
+                <a href="{% url manage_student_view student.id %}" title="{{ student.description }}">
+                	<img id="myimg" src="{% media_path student.user.get_profile.get_avatar "normal" %}" alt="">
+            	</a>
+                {% else %}
+                <a>
+                   <img id="myimg" src="{{ STATIC_URL }}img/avatar_128.png" width="140" height="140" />
+                </a>
+        		{% endif %}
+        		 <div id="fileb" class="imghidden">{{ form.avatar }}</div>
+                 <a class="btn hidden" id="change_img" onclick="document.getElementById('id_avatar').click();">选择图片</a>
+                <span class="help-inline" id="id_logo_error"></span>
+            </div>
+            <div class="controls controls_rank">
+                       <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.name.label }}</span>
+                            {{ form.name }}
+                            <span class="help-inline">{{ form.name.errors }}</span>
+                            <span id="id_nameTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.name.help_text }}</p>
+                        </div>
+                        <div class="controls-tipInput">
+                            <span class="tipInput-tip">号码</span>
+                            {{ form.mobile }}
+                            <span id="id_mobileTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            {% if form.mobile.errors %}
+                            <script>
+            					$(function() {
+            						$('#id_mobileTip').html(
+										'<span><span class="onError_top">{{ form.mobile.errors }}</span><span class="onError_bot"></span></span>'    
+									)
+								})
+							</script>	
+                            {% endif %}
+                            <p class="help-block"></p>
+                        </div>
+                         <div class="controls-tipInput">
+                            <span class="tipInput-tip" id="tip-Tip">{{ form.description.label }}</span>
+                            {{ form.description }}
+                            <span class="help-inline">{{ form.description.errors }}</span>
+                            <span id="id_descriptionTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.description.help_text }}</p>
+                        </div>
+                       <div class="controls-tipInput">
+                            <span class="tipInput-tip">班级</span>
+                            {{ form.group }}
+                            <span class="help-inline">{{ form.group.errors }}</span>
+                            <span id="id_groupTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.group.help_text }}</p>
+                        </div>
+                        <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.gender.label }}</span>
+                            {{ form.gender }}
+                            <span class="help-inline">{{ form.gender.errors }}</span>
+                            <span id="id_genderTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.gender.help_text }}</p>
+                        </div>
+                        <div class="controls-tipInput control-group">
+                            <span class="tipInput-tip">{{ form.birth_date.label }}</span>
+                            {{ form.birth_date }}
+                            <span id="id_birth_dateTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                        	{% if form.birth_date.errors %}
+                            <script type="text/javascript">
+            					$(function() {
+            						$('#id_birth_dateTip').html(
+										'<span><span class="onError_top">{{ form.birth_date.errors }}</span><span class="onError_bot"></span></span>'    
+									)	
+							 })
+							</script>	
+                            {% endif %}
+                        </div>
+              </div>
+        </div>
+
+        <div class="form-actions">
+            <input class="btn btn-success" type="button" name="" value="{% trans "Save" %}" onclick="checkSubmit()">
+            <input type="button" class="btn btn_w" onclick="history.back(-1);"value="{% trans "Cancel" %}" />
+        </div>
+
+        {% if student %}
+        <div class="control-group control_separate">
+            <div class="controls">
+                <a href="{% url manage_student_delete student.id%}" title="删除这位学生" class="btn btn-danger a_confirm_link">&nbsp;&nbsp;&nbsp;<i class="icon-trash icon-white"></i>&nbsp;{% trans "Delete" %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>                
+            </div>
+        </div>
+        {% endif %}
+    </form>
+</div>
+<script type="text/javascript">
+$(function(){
+
+   $("#fileb").children("#id_avatar").change(function(){
+	         previewImage(this,'myimg')
+   })
+  function previewImage(file,imgId){  
+           if (file.files && file.files[0]){  
+               var img = document.getElementById(imgId);  
+               var reader = new FileReader();  
+               reader.onload = function(evt){img.src = evt.target.result;}  
+               reader.readAsDataURL(file.files[0]);  
+           }else{  
+               file.select();  
+               var src = document.selection.createRange().text;  
+               $("#"+imgId).attr("src",src);
+           }  
+  } 
+  if ($.browser.msie){
+		  $("#fileb").removeClass("imghidden");		  
+	 }else{
+		  $("#change_img").removeClass("hidden");
+	}  	
+})	
+</script>

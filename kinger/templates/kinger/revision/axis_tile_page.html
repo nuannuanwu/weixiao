@@ -1,0 +1,25 @@
+{% load i18n kinger_tags comments pagination_tags %}
+<div class="pic_btn pull-left">
+	<a href="javascript:;" style="{% if tpage == 1 %}display: none;{% endif %}" rel="pic_ico" data-href="{% url axis_tile_page tile.id %}?channel={{channel|default:"edu"}}&tpage={{tpage|add:-1}}&is_ajax={{is_ajax}}">
+		<img src="{{ STATIC_URL }}kinger/img/page_prev.jpg"/>
+	</a>
+</div>
+<div class="pic_btn pull-right" style=" text-align: right;">
+	<a href="javascript:;" style=" text-align: right;{% if is_last_tpage %} display: none; {% endif %}" rel="pic_ico" data-href="{% url axis_tile_page tile.id %}?channel={{channel|default:"edu"}}&tpage={{tpage|add:1}}&is_ajax={{is_ajax}}">
+		<img src="{{ STATIC_URL }}kinger/img/page_next.jpg"/>
+	</a>
+</div>
+<ul> 
+    {% for t in tiles  %}
+	<li >
+            {% if is_ajax %}
+            <a href="javascript:;" {% if order == forloop.counter0 %}class="on"{% endif %} rel="tile_detail" data-href="{% url axis_tile_view t.id %}?channel={{channel|default:"edu"}}&tpage={{tpage}}">
+            {% else %}
+            <a rel="tile_detail" {% if order == forloop.counter0 %}class="on"{% endif %}  href="{% url axis_tile_view t.id %}?channel={{channel|default:"edu"}}&tpage={{tpage}}">
+           {% endif %}  
+                <button style=" margin:0; padding:0; width:100%; height:100%; border:0; background:none;">{% if t.is_report %}<div class="kDailyItem-icon kSt_{{t.type_id}}"><span class="kSt_Img" style="margin:0; width:72px; height:72px; "></span></div>{% else %}<img rel="{{order}}" src="{% if t.new_type_id == 4 %}{{ STATIC_URL }}kinger/img/write_pic.png{% else %}{% media_path t.img 'img_small'%}{% endif %}" />{% endif %}</button>
+ 
+           </a>
+       </li>
+    {% endfor %} 
+</ul>

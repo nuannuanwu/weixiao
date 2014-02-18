@@ -1,0 +1,44 @@
+{% load i18n kinger_tags oa_tags %} 
+<div rel="form" order="{{order}}" attr="show" > 
+    <p>
+       <label> 姓 名* </label>
+       <input id="id_form-{{order}}-name" class="input-medium" name="form-{{order}}-name" maxlength="60" type="text" datatype="*" errormsg=" " nullmsg="请输入监护人姓名" /> 
+       <!--input id="id_name" class="input-medium" name="name" type="text" /-->
+       <input name="form-{{order}}-relation" maxlength="60" placeholder="关系" class="input-medium" id="id_form-{{order}}-relation" type="text" datatype="*" errormsg=" " nullmsg="请输入和监护人的关系">&nbsp; 
+       <span id="id_form-{{order}}-nameTip" class="erro-tips"></span>
+       <span id="id_form-{{order}}-relationTip" class="erro-tips"></span>
+       <span class="Validform_checktip "></span>
+       <!--input id="id_relation" class="input-medium" name="relation" type="text" placeholder=" 关系" /--> 
+    </p>
+    <p>
+       <label> 手 机* </label>
+       <input name="form-{{order}}-mobile" maxlength="20" placeholder="手机号" class="input-medium" id="id_form-{{order}}-mobile" type="text" datatype="*" errormsg=" " nullmsg="请输入监护人手机" />&nbsp;  
+       <span style="color: #999;"> 此手机号用于接收信息</span>
+       <span id="id_form-{{order}}-mobileTip" class="erro-tips"></span>
+       <span class="Validform_checktip "></span>
+    </p>
+    <p>
+       <label> 电 话 </label>
+       <input name="form-{{order}}-office_phone" maxlength="20" placeholder="办公电话/手机" class="input-medium" id="id_form-{{order}}-office_phone" type="text" ignore="ignore" datatype="m|tel-3" errormsg="输入的手机或电话号码有错 " nullmsg="">&nbsp; 
+       <input name="form-{{order}}-other_phone" maxlength="20" placeholder="其它电话/手机" class="input-medium" id="id_form-{{order}}-other_phone" type="text" ignore="ignore" datatype="m|tel-3" errormsg="输入的手机或电话号码有错" nullmsg=" ">&nbsp;
+       <span id="id_form-{{order}}-office_phoneTip" class="erro-tips"> </span> 
+       <span id="id_form-{{order}}-other_phoneTip" class="erro-tips"></span>
+       <span class="Validform_checktip "></span>
+    </p>
+    <p>
+       <label> 电 邮 </label> 
+       <input name="form-{{order}}-office_email" maxlength="75" placeholder="办公电邮" class="input-medium" id="id_form-{{order}}-office_email" type="text" ignore="ignore" datatype="e" errormsg="输入的邮件地址有错" nullmsg="请输入监护人姓名"/>&nbsp; 
+       <input name="form-{{order}}-other_email" maxlength="75" placeholder="其他电邮" class="input-medium" id="id_form-{{order}}-other_email" type="text" ignore="ignore" datatype="e" errormsg=" " nullmsg="输入的邮件地址有错"/>&nbsp;
+       <span id="id_form-{{order}}-office_emailTip" class="erro-tips"> </span><span id="id_form-{{order}}-office_emailTip" class="erro-tips"></span> 
+       <span class="Validform_checktip "></span>
+    </p>
+    <p>
+       <label> 住 址* </label>
+       <input id="id_form-{{order}}-address" style="width:450px;" name="form-{{order}}-address" maxlength="150" type="text" datatype="*" errormsg=" " nullmsg="请输入监护人住址"/>&nbsp;
+       <span id="id_form-{{order}}-addressTip" class="erro-tips"></span> 
+       <span class="Validform_checktip "></span>
+    </p> 
+<p><label> </label><a rel="del_guardian" href="javascript:;" order="{{order}}"> 删除该监护人</a></p>
+</div>
+
+ 

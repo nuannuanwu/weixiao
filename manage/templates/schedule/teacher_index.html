@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load pagination_tags kinger_tags i18n%}
+{% block content %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/shedu.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/plugins/chosen/chosen.css">
+<script type="text/javascript" src="{{ STATIC_URL }}kinger/plugins/chosen/chosen.jquery.min.js"></script>
+	<div class="up-kch span12">
+    	<div class="inbox">
+        	<div class="up-title">
+            	<div class="t-zhkb">
+               	  <h3 class="upobj">周课表</h3>
+                  <p class="t-inclass">
+                  	<select id="group_id" class="classSelect" value="{{group.id}}">
+                        {% for g in groups %}
+                    	<option  value="{{g.id}}" {% if group.id == g.id %}selected="selected"{% endif %}>{{g.name}}</option>
+                        {% endfor %}
+                    </select>
+                  </p>
+                </div>
+                <a href="{% url manage_create_schedule %}?class_id={{group.id}}" class="add-newf"><span>添加新课表</span></a>
+            </div>
+            <div class="uploadfile-list">
+                {% autopaginate schedules 10 %}
+            	<ul>
+                    {% for s in schedules %}
+                	<li>
+                    	<div class="upfileName">
+                    		<a href="{% url manage_download_schedule s.id %}">{{s.name}}</a>
+                    	</div>
+                        <div class="uploadDate">
+                        	<span title="{{s.start_time|date:'Y-m-d H:i:s'}}">{{s.start_time|natural_time}}</span>
+                            <a class="close-btn" rel="delete_schedule" href="{% url manage_delete_schedule s.id %}"></a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <form action="" method="get" id="delete_schedule">{% csrf_token %}</form>
+        </div>
+        <div id="pagination">{% paginate %}</div>
+    </div>
+<script type="text/javascript">
+	$(function(){
+		$(".classSelect").chosen();
+	    $(".uploadfile-list > ul > li:even").css("backgroundColor","#fbfbfb");	
+		$(".uploadfile-list > ul > li:last").css("border-bottom","0px");
+		$(".uploadfile-list > ul > li").hover(function(){
+			$(this).children(".uploadDate").show()
+		},function(){
+			$(this).children(".uploadDate").hide()
+		})
+	})
+    $("#group_id").change(function(){
+        var group_id = $(this).val();
+        javascript:location.href = '{% url manage_schedule_teacher %}?class_id=' + group_id;
+    })
+    $("a[rel='delete_schedule']").click(function(){
+        $("#delete_schedule").attr("action",$(this).attr('href'))
+        Bconfirm({
+            message: '确认删除此课表?',
+            handler: function(){
+                $("#delete_schedule").submit()
+            }
+        });  
+        return false;     
+    })
+              
+</script>    
+{% endblock %}

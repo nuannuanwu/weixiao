@@ -1,0 +1,40 @@
+
+/************************************************************************
+*
+*    description         : introduction 公用样式文件
+*    use                 : 用途:为king中introduction一些公用组件控件作样式定义   
+*    dependents          : 关联模块    [kinger introduction]
+*    create              : 2013-2-28  liaojj
+*
+*
+*************************************************************************/
+#Client{ width:61px; height:135px; background:url(../img/Client.png) no-repeat; position:fixed; top:40px; right:12%; cursor:pointer;}
+.kintro{width:940px;}
+.introBG{background:url(../img/introBG.png) no-repeat;}
+.kintro .chzh{ text-indent:-9999em; background:url(../img/shadow_line.png) center bottom no-repeat; height:66px; padding-bottom:15px;}
+.kintro .chzh span{ display:block; margin-left:300px; background-position:0px -190px;height:66px;}
+.w-growup{ height:270px;  margin:25px 0px;}
+.w-growup .w-img{ display:block; float:right; width:370px; height:268px;}
+.intro-text1{ float:left; margin-top:100px; margin-left:20px;}
+.intro-text1 h2{background-position:0px -370px; height:28px;  text-indent:-9999em; margin-bottom:20px;}
+.intro-text1 p{ font-size:14px; color:#555;}
+.kintro .chzh span.ibg{background-position:0px -286px;}
+.intro-text2{ width:370px; float:left; overflow:hidden; margin-top:30px;}
+.w-growup .h-img{ width:425px; height:270px; display:block; float:right; margin-right:10px;}
+.intro-text2 h3{ font-size:30px; color:#00CCFF; margin-bottom:20px;}
+.intro-text2 p{ font-size:14px; color:#555; margin-left:120px; line-height:1.6em;}
+.f-growup{background:url(../img/shadow_line.png) center top no-repeat; height:220px; padding:50px 35px;}
+.l-gorwup{ width:120px; float:left;}
+.l-gorwup h4{ color:#1e1e1e; font-size:16px; text-align:center; margin-top:35px;}
+.m-gorwup{ width:400px; float:left; margin-left:70px;}
+.m-gorwup p.pinfo{ background-position:0px -441px; width:100%; height:55px; text-indent:-9999em; margin:0px;}
+.m-gorwup ul{ margin-top:40px; margin-left:22px;}
+.m-gorwup ul li{ font-size:14px; color:#202020; height:25px; line-height:25px; margin:0; padding:0;}
+.r-gorwup{ width:224px; float:right;}
+.r-gorwup a.iph{ display:block; width:224px; height:66px; text-indent:-9999em;}
+.r-gorwup a.andr{ display:block; width:224px; height:66px; background-position:0px -78px; text-indent:-9999em;}
+.r-gorwup p{ font-size:12px; color:#696969; line-height:25px;}
+a:focus {
+  outline:0px;
+  outline-offset: 0px;
+}

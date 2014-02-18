@@ -1,0 +1,147 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="main"> 
+    <div class="tab"><span>{% if site %}修改网站{% else %}添加网站{% endif %}</span><a class="tbbtn" href="{% url oa_website_list %}">返回</a></div> 
+    <div class="column">
+        <form id="post_form" class="registerform" action="" method="post">{% csrf_token %}
+            {% if request.user|is_agency_user %}
+               <div class="form-div">
+                    <label class="tipInput-tip">所属机构*</label>
+                    <select name="school" class="Validform_error" datatype="*" errormsg="" nullmsg="请选择所属机构" {% if site %}disabled="disabled"{% endif %}>
+                    {% for s in schools %}
+                    	<option value="{{s.id}}" {% if s.id == school.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                    {% endfor %}
+                    </select>
+                    <span class="erro-tips">{{form.school.errors|striptags}}</span>
+                </div>
+            {% endif %}
+            <p class="form-div" style=" margin: 8px 0;">
+                <label class="tipInput-tip">站点名称*</label>
+                    {{form.name|attr:"datatype:*"|attr:"errormsg: "|attr:"nullmsg:请输入站点名称"}}&nbsp;
+                    <span id="id_nameTip" class="erro-tips">{{form.name.errors|striptags}}</span>
+                    <span class="Validform_checktip "></span>
+                </p>
+                <div class="form-div" style="height:30px;">
+                	<label style="margin-left:75px; width: auto;">
+                    	<input type="radio" id="radio_1" name="type" checked="checked" value="0" style="vertical-align:-2px;"> 二级域名
+                    </label>
+                    <label style="margin-left:35px; width:500px;">
+                    	<input id="radio_2" type="radio" name="type" value="1" style="vertical-align:-2px;">独立域名<span style="color:#a5a5a5;">(需提交申请给系统管理员配置域名解析)</span>
+                    </label>
+                </div>
+                <div class="form-div" id="domainName">
+                    <label>站点域名*</label>
+                    <input name="domain" value="{{site.domain}}" maxlength="100" datatype="web" ajaxurl="{% url oa_check_website_domain %}?site_id={{site.id}}" type="text" id="id_domain"  nullmsg="请填写站点二域名" errormsg="站点二级域名只能由字母和数字组成" />
+                    <!--{{ form.domain|attr:"ajaxurl:{% url oa_check_website_domain %}"|attr:"datatype:ym"}}-->
+                    <span id="domain_extra">.{{domain_string}}</span>&nbsp;
+                    <span id="domain-tips" class="Validform_checktip">{{form.domain.errors|striptags}}</span> 
+                </div>
+                {% csrf_token %}
+                <div  class="form-div">
+                    <label>状态*</label>
+                    {{form.status|attr:"class:Validform_error"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请选择状态"}}
+                    <span id="id_statusTip" class="erro-tips">{{form.status.errors|striptags}}</span>
+                </div>
+                <div  class="form-div">
+                	<label></label>
+                        <a class="btn btn-success" id="sub_btn" href="javascript:; " style="color: #fff;" >{% trans "Save" %}</a>&nbsp;
+                        <a  href="{% url oa_website_list %}"class="btn" style=" margin-left:28px;">取消</a>
+                </div>
+        </form> 
+    </div>
+</div>
+<script type="text/javascript">
+ $(function(){
+     if($("#radio_1").attr("checked")){
+         $("#id_domain").attr("datatype","web");
+         $("#id_domain").attr("nullmsg","请填写站点二域名");
+         $("#id_domain").attr("errormsg","站点二级域名只能由字母和数字组成");
+     }
+     if($("#radio_2").attr("checked")){
+         $("#id_domain").attr("datatype","weburl");
+         $("#id_domain").attr("nullmsg","请填写站点域名");
+         $("#id_domain").attr("errormsg","站点域名如:weixiao178.com");
+     }
+     $("#radio_1").click(function(){
+         $("#radio_1").attr("checked",true);
+         $("#radio_2").attr("checked",false);
+         $("#id_domain").attr("datatype","web");
+         $("#id_domain").attr("nullmsg","请填写站点二域名");
+         $("#id_domain").attr("errormsg","站点二级域名只能由字母和数字组成");
+         $("#id_domain").val("");
+         $(".Validform_checktip").text("");
+         $(".Validform_checktip").removeClass("Validform_wrong");
+         $(".Validform_checktip").removeClass("Validform_right");
+     });
+     $("#radio_2").click(function(){
+           $("#radio_1").attr("checked",false);
+           $("#radio_2").attr("checked",true); 
+            $("#id_domain").attr("datatype","weburl");
+            $("#id_domain").attr("nullmsg","请填写站点域名");
+            $("#id_domain").attr("errormsg","站点域名如:weixiao178.com");
+             $("#id_domain").val("");
+             $(".Validform_checktip").text("");
+             $(".Validform_checktip").removeClass("Validform_wrong");
+             $(".Validform_checktip").removeClass("Validform_right");
+          
+     });
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ; 
+                "web"  : /^[a-zA-Z][\dA-Za-z]{0,30}$/,
+                "ym"   : /^(([0-9]+[a-zA-Z]+[0-9]){1,20})|(([a-zA-Z]+[0-9]+[a-zA-Z]){1,20})|(([a-zA-Z]){1,20})|(([a-zA-Z]+[0-9]){1,20})$/,
+                "weburl" : /^([a-zA-Z][\w-]+\.)+((com)|(net)|(org)|(gov\.cn)|(info)|(cc)|(com\.cn)|(net\.cn)|(org\.cn)|(name)|(biz)|(tv)|(cn)|(mobi)|(name)|(sh)|(ac)|(io)|(tw)|(com\.tw)|(hk)|(com\.hk)|(ws)|(travel)|(us)|(tm)|(la)|(me\.uk)|(org\.uk)|(ltd\.uk)|(plc\.uk)|(in)|(eu)|(it)|(jp))$/
+             } 
+	});
+}); 
+  
+$("[name=type]").change(function(){
+    if($(this).val() == 1){
+        $("#domain_extra").hide();
+    }else{
+        $("#domain_extra").show();
+    }
+});
+
+//$("#id_domain").blur(function(){
+//    domain = $(this).val(); 
+//    if(domain == "" ){
+//          $("#domain-tips").removeClass("Validform_right");
+//          $("#domain-tips").text("域名不能为空");
+//          $("#domain-tips").addClass("Validform_wrong"); 
+//    }else{
+//        if($("#radio_1").is(":checked") && $(this).val()){  
+//            url = "{% url oa_check_website_domain %}";
+//            $.post(url,{dom:domain},function(result){
+//                data = $.parseJSON(result);
+//                    //$("#domainName").append('<span id="domain-tips"></span>'); 
+//                if(data.status){
+//                    $("#domain-tips").text("抱歉，你输入的域名不可用。");
+//                    $("#domain-tips").addClass("Validform_wrong"); 
+//                }else{
+//                    $("#domain-tips").text("恭喜！您输入的域名可以使用。");
+//                    $("#domain-tips").addClass("Validform_right");
+//                }
+//            });
+//        }
+//         if( domain == ""){
+//              $("#domain-tips").removeClass("Validform_right");
+//              $("#domain-tips").text("域名不能为空");
+//              $("#domain-tips").addClass("Validform_wrong"); 
+//           }
+//    }
+//});
+$("#sub_btn").click(function(){
+    if($("#id_domain").val()==""){ 
+       $("#domain-tips").removeClass("Validform_right");
+       $("#domain-tips").text("域名不能为空");
+       $("#domain-tips").addClass("Validform_wrong"); 
+    }else{
+        $("#post_form").submit();
+    }
+}); 
+</script>
+{% endblock %}

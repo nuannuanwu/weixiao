@@ -1,0 +1,113 @@
+{% load i18n kinger_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <title>{% block meta_title %}{% endblock %}{% if settings.SITE_TITLE %} | {{ settings.SITE_TITLE }}{% endif %}</title>
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico">
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome-ie7.css">
+    <![endif]-->
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/base.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/manage.css">
+
+    <style type="text/css">
+    body
+    {
+        padding-top: 60px;
+    }
+	.row,.span10{ _margin-left:0px;}
+	.span10{ _float:left;}
+	.span2{_float:right; _width:140px; _height:auto; _background:#f5f5f5;}
+	.well{_padding:0px 5px 0px 5px; _border:0px;}
+	
+    </style>
+    {% block extra_css %}{% endblock %}
+	<!--[if lte IE 8]>
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/ie78.css">
+    <![endif]-->
+
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- chosen js -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/plugins/chosen/chosen.css">
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery.imagesloaded.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/plugins/chosen/chosen.jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/js/base.js"></script>
+    <script src="{{ STATIC_URL }}kinger/js/manage.js"></script>
+    {% block extra_js %}{% endblock %}
+
+<!--[if lt IE 9]>
+<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+{% block extra_head %}{% endblock %}
+
+</head>
+<body id="{% block body_id %}body{% endblock %}">
+    {% include "ie6.html" %}
+    {% include "main_menu.html" %}
+    <div class="container">
+        {% for message in messages %}
+        <script>jNotify("{{ message }}");</script>
+        {% endfor %}
+    </div>
+
+    <div class="container" id="container">
+        <div class="row">
+            <div class="span10 middle">
+                {% block main %}{% endblock %}
+                {% block content %}{% endblock %}
+            </div>
+            <div class="span2 right">
+                <div class="well kManageBar">
+                    <!--Sidebar content-->
+                    {% if user.is_authenticated %}
+                    <ul class="nav nav-list">
+                        <li>
+                            <h3 class="kManageBar-title" >{% trans "Management" %}</h3>
+                        </li>
+                        <li class="{% active_checker "class" %}">
+                            <a href="{% url manage_class_list %}">{% trans "Class" %}</a>
+                        </li>
+                        <li class="{% active_checker "student" %}">
+                            <a href="{% url manage_student_list %}">{% trans "Student" %}</a>
+                        </li>
+                        <li class="{% active_checker "teacher" %}" >
+                            <a href="{% url manage_teacher_list %}">{% trans "Teacher" %}</a>
+                        </li>
+                        <li class="{% active_checker "cookbook" %}" >
+                            <a href="{% url manage_cookbook %}">发布食谱</a>
+                        </li>
+                        <li class="{% active_checker "school" %}" >
+                            <a href="{% url manage_school_send_account %}">发送帐号</a>
+                        </li>
+                    </ul>
+                    {% block sidebar %} {% endblock %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+    	{% block footer %}{% endblock %}
+    	{% block autofoot %}
+    	<script>
+    	$('body').change(function(){AutoFoot()})
+    	AutoFoot()
+    	</script>
+    	{% endblock %}
+		<div class="container">
+    		<span class="pull-left">&copy;2013育明科技</span>
+    		<a class="pull-right" href="http://sae.sina.com.cn" target="_blank"><img src="http://static.sae.sina.com.cn/image/poweredby/117X12px.gif" title="Powered by Sina App Engine"></a>
+		</div>
+    </div>
+</body>
+</html>

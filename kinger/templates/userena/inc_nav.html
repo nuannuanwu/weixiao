@@ -1,0 +1,14 @@
+{% load i18n %}
+
+<ul id="box-nav" class="nav nav-tabs">
+    {% url userena_profile_detail user.username as the_url %}
+    <li {% if the_url == request.path %}class="active"{% endif%}><a href="{% url userena_profile_detail user.username %}">{% trans 'View profile' %}</a></li>
+    {% url userena_profile_edit user.username as the_url %} 
+    <li {% if the_url == request.path %}class="active"{% endif%}><a href="{% url userena_profile_edit user.username %}">{% trans "Edit profile" %}</a></li>
+    {% url userena_password_change user.username as the_url %}
+    <li {% if the_url == request.path %}class="active"{% endif%}><a href="{% url userena_password_change user.username %}">{% trans "Change password" %}</a></li>
+    {% url userena_email_change user.username as the_url %}
+    <li {% if the_url == request.path %}class="active"{% endif%}><a href="{% url userena_email_change user.username %}">{% trans "Change email" %}</a></li>
+    {% url manage_change_username as the_url %}
+    <li {% if the_url == request.path %}class="active"{% endif%}><a href="{% url manage_change_username %}">{% trans "Change username" %}</a></li>
+</ul>

@@ -1,0 +1,77 @@
+{% load i18n kinger_tags oa_tags %}
+	<div id="oa-top">
+    	<div class="oa-top navbar"> 
+            {% if request.user.is_authenticated and not request.user|is_agency_user %} 
+            {% get_school_site request.user.teacher.school as websites %}
+            {% get_parent_domain_string as domain_string %}
+            <div class="nav infor_member">
+            	<div class="dropdown" style="float:left; width: 100px;text-align:left; ">
+                    {% if not websites|is_empty_list %} 
+                    {% else %}  
+                        {% if websites|length < 2 %}
+                            <a href="http://{{websites.0.domain}}{% if websites.0.type == 0 %}.{{domain_string}}{% endif %}" target="_blank"  style="float:left;" class="dropdown-toggle" data-toggle="dropdown">{{websites.0.name}}</a>
+                        {% else %} 
+                            <a href="#"  style="float:left;" class="dropdown-toggle" data-toggle="dropdown">学园首页</a>
+                            <ul class="dropdown-menu" style="">	
+                            {% for w in websites %}
+                               <li>
+                                   <a href="http://{{w.domain}}{% if w.type == 0 %}.{{domain_string}}{% endif %}" target="_blank" style="display:block; float: left; width: 140px; padding-right:0px; margin-right:0px;">
+                                       {{w.name}}
+                                   </a>
+                               </li>
+                             {% endfor %}
+                            </ul>
+                        {% endif %}
+                     {% endif %}
+                </div>     
+            </div>
+            {% endif %}
+            <ul style=" margin-top:5px; margin-bottom:5px;" class="infor_member nav pull-right">
+            {% if request.user.is_authenticated %} 
+                <li class="dropdown">
+                    <a style=" color: #0473b7; margin:0; padding:0; text-shadow:none;" href="javascript:;" role="button" data-toggle="dropdown" id="dropdown"><font style="font-size: 13px;">{% if user.get_profile.chinese_name_or_username %}{{ user.get_profile.chinese_name_or_username }}{% else %}{{ user.username }}{% endif %}</font> &nbsp; <img src="{{ STATIC_URL }}oa/images/nav_ng.png" /></a>
+                    <ul class="dropdown-menu" style="left:-80px; top:23px;">
+                        <li>
+                            <a href="{% url oa_logout %}" style="display:block; width:140px; padding-right:0px; margin-right:0px;">
+                                  <i class="icon-share"></i>&nbsp; 退出
+                            </a>
+                        </li> 
+                    </ul>
+               </li>
+            {% endif %}
+           </ul>
+            <em>|</em><a target="_blank" href="{% url kinger_edu_index %}">微校首页 </a> 
+        </div>
+    </div>
+   <div id="header" class="" > 
+            <div class="header-nav layout_main" >
+                <!-- <img src="{{ STATIC_URL }}oa/images/head_bg.png" />-->
+                <div class="logo" >
+                    <a href="{% url oa_home %}">
+                    <img src="{{ STATIC_URL }}oa/images/logo_web.png" />
+                    </a>
+                </div>
+            </div> 
+      {% get_site site as site_id %}
+      <div class="menu layout_main">
+           <ul>
+               <!--li><a class="{% oa_activer manage_site %}" href="{% url oa_website_manage site_id %}">站点管理</a></li-->
+               <li><a class="{% oa_activer site_nav %}" href="{% url oa_part_nav_grove site_id %}?cid=5">导航栏目管理</a></li>
+               <li><a class="{% oa_activer part_all %}" href="{% url oa_part_con_anc_list site_id %}">内容板块管理</a></li>
+               <li><a class="{% oa_activer school_mail %}" href="{% url oa_mailbox site_id %}">家园互动</a></li>
+               <li><a class="{% oa_activer site_setting %}" href="{% url oa_website_update site_id %}">站点系统设置</a></li>
+           </ul> 
+           <!--<ul style=" padding-left:10px; margin-right:30px; position:relative;" class="infor_member nav pull-right">
+              {% if request.user.is_authenticated %} 
+           		<li id="fat-menu" class="dropdown">
+                <a style="margin-top:0; padding-top:0; color:#fff; text-shadow:none;" href="javascript:;" role="button" data-toggle="dropdown" id="dropdown">{% if user.get_profile.chinese_name_or_username %}{{ user.get_profile.chinese_name_or_username }}{% else %}{{ user.username }}{% endif %} &nbsp; <img src="{{ STATIC_URL }}oa/images/nav_ng.png" /></a>
+               <ul class="dropdown-menu"  style="left:-64px;">
+                  <li><a href="{% url oa_logout %}"><i class="icon-share"></i>&nbsp; 退出</a></li> 
+               </ul>
+               </li>
+              {% endif %}
+           </ul> -->
+      </div>
+   </div>
+   <div id="centont" class="layout_main">
+   

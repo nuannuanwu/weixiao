@@ -1,0 +1,110 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %} 
+<div class="main">
+      <div class="tab"><span>公文类别设置</span></div>
+      <div class="column">
+        <div class="form-horizontal form-kPicCon">  
+            <form  id="form_horzt" class="registerform" style="width:400px;" action="" method="post" enctype="multipart/form-data" >{% csrf_token %} 
+            {{ form.management_form }}
+            {% for f in form %}
+              <div class="box_content">
+                  <div class="show_del" rel="{{categorys|obj_pk:forloop.counter0}}" style="margin-bottom:10px;" > 
+                      {% if f.parent.value %}
+                      <div id="son_content_{{categorys|obj_pk:forloop.counter0}}" style="padding-left:45px; width:400px; margin:0;" class="box_son show_del" >
+                      {{f.name|attr:"rel:input-text"}}
+                          <span class="del" style="padding:10px; cursor:pointer;">
+                            <a style=" display: none;" href="javascript:;" onclick="if(confirm('确认删除吗?')) window.location='{% url oa_document_delete_category categorys|obj_pk:forloop.counter0|default:0 %}'" rel="doc_category">删除</a>
+                          </span>
+                      </div>
+                      {% else %}{{f.name|attr:"rel:input-text"}}{% endif %} 
+                      {% if not f.parent.value %} 
+                           <a style=" margin-left:5px 10px;" href="javascript:;" rel="{{categorys|obj_pk:forloop.counter0}}" att="add_son"> 添加子目录</a>
+                          <span class="del" style="padding:10px; cursor:pointer;">
+                           <a style=" display: none;" href="javascript:;" onclick="if(confirm('确认删除吗?')) window.location='{% url oa_document_delete_category categorys|obj_pk:forloop.counter0|default:0 %}'" rel="doc_category">删除</a>
+                          </span> 
+                      {% endif %}
+                   </div>
+                   <div id="son_content_{{categorys|obj_pk:forloop.counter0}}" style="padding-left:44px; padding-top: 0px; display: block;" class="box_son" ></div>
+                   </div>
+              	  <p style="display:none">{{f.parent}}</p>
+                {{f.name.errors}} 
+            {% endfor %}
+            <div id="parent_content" style="display: block; padding-left: 0;"></div>
+            <p style=""><a class="btn" title="添加分类" href="javascript:;" id="add_parent"><i class="icon-plus"></i>添加新分类</a></p>
+            <div id="parent_content"></div>
+            <p style="margin-top:20px;">
+                <a id="server_add" style="color:#fff;" href="javascript:;" class="btn btn-success"> 保 存 </a> 
+                <!-- <input class="btn" style="margin-left:15px;" type="reset" value=" 取 消 " /> -->
+            </p>
+           </form> 
+        </div>
+      </div>
+</div>
+<script type="text/javascript"> 
+    $(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "nun" : /^[0-9]*[1-9][0-9]*$/
+             } 
+	});
+    var FormNum = Number($("#id_form-TOTAL_FORMS").val());
+    //添加父类
+    $("#add_parent").click(function(){ 
+      url = "{% url oa_document_get_extra_form %}"
+      $.post(url,{order:FormNum},function(result){
+          data = $.parseJSON(result);
+          $("#parent_content").append(data.con);
+          FormNum = FormNum + 1;
+          $("#id_form-TOTAL_FORMS").val(FormNum); 
+        });
+    });
+  //$("#add_parent").click();
+  // 添加子类
+    $("[att=add_son]").click(function(){
+	   var relSon=$(this).attr('rel');
+            url = "{% url oa_document_get_extra_form %}"
+            pid = $(this).attr("rel");
+            $.post(url,{order:FormNum,parent_id:pid},function(result){
+                data = $.parseJSON(result);
+                $("#son_content_"+relSon).append(data.con);
+                FormNum = FormNum + 1;
+                $("#id_form-TOTAL_FORMS").val(FormNum); 
+              });
+    });
+    $(".show_del").hover(function(){ 
+            $(this).find('[rel=doc_category]').show();
+	},
+	function(){ 
+            $(this).find('[rel=doc_category]').hide();
+	});
+	//删除
+	$(".del_son").live('click',function(){
+               $(this).parents('p').remove();
+		 FormNum= FormNum-1;
+              $("#id_form-TOTAL_FORMS").val(FormNum);
+	});
+        //保存
+	$("#server_add").live('click',function(){  
+                $("#form_horzt").submit();
+               // var formHorzt = $("#form_horzt"),i=0;
+//		formHorzt.find('input').each(function(k,v){ 
+//			boxId = v.getAttribute('id'); 
+//			$mmbox = $("#"+boxId); 
+//			if($mmbox.val()=="")
+//			{    
+//			    $(this).attr("placeholder","不能为空"); 
+//			}
+//		});
+//		if(i==0){
+                    
+			//$("#form_horzt").submit();
+		//} 
+	});
+	 
+</script>
+
+{% endblock %}

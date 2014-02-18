@@ -1,0 +1,46 @@
+{% extends 'kinger/pwd_back/base.html' %}
+{% load kinger_tags %}
+
+{% block pwd_back_main %}
+	<style>
+	#pwd_back_success{ font-size: 18px; padding: 44px 472px 130px 72px; background: url({{STATIC_URL}}kinger/img/kinger/pwd_back_bg.png) no-repeat 535px -10px;}
+	#pwd_back_success .successJump{ color: #8BBB49; text-decoration: underline}
+	.kTips{ height: 95px; margin-top: 0}
+	</style>
+
+	<div id="pwd_back_success">
+		<p>恭喜你！修改成功，您可以登录浏览信息了。</p>
+		<a class="successJump" href="{% url userena_signin %}"><span class="kSeconds">5</span>秒后进入登陆界面......</a>		
+	</div>
+
+{% endblock %}
+
+{% block pwd_back_tips %}
+<div class="kTips">		
+	<hr>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	var Turn = {
+		delay_time:5,
+		go:function(location, handlerFun){
+			var count = this.delay_time;
+			countdown = setInterval(function(){
+				if(count == 0){
+					window.location = location
+				}
+			handlerFun(count)
+			count--;
+			}, 1000);
+		}
+	}
+
+	var handlerFun = function(count){
+		$('.kSeconds').text(count.toString()) 
+	}
+
+	Turn.go('{% url userena_signin %}', handlerFun);
+});
+</script>
+{% endblock %}

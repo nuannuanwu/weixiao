@@ -1,0 +1,18 @@
+<div class="navbar navbar-fixed-top">
+    <div class="knavbar-inner">
+    	<div class="container">
+        	<span class="kgray"></span>
+       		<a class="brand" href="{% url waiter %}">客服后台</a>
+            {% if request.user.is_authenticated %}
+                <ul class="knav pull-right">                    
+                    <li><a href="{% url userena_profile_detail request.user.username %}">{{ request.user.get_profile.chinese_name_or_username }}</a></li>
+                    <li><a href="{% url userena_signout %}" class="klogout">退出</a></li>
+                </ul>
+            {% else %}
+                <ul class="knav pull-right">
+                    <li><a href="{% url userena_signin %}" class="klogout">登录</a></li>
+                </ul>
+            {% endif%}       		
+        </div>
+    </div>
+</div>

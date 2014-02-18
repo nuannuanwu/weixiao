@@ -1,0 +1,15 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block content_title %}<h2>{% blocktrans with user.username as username %}Account &raquo; {{ username }}{% endblocktrans %}</h2>{% endblock %}
+
+{% block content %}
+<form action="" method="post" class="form-horizontal">
+  {% include 'userena/inc_nav.html' %}
+  {% csrf_token %}
+  {{form}}
+  <div class="form-actions">
+    <input type="submit" class="btn btn-primary" value="{% trans "Change username" %}" />
+  </div>
+</form>
+{% endblock %}

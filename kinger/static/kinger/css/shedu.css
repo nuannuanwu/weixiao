@@ -1,0 +1,35 @@
+@charset "utf-8";
+/* CSS Document */
+.up-kch{ width:940px; border:#E6E6E6 solid 1px; border-radius:6px; -moz-border-radius:6px; -webkit-border-radius:6px; background-color:#fff;}
+.inbox{ padding:40px 80px 0px 80px;}
+.up-title{ height:36px; width:780px;}
+.add-newf{ width:130px; height:36px; display:block; text-indent:-9999em; background:url(../img/kch_addbtn.png) no-repeat; overflow:hidden; cursor:pointer; float:right;} 
+.t-zhkb{ float:left; margin-top:4px;}
+.t-zhkb h3.upobj{ font-size:18px; color:#666; float:left; margin-right:5px; margin-top:2px;}
+.t-zhkb .t-inclass{ float:left;}
+.t-zhkb .t-inclass span{ color:#999; font-size:18px;}
+.uploadfile-list{ margin-top:10px; margin-bottom:40px; border:#ebebeb solid 1px;}
+.uploadfile-list ul{ list-style:none; padding:0px !important;  margin:0px !important; overflow:hidden;-webkit-padding-start: 0px;-webkit-margin-after: 0px;-webkit-margin-before: 0px; width:100%;}
+.uploadfile-list ul li{ line-height:33px; height:33px; border-bottom:#ebebeb solid 1px; padding:0px 10px; overflow:hidden; font-size:16px;}
+.uploadfile-list ul li .upfileName{ float:left;}
+.upfileName a{ color:#B88500; text-decoration:none;}
+.uploadfile-list ul li .uploadDate{float:right; color:#ccc; display:none;}
+.uploadDate a.close-btn{display:inline-block; width:16px; height:16px; background:url(../img/faceico.gif) no-repeat; cursor:pointer;  position:relative; top:3px;}
+.uploadDate a.close-btn:hover{ background-position:0px -30px;}
+/**课表上传***/
+.toback{ margin-top:40px; margin-left:285px; height:24px; line-height:24px;}
+.toback a.tbbtn{ display:block; height:24px; background:url(../img/back-kch.png) left no-repeat; padding-left:30px; color:#BB5D08; font-size:18px;}
+.upForm{ margin-left:285px; margin-top:50px;}
+.upForm .nflieul{ font-size:16px; font-weight:normal; color:#666;}
+.upForm .fliebox{ margin-top:25px; margin-right:25px;}
+.usedintro{ margin-left:285px; margin-bottom:50px; margin-top:30px; color:#878787; font-size:16px;}
+.usedintro h5 {font-weight:normal; font-size:16px;}
+.usedintro h5,.usedintro p{ margin:10px 0px; padding:0px;}
+.fliebox{ width:390px; height:35px; margin:20px 0px; position:relative; overflow:hidden; }
+.fliebox .mn-f{ border:#bababa solid 1px; border-radius:3px 0px 0px 3px;  -webkit-border-radius:3px 0px 0px 3px; -moz-border-radius:3px 0px 0px 3px;background-color:#f4f4f4; width:288px; height:17px; outline:0px; outline-offset:0px; padding:8px 0px 8px 2px; margin:0px; display:block; float:left;}
+.fliebox .mn-s{ width:96px; height:35px; border:#bababa solid 1px; border-left:0px; border-radius:0px 3px 3px 0px;-moz-border-radius:0px 3px 3px 0px;-webkit-border-radius:0px 3px 3px 0px; background-color:#8CBB4A; outline:0px; outline-offset:0px; display:block; float:left;  font-size:16px; color:#fff; font-weight:bold; cursor:pointer;}
+.fliebox .uplfilebtn{ width:96px; height:33px; position:absolute; top:1px; right:1px; cursor:pointer; opacity:0; filter:alpha(opacity=0); border:0px; outline:0px; outline-offset:0px;font-size:50px;}
+.fliebox .uplfilebtn-webkit{ width:230px; height:33px; position:absolute; top:1px; right:1px; cursor:pointer; opacity:0; filter:alpha(opacity=0); border:0px; outline:0px; outline-offset:0px; font-size:30px;}
+ .flshbtn .subtj{ margin-left:152px;}
+#id_src_error{ margin-top:15px; margin-bottom:15px; display:block;}
+#pagination{ margin-left:80px;}

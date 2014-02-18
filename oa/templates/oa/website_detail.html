@@ -1,0 +1,63 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="main">
+	<div class="tab">
+    	<span>网站信息</span>
+    </div>
+    <div class="column setwebsite">
+        <form action="" method="post" class="registerform" enctype="multipart/form-data">{% csrf_token %}
+            <p>
+            	<label>学园名称*</label><input type="text" disabled="disabled" value="{{site.school.name}}" />&nbsp;
+            </p>
+            <p>
+            	<label>学园网址</label><input type="text" maxlength="100" disabled="disabled" value="{{site.domain}}">
+            </p>
+            <p><label>网站首页名称</label>{{form.name}} </p>
+            <p>
+            	<label>上传logo</label>
+            	<div class="website-logo">
+                    <input type="text" class="up-logopic" value="{{site|get_logo_url}}" id="txt" placeholder="选择logo" style="background-color:#fff;" />
+
+                    <input type="file" name="logo" class="up-logopic-file" id="up-file" onchange="txt.value=this.value" />
+                    <span style="display:block; position:absolute; left:225px; top:5px; color:#989898;">建议宽高：120px * 80px，建议使用透明背景。</span>
+                </div>
+            </p>
+            <p style="width:100%; height:30px;">
+            	<label>学园所在地：</label>
+            	<input type="text" disabled="disabled" value="{{site.school.province|default:"广东省"}}{{site.school.city|default:"深圳市"}}{{site.school.area}}">
+            </p> 
+            <p><label>联系电话</label> {{form.telephone|attr:"ignore:ignore"|attr:"datatype:m|tel-3"|attr:"errormsg:输入的手机/电话号格式不正确"|attr:"nullmsg: "}}&nbsp;</p> 
+            <p><label>联系人</label>{{form.charger|attr:"class:span2"}}&nbsp;</p>
+            <p><label>E-Mail</label>{{form.email|attr:"ignore:ignore"|attr:"datatype:e "|attr:"errormsg:输入的E-Mail格式不正确"|attr:"nullmsg: "}}&nbsp;</p>
+            <p>
+            	<label></label>
+            	<input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+            </p>
+            <input type="hidden" name="status" value="{{site.status}}">
+            <input type="hidden" name="domain" value="{{site.domain}}">
+            <input type="hidden" name="type" value="{{site.type}}">
+        </form>
+    </div> 
+</div>
+<script type="text/javascript">
+    $(function(){
+    $(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "web"  : /^(\w+)|([\u0391-\uFFE5]+)$/,
+                "ym"   : /^[A-Za-z0-9]+$/,
+                "weburl" : /^([\w-]+\.)+((com)|(net)|(org)|(gov\.cn)|(info)|(cc)|(com\.cn)|(net\.cn)|(org\.cn)|(name)|(biz)|(tv)|(cn)|(mobi)|(name)|(sh)|(ac)|(io)|(tw)|(com\.tw)|(hk)|(com\.hk)|(ws)|(travel)|(us)|(tm)|(la)|(me\.uk)|(org\.uk)|(ltd\.uk)|(plc\.uk)|(in)|(eu)|(it)|(jp))$/
+             } 
+	});
+}); 
+    if($.browser.mozilla){
+            $("#up-file").css({fontSize:"14px"})
+     }else if(navigator.userAgent.toLowerCase().match(/chrome/)!=null){
+            //$("#id_src").addClass("uplfilebtn-webkit").removeClass("uplfilebtn")
+     }
+</script>
+{% endblock %}

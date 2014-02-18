@@ -1,0 +1,156 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="main">
+    <div class="tab"><span>报名表详情</span> <a  href="{% url oa_regist_apply_list %}" style="margin-left: 28px;">返回</a></div>
+    <div class="column">
+        <div class="on_registr">
+            <form class="registerform" action="" method="post">{% csrf_token %}
+               <table> 
+                   <thead>
+                       <tr><th colspan="10">报名表&nbsp;&nbsp;序号{{regist.id}}</th></tr>
+                   </thead>
+                   <tbody>
+                       <tr>
+                           <td width="35" >班级</td>
+                           <td width="65"><span class="info_color" ><div style="display:none">{{form.group}}</div>{{regist.group.name}}</span></td>
+                           <td width="60">姓名</td>
+                           <td width="65"><span class="info_color" ><div style="display:none">{{form.name}}</div>{{regist.name}}</span></td>
+                           <td width="40">性别</td>
+                           <td width="35">
+                               <span class="info_color" >{% if regist.gender == 1 %}男{% else %}女{% endif %}</span>
+                           </td>
+                           <td width="40">籍贯</td>
+                           <td width="90"><span class="info_color" ><div style="display:none">{{form.hometown}}</div>{{regist.hometown}}</span></td>
+                           <td width="40">民族</td>
+                           <td width="70" class="align-left"><span class="info_color" ><div style="display:none">{{form.nation}}</div>{{regist.nation}}</span></td>
+                       </tr>
+                       <tr>
+                           <td>地址</td>
+                           <td colspan="6" class="align-left">
+                               <span class="info_color" ><div style="display:none">{{form.address}}</div>{{regist.address}}</span>
+                           </td>
+                           <td>出生日期</td>
+                           <td colspan="2" class="align-left">
+                               <span  class="info_color" ><div style="display:none">{{form.birth_date}}</div>{{regist.birth_date}}</span>
+                           </td>
+                       </tr>
+                       <tr>
+                           <td rowspan=" {{guardians_count|add:"1" }}"><div style="width: 15px; padding: 5px 0;">家庭成员</div></td>
+                           <td align="center">成员</td>
+                           <td align="center">姓名</td>
+                           <td align="center" colspan="4">单位</td>
+                           <td align="center" colspan="3">联系电话</td>
+                       </tr> 
+                       {% for g in guardians %}
+                       <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                           <td align="center"><span class="info_color">{{g.relation}}</span></td>
+                           <td align="center"><span class="info_color">{{g.name}}</span></td>
+                           <td colspan="4" class="align-left">
+                               <span class="info_color">{{g.unit}}</span>
+                           </td>
+                           <td colspan="3">
+                               <span class="info_color">{{g.mobile}}</span>
+                           </td>
+                       </tr>
+                       {% endfor %} 
+                       <tr>
+                           <td colspan="2">所交证件名称</td>
+                           <td colspan="5" class="align-left">
+                               <span class="info_color"><div style="display:none">{{form.credential}}</div>{{regist.credential}}</span>
+                           </td>
+                           <td>药物过敏史</td>
+                           <td colspan="2" class="align-left">
+                               <span class="info_color"><div style="display:none">{{form.drug_allergy}}</div>{{regist.drug_allergy}}</span>
+                           </td>
+                       </tr>
+                       <tr>
+                           <td colspan="2">入托时间</td>
+                           <td colspan="2">
+                               <span class="info_color"><div style="display:none">{{form.nursery_time}}</div>{{regist.nursery_time|date:" Y年m月"}}</span>
+                           </td>
+                           <td>体检情况</td>
+                           <td colspan="2" class="align-left">
+                               <span class="info_color"><div style="display:none">{{form.examination}}</div>{{regist.examination}}</span>
+                           </td>
+                           <td>患病史</td>
+                           <td colspan="2" class="align-left">
+                               <span class="info_color"><div style="display:none">{{form.disease_history}}</div>{{regist.disease_history}}</span>
+                           </td>
+                       </tr>
+                       <tr>
+                           <td colspan="2">经办人</td>
+                           <td colspan="2">
+                               <span class="info_color"><div style="display:none">{{form.charger}}</div>{{regist.charger|get_name}}</span>
+                           </td>
+                           <td>备注</td>
+                           <td colspan="5" class="align-left">
+                               <span class="info_color">{{regist.description}}</span>
+                           </td>
+                       </tr>
+                       <tr>
+                           <td colspan="10" class="align-left">
+                               确认以上所填资料准确无误。家长签字
+                               <span class="info_color" ><div style="display:none">{{form.signature}}</div>{{regist.signature}}</span>
+                           </td>
+                       </tr>
+                   </tbody>
+               </table>
+               <div class="review">
+                   <p>审阅操作</p>
+                   <div class="bwrap" style="clear: none;">
+                       <div class="inquire opt-set pull-left">
+                        <span>设置状态*</span>
+                        <span>{{form.status|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请选择状态" }}</span>
+                         &nbsp;{{form.description|attr:"placeholder:备注内容"}} 
+                       </div>
+                       <div class="review-words pull-right">
+                           <label style="font-size: 13px; color: #454545;">{{form.send_msg}}&nbsp;&nbsp;短信通知家长<span  style="color: #ccc;">(字数限制70)</span> 
+                               <div style=" display: inline; margin-left: 10px;  " class="msg-number set-msg">您还可以输入 <span id="remains_text">70</span> 字</div>
+                               <input  type="hidden" maxLength="4" id="remains" value="70" />
+                           </label>
+                           <div style="display: none;"  id="msg_text" class="info_color">
+                             <textarea id="Memo" class="m-content-ta" value='' name="msg_body" placeholder="请输入内容" onKeyDown="gbcount(this.form.Memo,this.form.totals,this.form.useds,this.form.remains);" onKeyUp="gbcount(this.form.Memo,this.form.totals,this.form.useds,this.form.remains);"></textarea>
+                             <p class="set-msg">
+                                <input  type="hidden" maxLength="4" id="totals" size="3" value="70" class="inputtext" /> 
+                                <input type="hidden" maxLength="4" id="useds" size="3" value="0" class="inputtext" /> 
+<!--                                您还可以输入<input readonly type="text" maxLength="4" id="remains" value="140" />字-->
+                             </p>
+<!--                               {{form.msg_body}}-->
+                           </div>
+                       </div>
+                   </div>
+                   <div class="btnes">
+                       <input type="submit" value="确&nbsp;&nbsp;定" class="btn btn-success" />
+                       <a class="btn" href="{% url oa_regist_apply_list %}" style="margin-left: 28px;">取消</a>
+                        <!--<input type="button" value="取&nbsp;&nbsp;消" class="btn" />-->
+                   </div>
+               </div>
+            </form> 
+     </div>
+    
+  </div>
+</div>
+<script>
+ //表单验证 
+$(function(){ 
+    $(".registerform").Validform({
+        tiptype:2,
+        showAllError:true
+    });
+}); 
+
+ $(function(){
+     $("#id_send_msg").removeAttr("checked"); 
+     $("#id_send_msg").click(function(){
+         if($(this).attr("checked")){
+             $("#msg_text").show();
+             $(".msg-number").show();
+         }else{
+             $("#msg_text").hide();
+             $(".msg-number").hide();
+         }
+     }); 
+ });
+</script>
+{% endblock %}

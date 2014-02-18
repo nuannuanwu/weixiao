@@ -1,0 +1,39 @@
+{% extends 'manage_base.html' %}
+{% load i18n kinger_tags %}
+{% block content %}
+{% load pagination_tags %}
+{% autopaginate teacher_list 24 %}
+<div class="page-header">
+    <div class="pull-right" style="margin-right:5px;">
+        <a class="btn btn-primary" data-toggle="modal" href="#import-teacher-modal" >{% trans "Import" %}</a>
+        <a href="{% url manage_teacher_create %}" class="btn btn-primary"><i class="icon-plus-sign"></i> {% trans "Create" %}</a>
+    </div>
+    <h1><a href="{% url manage %}">学校管理</a><i class="icon-chevron-right"></i><a href="{% url manage_teacher_list %}">教师管理</a></h1>
+</div>
+<div class="well">
+    <form class="form-search" method="GET">
+        <input type="text" name="q" class="input-medium search-query" value="{{query}}" placeholder="{% trans "Teahcer name" %}">
+        <button type="submit" class="btn">{% trans "Search" %}</button>
+    </form>
+</div>
+<ul class="thumbnails kPicList kPicList-mini">
+    {% for teacher in teacher_list %}
+    <li>
+        <div class="thumbnail">
+            <a href="{% url manage_teacher_view teacher.id %}" title="{{ teacher.description }}">
+                <img src="{% media_path teacher.user.get_profile.get_avatar "avatar" %}" alt="">
+            </a>
+            <div class="caption">
+                <a class="kListLink" href="{% url manage_teacher_view teacher.id %}" title="{{ teacher.appellation }} {{ teacher.name }}">{{ teacher.name }}</a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<div class="pagination">
+{% paginate %}
+</div>
+{% include "manage/includes/teacher_import.html" %}
+
+{% endblock %}

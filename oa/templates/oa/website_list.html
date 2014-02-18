@@ -1,0 +1,137 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate websites 10 %}
+<div class="main">
+    <div class="tab"><span>网站列表</span><a class="btn ablackcolor" href="{% url oa_website_create %}"><i class="add_btn">&nbsp;</i>添加</a></div>
+    <div class="column">
+    	  <div style="padding:5px 0;"> 
+              <form class="form-inline" action="{% url oa_website_list %}" ethod="GET">
+                {% if request.user|is_agency_user %}
+              	  <select class="select-110" name="s">
+                  	<option value="-1">--所有学园--</option>
+                    {% for s in schools %}
+                  	<option value="{{s.id}}" {% if s.id == school_id %}selected="selected"{% endif %}>{{s.name}}</option>
+                    {% endfor %}
+                  </select>
+                {% endif %}
+                  <input type="text" name="q" id="keyW" class="input-medium search-query" value="{{query}}" placeholder="网站名">
+                  <button type="submit" class="btn" id=" "  >{% trans "Search" %}</button>
+              </form> 
+           </div>
+           <div class="list"> 
+            <form  id="form_post"  onsubmit="return check()" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+              <table>
+              	<tbody>
+                   <tr align="center"> 
+                       <th scope="col" style="padding-left:10px;"><input type="checkbox" rel="checkall">网站名</th> 
+                       <th scope="col">域名</th>
+                       <th scope="col">创建时间</th>
+                       {% if request.user|is_agency_user %}<th scope="col">所属机构</th>{% endif %}
+                       <th scope="col">状态</th>
+                       <th scope="col">操作</th>
+                   </tr>
+                   {% if not websites|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                        {% else %}
+                  {% for w in websites %} 
+                  <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">  
+                      <td width="110">
+                      	<div class="td-words w_110">
+                        <input type="checkbox" name="site_pks" rel="role" value="{{w.id}}" class="left-input">
+                        <a href="{% url oa_website_edit w.id %}">{{w.name}}</a>
+                        </div>
+                      </td>
+                      <td width="100" title="{{w|get_full_domain:domain_string|domain_without_http}}">
+                        <div class="td-words">
+                          <a href="{{w|get_full_domain:domain_string|domain_enable:w.status}}" title="{{w|get_full_domain:domain_string|domain_enable:w.status}}" {% if w.status == 1 %}target="_blank"{% endif %}>
+                            {{w|get_full_domain:domain_string|truncatestr:":32"|domain_without_http}}
+                          </a> 
+                        </div>
+                      </td>
+                      <td width="90"><div class="" style="margin-right: 0;" title="{{w.ctime|date:'Y-m-d G:i'}}">{{w.ctime|date:"Y-m-d G:i"}}</div></td>
+                      {% if request.user|is_agency_user %}<td width="90"><div class="td-words " title="{{w.school.name}}">{{w.school.name}}</div></td>{% endif %}
+                      <td width="30">
+                      	<div class="td-words w_30" rel="{{w.status}}">{% if w.status %}启用{% else %}停用{% endif %}</div>
+                      </td>
+                      <td width="30">
+                      	<div class="td-words w_30">
+                        	<a href="{% url oa_part_nav_grove w.id %}" target="_blank">管理</a>
+                        </div>
+                      </td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                  <tr>
+                  	<td colspan="6">
+                     	<input type="checkbox" id="sel-all" rel="checkall" style="margin-left:5px;" />  
+                        <select id="select_val" class="select-110 s-status" name="status" style="margin:0px; top:1px;">
+                    		<option value="1">启用</option>
+                    		<option value="0">停用</option>
+                		</select> 
+                    	<input type="submit" disabled="disabled" class="btn btn-success" id="sub_form"  value="提 交" /> 
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+            <div class="pagination pagination-centered">{% paginate %}</div>
+         </div>
+    </div>
+
+ </div>
+
+<script type="text/javascript">
+
+$(':checkbox[rel=checkall]').change(function(){
+	$(':checkbox[rel=role]').attr('checked',this.checked);
+	$(':checkbox[rel=checkall]').attr('checked',this.checked);
+	chekck();
+})
+
+$(':checkbox[rel=role]').change(function(){
+	var flag = true;
+	$(':checkbox[rel=role]').each(function() {
+        if(!this.checked){
+		  flag = false;
+		}
+    });
+   $(':checkbox[rel=checkall]').attr('checked',flag);
+   chekck();
+});
+
+function chekck(){
+	var formChek = $("#form_post"),
+	checkedlen = formChek.find('input[rel=role]:checked').length;
+	if(checkedlen){
+		$("#sub_form").attr('disabled',false)
+	}else{
+		$("#sub_form").attr('disabled',true)
+	}
+}
+var flagType="1";
+$("#select_val").click(function(){
+    flagType=$(this).val();
+});
+function check(){  
+   var rimndText="";
+   if(flagType == 1){
+       rimndText="是否启用所选网站";
+   }else{
+       rimndText="是否停用所选网站";
+   }  
+   var r=confirm(rimndText);
+	if (r==true) {
+		//alert("删除成功");
+	} else { 
+		return false;//false:阻止提交表单  
+	}  
+} 
+</script>
+
+{% endblock %}

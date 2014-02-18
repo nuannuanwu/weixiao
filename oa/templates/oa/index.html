@@ -1,0 +1,57 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+	<div id="centont" style="width:960px; overflow:hidden; margin:0 auto; clear:both;">
+    	<div class="common-functions">
+        	<h3 class="c-f-title">常用功能</h3>
+            <div class="functions">
+            	<ul>
+                    <li>
+                    	<a href="{% url oa_send_message %}" class="functions-img"><img src="{{ STATIC_URL }}oa/images/index_ico_1.png" /></a>
+                    	<p><a href="{% url oa_send_message %}">发消息</a></p>
+                    </li>
+                    <li>
+                    	<a href="{% url oa_my_document %}" class="functions-img"><img src="{{ STATIC_URL }}oa/images/index_ico_2.png" /></a>
+                    	<p><a href="{% url oa_my_document %}">收公文</a></p>
+                    </li>
+                    <li>
+                    	<a href="{% url oa_write_document %}" class="functions-img"><img src="{{ STATIC_URL }}oa/images/index_ico_3.png" /></a>
+                    	<p><a href="{% url oa_write_document %}">发公文</a></p>
+                    </li>
+                    <li>
+                        <a href="{% url oa_schedule_teacher %}" class="functions-img"><img src="{{ STATIC_URL }}oa/images/index_ico_4.png" /></a>
+                        <p><a href="{% url oa_schedule_teacher %}">周课表</a></p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="n-wrap">
+        	<div class="n-box pull_left">
+            	<h4 class="c-f-title"><a href="{% url oa_my_document %}" class="pull_right more-n">更多</a><div>最近公文</div></h4>
+                <ul class="n-con">
+                    {% for d in documents %}
+                        {% if forloop.counter <= 5 %}
+                            <li>
+                                <a href="{% url oa_document_detail d.document.id %}" class="pull_left">{% if not d.is_read %}<em>[未读]</em>{% endif %}{{d.document.title}}</a>
+                                <span class="fb-time pull_right">{{d.document.ctime|date:"Y-m-d G:i"}}</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="n-box pull_right">
+                <h4 class="c-f-title"><a href="{% url oa_message_list %}" class="pull_right more-n">更多</a><div>最近消息</div></h4>
+                <ul class="n-con">
+                    {% for m in message_list %}
+                        {% if forloop.counter <= 5 %}
+                           <li>
+                            <a href="{% url oa_message_history m.message.sender.id %}" class="pull_left">{% if not m.read_at %}<em>[未读]</em>{% endif %}{{ m.message.body }}</a>
+                            <span class="fb-time pull_right">{{ m.message.sent_at|date:"Y-m-d G:i"}}</span>
+                           </li>
+                       {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>{{ site.name }}</title>
+<script type="text/javascript">
+/*
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-20356935-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {	
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+*/
+</script>
+<meta charset="utf-8">
+<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<!-- Le styles -->
+
+<script type='text/javascript' src="{{STATIC_PREFIX}}bootstrap/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_PREFIX }}bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_PREFIX }}css/base.css" />
+
+<style>
+body {
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <div id="nav" class="row">
+            <div class="navbar navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <a class="brand" href="{% url kinger.views.frontend.index %}">Kinger</a>
+
+                        <ul class="nav">
+                            <li class="active">
+                                <a href="{% url kinger.views.frontend.index %}">Home</a>
+                            </li>
+                            <li>
+                                <a href="{% url kinger.views.student.index %}">Student</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content" class="row">
+            <div class="span9">
+                <!--Body content-->
+                <hr/>
+                {% block content %} {% endblock %}
+            </div>
+            <div class="span3">
+                <!--Sidebar content-->
+                <hr/>
+                {% block sidebar %} {% endblock %}
+            </div>
+        </div>
+
+        <hr/>
+        <div id="footer" class="row">
+            <footer class="footer">
+                <p class="pull-right"><a href="#">Back to top</a></p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

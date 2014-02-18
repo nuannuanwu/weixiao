@@ -1,0 +1,382 @@
+/************************************************************************
+*
+*    description         : aq 公用样式文件，为避免跟其它css框架冲突，采用k为前缀
+*    use                 : 用途:为aq中通用样式文件
+*    dependents          : 关联模块    [aq]
+*    create              : 2012-8-6  saint
+*
+*
+*************************************************************************/
+
+/* `bootstrap - 扩展
+----------------------------------------------------------------------------------------------------*/
+	/* `form-horizatal
+	   ============================================================ */
+body{
+	font-family:"Helvetica Neue", Ubuntu, "Hiragino Sans GB", "WenQuanYi Micro Hei","Microsoft YaHei","微软雅黑", sans-serif;
+	background-color: #414141;
+}	  
+.container{ width: 670px !important;}
+	/* `aq_nav
+	   ============================================================ */
+.knavbar-inner{
+	min-height:50px;
+	border-bottom: 1px solid #6F6F6F;
+	background-color:#232323;
+}
+
+.knavbar-inner .brand{
+	padding:0;
+	margin-left:20px;
+	height:50px;
+	line-height:50px;
+	font-size:22px;
+	font-weight:bold;
+	color:#EAEAEA;
+}
+.kgray{
+	float: left;
+	display:block;
+	width: 60px;
+	height:50px;
+	background-color:#404040;
+}
+.knav{
+	margin:0;
+}
+.knav li{
+	display:block;
+	float:left;
+	margin:0 0 0 20px;
+	height: 50px;
+}
+.knav li a{
+	display:block;
+	margin-top:15px;
+	height: 20px;
+	font-size:14px;
+	color:#A2A2A2;
+}
+.knav li .klogout{
+	width:46px;
+	text-align:center;
+	background-color: #656565;
+  	-webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+/* `toolbar
+	   ============================================================ */
+.kToolbar {
+	position: fixed;
+	width: 200px;
+	top: 230px;
+	margin-left: 340px;
+	left: 50%;
+}
+.kToolbar .kpage{
+	display:block;
+	width: 100%;
+	margin:0 0 20px 15px;
+	font-size:18px;
+	color:#A3A3A3;
+}
+.kToolbar-turn a{
+	display:block;
+	float: left;
+	margin-left:10px;
+}
+/* `aq_base
+	   ============================================================ */
+.krow{
+	margin:50px 0 20px;
+	position:relative;
+	padding: 20px;
+	width:628px;
+	min-height:500px;	
+	background: none repeat scroll 0 0 white;
+	border: 1px solid #CCC;
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+}
+.krow .ktab{
+	position:absolute;
+	top:-36px;
+	left:-1px;
+	margin:0;
+}
+.krow .ktab li{
+	display:block;
+	float: left;
+	margin-right:6px;
+	width:100px;
+	height:35px;
+	text-align:center;
+	background-color: #D8D8D8;
+	border-top: 1px solid #CCC;
+	border-left: 1px solid #CCC;
+	border-right: 1px solid #CCC;
+}
+.krow .ktab .active{
+	background-color: white;
+}
+.krow .ktab .active a{
+	color:#333;
+}
+.krow .ktab li a{
+	display:block;
+	width:100px;
+	height:35px;
+	line-height:35px;
+	font-size:16px;
+	color:#666;
+}
+.krow .ktab li a:hover{
+	text-decoration: none;
+}
+.kmsgInfo,.khistoryInfo{
+	width:100%;
+	height:20px;
+	line-height:20px;
+	margin:10px 0 25px 0;
+}
+.kmsgInfo span{
+	font-size:18px;
+	color:#999;
+}
+.kmsgInfo b{
+	margin-left:10px;
+	font-weight:bold;
+	color:#666;
+}
+.kmsgList{
+	width:100%;
+	height: auto; 
+}
+.knoList{
+	width:100%;
+	border-top: 1px solid #CCC;
+}
+.knoList .knorec{
+	margin:20px 0 0 10px;
+	font-size:16px;
+	color:#333;
+}
+.kmsgBar{
+	width:608px;
+	height: 50px;
+	line-height:50px;
+	padding:0 10px;
+	background-color:#FFF;
+	border-top: 1px solid #CCC;
+}
+.kmsgList .gray{
+	background-color:#EEE;
+}
+.kmsgHead{
+	margin-top:9px;
+	width: 30px;
+	height:30px;
+	border: 1px dashed #CCC;
+	background-color:#FFF;
+	-webkit-border-radius: 1px;
+     -moz-border-radius: 1px;
+          border-radius: 1px;
+}
+.kmsgHead img{
+	display:block;
+	height:30px;
+	margin:auto;
+}
+.kmsgBar .kmsgCon{
+	margin-left:20px;
+	width:65%;
+	color:#333;
+	white-space: nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	text-align:left;
+	cursor: pointer;
+}
+.kmsgBar .kmsgDate{
+	margin-right:5px;
+	color:#CCC;
+}
+.kmsgDialog{
+	display:none;
+	position:relative;
+	width:624px;
+	height: auto;
+	margin:20px 0;
+	background-color:#FFF;
+	border: 2px solid #ABABAB;
+}
+.kdialogDashed{
+	position: absolute;
+	left:0;
+	top:-16px;
+	width:100%;
+	border-top: 2px dashed #999;
+}
+.kdialogClose{
+	position: absolute;
+	top:-11px;
+	right: -11px;
+	width:22px;
+	height:22px;
+	background:url(../img/dialog_close.png) 0 0 no-repeat;
+}
+.kdialogHeader{
+	width:100%;
+	height:50px;
+	line-height:50px;
+	border-bottom: 1px solid #CCC;
+	background-color:#EEE;
+}
+.kdialogHeader .kmsgHead{
+	margin-left:12px;
+}
+.kdialogHeader span{
+	margin-left:10px;
+	font-size:16px;
+	font-weight: 600;
+	color:#333;
+}
+.kdialogHeader .kmore{
+	margin-left:10px;
+	font-size:14px;
+}
+.kdialogHeader .btn{
+	margin:11px 10px 0 0;
+}
+.kdialogHeader .kset{
+	margin-right:10px;
+	font-size:13px;
+	font-weight: normal;
+	color: #999;
+}
+.kDialog{
+	 margin:10px auto 0;
+	 width:600px;
+}
+.kDialog p{
+	margin:0;
+	width:100%;
+	font-size: 13px;
+	line-height: 16px;
+	font-weight: 200;
+}
+.kDialog small{
+	font-size: 66%;
+	color:#999;
+}
+.kDialog .kmsgHead{
+	margin:0;
+}
+.kChat_left,.kChat_right{
+	position: relative;
+	min-height:42px;
+	max-width: 420px;
+}
+.kChat_right{
+	float: right;
+	text-align:right;
+	margin-right:20px;
+	padding: 8px 10px 5px;
+	background-color: #EEF6E8;
+	border: 1px solid #AFD895;
+}
+.kChat_left{
+	margin-left:20px;
+	padding: 8px 10px 5px;
+	background-color: #F6F1E8;
+	border: 1px solid #D8C095;
+}
+.kDialog form{
+	float:left;
+	margin-left:50px;
+	width:500px;
+}
+.kmessage{
+	width: 492px;
+	height: 100px;
+	margin: 0px;
+	padding: 4px;
+	border: 1px solid #999;
+	font-size: 14px;
+	word-wrap: break-word;
+	line-height: 18px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	outline: none;
+	resize: none;
+}
+.kSend{
+	height: 28px;
+	line-height:28px;
+}
+.kSend span{
+	font-size:16px;
+	color:#999;
+}
+.ktrian_out,.ktrian_in{
+		position: absolute;
+		width: 0;
+		height: 0;
+		font-size: 0;
+		overflow: hidden;
+		border-width: 8px 10px;
+	}
+	.kChat_left .ktrian_out{
+		border-color: transparent #D8C095 transparent transparent;
+		border-style: dashed solid dashed dashed;
+		left: -20px;
+		top: 12px;
+	}
+	.kChat_left .ktrian_in{
+		border-color: transparent #F6F1E8 transparent transparent;
+		border-style: dashed solid dashed dashed;
+		left: -18px;
+		top: 12px;
+	}
+	.kChat_right .ktrian_out{
+		border-color: transparent transparent transparent #AFD895;
+		border-style: dashed dashed dashed solid;
+		right: -20px;
+		top: 12px;
+	}
+	.kChat_right .ktrian_in{
+		border-color: transparent transparent transparent #EEF6E8;
+		border-style: dashed dashed dashed solid;
+		right: -18px;
+		top: 12px;
+	}
+	.kchat_trian{
+		position:relative;
+	}
+	.kchat_trian .ktrian_out{
+		border-color: transparent transparent transparent #999;
+		border-style: dashed dashed dashed solid;
+		right: -22px;
+		top: 12px;
+	}
+	.kchat_trian .ktrian_in{
+		border-color: transparent transparent transparent #FFF;
+		border-style: dashed dashed dashed solid;
+		right: -20px;
+		top: 12px;
+	}
+
+/* `history
+	   ============================================================ */
+.khistoryInfo span{
+	font-size:18px;
+	color:#333;
+}
+/* `footer
+	   ============================================================ */
+footer{
+	width:100%;
+	height: 100px;
+	background-color: #222;
+	border-top: 1px solid #636363;
+}

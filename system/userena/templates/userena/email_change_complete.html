@@ -1,0 +1,14 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Email verification" %}{% endblock %}
+{% block content_title %}<h2>{% trans 'Confirm your new email' %}</h2>{% endblock %}
+
+{% block content %}
+<div class="nav-tabs" style="margin-bottom: 10px">
+	<h4 style="display: inline;float: left;">邮箱设置</h4>
+	<a href="{% url userena_account_setting %}" class="btn" style="display: inline;float: right;">{% trans "Back" %}</a>
+</div>
+<p>{% blocktrans with viewed_user.userena_signup.email_unconfirmed as email %}You have received an email at {{ email }}.{% endblocktrans %}</p>
+<p>{% blocktrans with viewed_user.username as username %}To associate this email address with your account ({{ username }}) click on the link provided in this email.{% endblocktrans %}</p>
+{% endblock %}

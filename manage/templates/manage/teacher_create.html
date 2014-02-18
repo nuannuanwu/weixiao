@@ -1,0 +1,28 @@
+{% extends 'manage_base.html' %}
+{% load i18n %}
+{% block content %}
+
+<div class="page-header">
+    <div class="pull-right">
+        <a href="{% url manage_teacher_list %}" class="btn">{% trans "Back" %}</a>
+    </div>
+    <h1><a href="{% url manage %}">学校管理</a><i class="icon-chevron-right"></i><a href="{% url manage_teacher_list %}">教师管理</a><i class="icon-chevron-right"></i>创建教师</h1>
+</div>
+
+{% url manage_teacher_create as create_url %}
+{% include "manage/includes/teacher_form.html" with action_url=create_url %}
+
+{% endblock %}
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/plugins/formValidator-4.1.3.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/plugins/formValidatorRegex.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.formValidator.initConfig({formID:"id_form",theme:"ArrowSolidBox"});
+		$("#id_name").formValidator({onFocus:"请输入教师姓名"}).inputValidator({min:1,onError:"不能为空"});
+		$("#id_appellation").formValidator({onFocus:"请输入教师职称"}).inputValidator();
+		$("#id_description").formValidator({onFocus:"请输入教师简介"}).inputValidator();
+		$("#id_mobile").formValidator({onFocus:"请输入教师手机"}).inputValidator({min:1,onError:"不能为空"});
+	})
+</script>
+{% endblock %}

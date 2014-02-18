@@ -1,0 +1,219 @@
+{% load i18n kinger_tags comments pagination_tags %}
+{% block extra_css %}
+<style>
+    .kDailyPlan-icon img { width: 50px; height: 50px; }
+    .kDailyItem-icon { width: 50px; height: 50px; float: left; }
+    .main .title { font-size: 21px; font-weight: 100; color: #333; }
+    .cook_menus {  font-size: 16px; color: #a27d57; line-height: 45px; }
+    input.datepickerinput {-webkit-box-shadow: none; Unknown property name.-moz-box-shadow: none;box-shadow: none; padding: 0; border: none; background: none; width: 140px; height: 20px; line-height: 20px;}
+</style>
+{% endblock %}
+    <div style=" color: #fbfafa; font-weight: 600; font-size: 24px; margin-bottom: 15px;">明日食谱</div>
+    <div class="main" style="width: 680px; min-height: 670px;">
+        <div class="content_box " style=" width:680px; min-height: 540px; padding: 0px 0px; ">
+            <!-- 翻页工具条 -->
+            <div class="peg_btn kToolbar" style=" display: none; width: 680px;">
+                <div class="kToolbar-turn" style=" margin-bottom: 0;">  
+                </div>
+                <input type="hidden" id="current_date" value="{{current_date}}">
+                
+            </div>
+            <!-- /翻页工具条 --> 
+            <div class="kDetail-picInfo box_daycook" style=" position: relative; margin-bottom: 10px; background-color: #fbfafa; height: 215px; overflow: hidden;  ">
+                    {% if yesterday.id %}
+                    <a class="downUp down " href="javascript:;" rel="cookbook_pre" data-title="{% trans "Previous" %}" pk="{{yesterday.id}}">&nbsp;</a>
+                    {% else %}
+                    <!--<a class="disabled downUp down" >&nbsp;</a>-->
+                    {% endif %}
+                <!-- 前天安排 -->  
+                <div class="kDetail-plan" style=" margin-left: 10px; ">
+                    <div><div class="title" style=" margin:8px 0;">前一天</div></div>
+                    <!--前天有数据-->  
+                    {% if yesterday.id and not request.user.student.school|isempty_school_cookbook %}
+                    <div  class="" >
+                        <!--<span class="kDailyItem-date">{{today_book.date|date:"d"}}</span>-->
+                            {% for c in book_item_pre %}
+                                {% if c.content and forloop.counter <= 3 %}
+                                <div class="cf" style=" margin-bottom: 5px; overflow: hidden;">
+                                {% if c.name|is_cookbook_item:request.user.student.school %}
+                                    <span class="kDailyItem-icon kDailyPlan-icon">
+                                            <img src="{% media_path c.img %}" />
+                                        </span>
+                                    <div class="kDailyItem-con" style="margin-left: 65px;">
+                                            <!--<div>{{c.cname}}</div>-->                                
+                                        <div class="cook_menus">{{c.content|escape|replace_n|safe}}</div>
+                                    </div>
+                                {% endif %}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>  
+                    {% else %}
+                    <!--前天有数据-->
+                        <div class="kDailyItems cf" style=" margin: 0 auto; width: 570px; padding: 10px;">
+                            <div class="kDailyItem cf"  > 
+                                <h2 class="no_activity" style=" margin-left: 0;">今日内容暂未更新</h2>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>  
+            </div>
+            
+           <div class="kDetail-picInfo" style="  margin-bottom: 10px;  background-color: #fdf6df; min-height: 215px; overflow: hidden; ">
+               
+               <!-- 当天安排 -->  
+                <div class="kDetail-plan" style=" margin-left: 10px; "> 
+                    <!-- 头部信息展示 -->
+                        <div class="kDetail-bar" style="position:relative;"> 
+                            <!--<h5 class="pull-left title">食谱预告</h5>--> 
+                            <!-- <span class="kDetail-bar-info">
+                            {% if tile or today_book %}
+                              来自 <a rel="namecard" data-uid="{% if ty == 'events' %}{{tile.creator_id}}{% else %}{{today_book.creator_id}}{% endif %}" href="javascript:;"> {% if ty == 'events' %}{{tile.creator.get_profile.chinese_name_or_username}}{% else %}{{today_book.creator.get_profile.chinese_name_or_username}}{% endif %}</a>
+                            {% endif %}
+                            </span>-->
+                            <div class="datepickebox" id="datepicker_cookbox" style="">
+                                <span style=" background-color: #fdf6df; width: 170px;" class="datepickerBox" >
+                                    <input type="text" class="datepickerinput" style="-webkit-box-shadow: 0 0 0 0;-moz-box-shadow: 0 0 0 0;box-shadow:0 0 0 0;width: 170px; font-size: 18px;" id="datepickerData" value="{{today|date:'Y年m月d日'}}" alt="{{type}}" /></span>
+                              <!--<i class="datepicker_xico"></i>-->
+                            </div> 
+                        </div>
+                        <script src="{{ STATIC_URL }}datepicker/WdatePicker.js" type="text/javascript"></script>
+                        <script language="JavaScript" >
+                        $(function(){
+                            //日历选择
+                            var dates = {{effective_date|safe}}; 
+                            var rq = "{{today|date:'Y-m-d'}}"; 
+                            if(!dates){
+                                dates = false; 
+                            }else{ 
+                                dates.push(rq);
+                            }
+                            $('#datepickerData').click(function(){
+                                WdatePicker(
+                                    { 
+                                    opposite:true,
+                                    disabledDates:dates,
+                                    maxDate:'%y-%M-%d', 
+                                    isShowOK:false,
+                                    isShowClear:true,
+                                    isShowOthers:false,
+                                    autoPickDate:true,
+                                    //autoPickDate:false,
+                                    isShowOK:true,
+                                    errDealMode:2,
+                                    highLineWeekDay:false, 
+                                    dateFmt:'yyyy年MM月dd日',
+                                    onpicked:function(dp){ 
+                                        var date = dp.cal.getDateStr();
+                                        var date_fmt = dp.cal.getP('y') + '-' + dp.cal.getP('M') + '-' + dp.cal.getP('d');
+                                         if(date){ 
+                                           var url = "{% url kinger_axis_daily_cookbook %}";
+                                            $.post(url,{date:date_fmt},function(result){
+                                                var data = $.parseJSON(result); 
+                                                $("#box_cookbook").empty();
+                                                $("#box_cookbook").html(data.con).show();
+                                            }); 
+                                        }else{ 
+                                            return false;
+                                        }   
+                                    }
+                                })
+                            })
+                        })
+                        </script>
+                        <script type="text/javascript"> 
+                        $('a[rel=namecard]').namecard();
+                        $(function(){
+                            $("#datepicker_cookbox").hover(function(){
+                                $(this).addClass("datepickebox_border").removeClass("datepickebox")
+                            },function(){
+                                $(this).addClass("datepickebox").removeClass("datepickebox_border")
+                            });   
+                        })
+                        </script>
+                     <!-- /头部信息展示 --> 
+                <!--当天食谱内容-->
+                    <!--当天有数据-->
+                    {% if today_book and not request.user.student.school|isempty_school_cookbook %}
+                        <div style="background-color: #fdf6df; "  class=" cf">
+                        <!--<span class="kDailyItem-date">{{today_book.date|date:"d"}}</span>-->
+                            {% for c in book_item %}
+                                {% if c.content %}
+                                    <div class="  cf" style=" margin-bottom: 5px; overflow: hidden;" >
+                                    {% if c.name|is_cookbook_item:request.user.student.school %}
+                                        <span class="kDailyItem-icon kDailyPlan-icon">
+                                            <img src="{% media_path c.img %}">
+                                        </span>
+                                        <div class="kDailyItem-con" style="margin-left: 65px;">
+                                            <!--<div>{{c.cname}}</div>-->
+                                            <div class="cook_menus">{{c.content|escape|replace_n|safe}}</div>
+                                        </div>
+                                    {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div> 
+                    <!--/当天有数据-->
+                    {% else %} 
+                        <div class="kDailyItems cf" style=" margin: 0 auto; width: 570px; padding: 10px;">
+                            <div class="kDailyItem cf" > 
+                                <h2 class="no_activity" style=" margin-left: 0;">今日内容暂未更新</h2>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>  
+            </div>
+            
+            <div class="kDetail-picInfo box_daycook" style=" position: relative; background-color: #fbfafa; height: 220px;  overflow: hidden;">
+                {% if next_day.id  and not request.user.student.school|isempty_school_cookbook %}
+                   <a class=" downUp up" href="javascript:;" rel="cookbook_next" data-title="{% trans "Next" %}" pk="{{next_day.id}}">&nbsp;</a>
+                {% else %}
+                    <!--<a class="disabled downUp up" style="">&nbsp;</a>-->
+                {% endif %}
+                <!-- 后一天安排 -->  
+                <div class="kDetail-plan" style=" margin-left: 10px; ">
+                    <div><div class="title" style=" margin:8px 0;">后一天</div></div>
+                <!--后一天食谱内容-->
+                <!--后一天有数据--> 
+                    {% if next_day.id %} 
+                        <div  class=" cf">
+                        <!--<span class="kDailyItem-date">{{today_book.date|date:"d"}}</span>-->
+                            {% for c in book_item_next  %}
+                                {% if c.content and forloop.counter <= 3 %}
+                                    <div class="  cf" style=" margin-bottom: 5px; overflow: hidden;">
+                                    {% if c.name|is_cookbook_item:request.user.student.school %}
+                                        <span class="kDailyItem-icon kDailyPlan-icon">
+                                            <img src="{% media_path c.img %}">
+                                        </span>
+                                        <div class="kDailyItem-con" style="margin-left: 65px;">
+                                            <!--<div>{{c.cname}}</div>--><div class="cook_menus">{{c.content|escape|replace_n|safe}}</div>
+                                        </div>
+                                    {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>  
+                    {% else %}
+                        <!--后一天有数据--> 
+                        <div class="kDailyItems cf" style=" margin: 0 auto; width: 570px; padding: 10px;">
+                            <div class="kDailyItem cf"> 
+                                <h2 class="no_activity" style=" margin-left: 0;">今日内容暂未更新</h2>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div> 
+            </div> 
+        </div>
+    </div>
+    <div class="sidebar" style=" margin-to: 0; width: 270px; min-height: 670px; overflow-x:hidden; ">
+        <div class="kmonthPic">
+            <h3 style=" margin-top: 0;">专家导师</h3>
+            <div class="kmonthPic-list cf">
+                {% for m in mentors %}                
+                    <a href="javascript:" class="" rel="namecard" data-uid="{{ m.user.pk }}">
+                        <img width="64px" height="64px" alt="" src='{% media_path m.user.get_profile.get_avatar "avatar" %}'  >
+                </a>                 
+                {% endfor %}
+            </div>
+        </div>
+    </div> 

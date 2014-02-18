@@ -1,0 +1,124 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate approvals 10 %} 
+<div class="main"> 
+	{% include "oa/document_url_menu.html" %} 
+    <div class="column">
+        <div> 
+        <form class="form-inline" method="GET" id="search-form-box"> 
+            <div id="slimp-seatch" class="pull_left w_175">
+                <input type="text" name="q" id="keyW" class="input-medium"  value="{{query}}" placeholder="标题">
+            </div>
+            <div id="adv-search" class="hide">
+                <input type="text" placeholder="开始时间" id="from" name="st" class="shijainduan w_80" value="{{st}}" />
+                &nbsp;&nbsp;至&nbsp;&nbsp;
+                <input type="text" placeholder="结束时间" name="et" value="{{et}}" id="to" class="shijainduan w_80" />&nbsp;&nbsp;
+            </div>
+            <button type="submit" class="searchB btn" id="searchB" />{% trans "Search" %}</button>
+            <a href="javascript:;" id="adv-search-btn" class="show">高级搜索</a>
+            
+        </form>
+        </div>
+        <div class="list"> 
+            <table>
+                <tr align="center">
+                    <th width="40" scope="col">级别</th>
+                    <th width="130" scope="col">状态</th>
+                    <th width="40" scope="col">操作</th> 
+                    <th scope="col" width="105">标题</th>
+                    <th width="60" scope="col">公文类型</th> 
+                    <th width="65" scope="col">浏览人数</th>
+                    <th width="85"  scope="col">发布时间</th>
+                    <th width="60" scope="col">发布者</th>
+                </tr>
+                {% if not approvals|is_empty_list %}
+                <tr>
+                    <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                        <h4 class="not_date"> 暂无数据</h4>
+                    </td>
+                </tr>
+                {% else %}
+                {% for a in approvals %}
+                <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                    <td>{{a.document.level|document_level}}</td>
+                    <td>{{a.document|document_status|safe}}</td>
+                    <td>无</td>
+                    <td><a target="_balnk" href="{% url oa_document_detail a.document.id %}" title="{{a.document.title}}">{{a.document.title|truncatestr:":10"}}</a></td>
+                    <td>{{a.document.category}}</td>
+                    <td>{{a.document|get_read_num:"read"}}/{{a.document|get_read_num:"total"}}</td>
+                    <td title="{{a.document.ctime|date:"Y-m-d H:i"}}">{{a.document.ctime|date:"Y-m-d"}}</td>
+                    <td>{{a.document.sender.profile.realname}}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </table>
+            <div class="pagination" style="text-align:center;">
+                 {% paginate %}
+            </div>
+       </div>
+    </div>
+</div>
+<script type="text/javascript"> 
+	$("#adv-search-btn").toggle(function(){
+		//$(this).addClass("smlip");
+		//$("#slimp-seatch").hide();
+		$(this).text("普通搜索");
+		$("#adv-search").show();
+	},function(){
+		//$(this).removeClass("smlip");
+		$(this).text("高级搜索");
+		$("#adv-search").hide();
+		$("#slimp-seatch").show();
+	})
+	$(".shijainduan").datepicker({dateFormat: 'yy-mm-dd'});
+	$("#from").datepicker({
+		 
+		buttonText: 'Choose',
+		defaultDate: "+1w",
+		changeMonth: true,
+		numberOfMonths: 1,
+		minDate: '+1m +1w', 
+		onClose: function(selectedDate) {
+			$("#to").datepicker("option", {dateFormat: 'yy-mm-dd'}, "minDate", selectedDate);
+		}
+	});
+	
+	$("#to").datepicker({
+	   // minDate: 2012-05-09,
+		buttonText: 'Choose',
+		defaultDate: "+1w",
+		changeMonth: true,
+		numberOfMonths: 1,
+		onClose: function(selectedDate) {
+			$("#from").datepicker("option", {dateFormat: 'yy-mm-dd'}, "maxDate", selectedDate);
+		}
+	});
+	
+	jQuery(function($){
+	$.datepicker.regional['zh-CN'] = {
+		closeText: '关闭',
+		prevText: '<上月',
+		nextText: '下月>',
+		currentText: '今天',
+		monthNames: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+		monthNamesShort: ['一','二','三','四','五','六',
+		'七','八','九','十','十一','十二'],
+		dayNames: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+		dayNamesShort: ['周日','周一','周二','周三','周四','周五','周六'],
+		dayNamesMin: ['日','一','二','三','四','五','六'],
+		weekHeader: '周',
+		dateFormat: 'yy-mm-dd',
+		firstDay: 1,
+		isRTL: false,
+		showMonthAfterYear: true,
+		yearSuffix: '年'};
+	$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+$("#file_tab li a").live('click',function(){ 
+	 $(this).parent('li').siblings().removeClass("active")
+	 $(this).parent('li').addClass("active");
+});
+</script>
+
+{% endblock %}

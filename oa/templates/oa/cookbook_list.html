@@ -1,0 +1,190 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/cookbook.css">
+{% endblock %}
+
+{% block content %}
+<style>
+.kCal-item{ border:#ddd solid 1px; box-shadow:0 1px 1px rgba(0, 0, 0, 0.3);}
+.titleCal h1{ margin-top:-3px;}
+.tileBoard{ margin-left:0px; width:960px;}
+.titleBar-chose{ background-color:#fff; opacity:100;}
+#agency_remind { width: 960px; margin: 0 auto; height: 420px; text-align: center; }
+#agency_remind h3 { padding-top: 200px; font-size: 32px; color: #ccc;   }
+</style>
+<div class="tileBoard">
+    <div class="titleBar">
+    	<div class="titleCal kPointer pull-left" > 
+            <div>
+    		<h1 id="info" data-groupid="{{ group.id }}" {% if request.user|is_agency_user %}data-school="{{sid|default:0}}"{% else %}{% if type == 'school' %} data-school="{{sid|default:0}}"{% endif %}{% endif %}>
+                {% if request.user|is_agency_user %}
+                    <select id="school_id" style=" margin-top: 10px;">
+                        <option value="0">--选择学园--</option>
+                        {% for s in schools %}
+                            {% if s.parent_id != 0 %}<option value="{{s.id}}" {% if s.id == sid %}selected="selected"{% endif %}>{{s.name}}</option>{% endif %}
+                        {% endfor %}
+                    </select>
+                {% endif %}
+                <span id="kGroupSelect" class="bg">
+                {% if type == 'school' %} 
+                    全园 
+                {% else %} 
+                    {{ group.name }}
+                {% endif%}
+                </span>
+                {% if not group.id or group.type == 3 %}
+                <span>食谱设置</span>
+                {% endif %}
+            </h1>
+            </div>
+            {% if sid > 0 %}
+            <div class="titleBar-chose thumbnail" id="kGroupSelect-con" style="{% if request.user|is_agency_user %}left:230px;{% else %}left:0px{% endif%}"  >
+    			<ol id="groups">
+                            <li><a href="?school=True&sid={{sid}}">全园</a></li>
+                            {% for g in groups %}
+                            <li><a href="?group={{g.pk}}&sid={{sid}}">{{ g.name }}</a></li>
+                            {% endfor %}    				
+    			</ol> 
+   		    </div> 
+           {% endif %} 
+    	</div>
+        {% if not group.id or group.type == 3 %}
+    	<div class="titleCog kPointer pull-left">
+    		<i class="icon-cog"></i>
+            <form action="{% url oa_cookbook_save_cookbook_set %}" method="post" style="margin:0">
+                {% csrf_token %}
+        		<div class="titleBar-chose thumbnail">
+        			<ul>
+        				<span>请勾选您需要使用的类型</span>
+        				<li><label class="checkbox"><input type="checkbox" name="breakfast" {% if set.breakfast.is_show %} checked="checked" {% endif %}>早餐</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="light_breakfast" {% if set.light_breakfast.is_show %} checked="checked" {% endif %}>早点</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="lunch" {% if set.lunch.is_show %} checked="checked" {% endif %}>午餐</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="light_lunch"{% if set.light_lunch.is_show %} checked="checked" {% endif %}>午点</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="dinner" {% if set.dinner.is_show %} checked="checked" {% endif %}>晚餐</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="light_dinner" {% if set.light_dinner.is_show %} checked="checked" {% endif %}>晚点</label></li>
+                        <input type="hidden" id="cookbok_school" value="{{sid}}" name="school_id">
+        				<button type="submit" class="btn btn-success">保存</button>
+        			</ul>   			
+       			</div>
+            </form>
+    	</div>
+    	{% endif %}
+        <div class="btn-group pull-right">        
+            <a class="btn" href="?{% if type == 'school' %}school=True{% else %}group={{ group.id }}{% endif %}&date={{prev_month|date:"Y-m"}}&sid={{sid}}"><i class="icon-chevron-left"></i>&nbsp;</a>
+            <a class="btn" href="{% url oa_cookbook %}?{% if type == 'school' %}school=True{% else %}group={{ group.id }}{% endif %}&sid={{sid}}">{% trans "This Month" %}</a>
+            <a class="btn" href="?{% if type == 'school' %}school=True{% else %}group={{ group.id }}{% endif %}&date={{next_month|date:"Y-m"}}{{new_query_string}}&sid={{sid}}"><i class="icon-chevron-right"></i>&nbsp;</a>
+        </div>
+        <span class="titleBar-date pull-right">{{date.month}}<span>/{{date.year}}</span></span>
+    </div>
+    
+    {% if request.user|is_agency_user and sid == 0 %}
+        <div id="agency_remind">
+            <h3> 请选择学园 </h3>
+        </div>
+    {% endif %}
+    <div class="kCal cf" id="cookbooks" style =" margin-right: -10px;" >
+            {% for week in month_cal %}
+            	{% for day in week %}
+                <div class="kCal-item {% if forloop.parentloop.counter == 3 or forloop.parentloop.counter == 5 %}bgBlue{% endif %} {% if day %}kPointer{% else %}bgGray{% endif %}" {% if day %}onclick="cookbook(this,{{date.year}},{{ date.month}},{{ day }})"{% endif %}>
+                    <div class="kItem-head">
+                    	{% if day %}
+                        	<a href="javascript:void(0)" class="close" onclick="cookbookClear(event,{{date.year}},{{ date.month}},{{ day }})">x</a>
+                        {% endif %}
+                        <span class="kItem-head-week">
+                        	{% if forloop.parentloop.counter == 1 %}
+                            	{{forloop.counter|chinese_weekday}}
+                        	{% endif %}
+                        </span>
+                        {% if day %}
+                            {{day|zfill:2}}
+                        {% endif %}
+                    </div>                
+                    <div class="kItem-body cf">
+                        <div class="kBody-bg" id="bg-{{date.year}}-{{ date.month}}-{{ day }}">
+                            {% if day > 0 %}
+                                {% with newday=day|add:"-1" %}
+                                    {% with cookbook_day=cookbook|list:newday %}
+                                        {% for i in cookbook_day.items %}
+                                            {{i}} 
+                                        {% endfor %}                                        
+                                    {% endwith%}
+                                {% endwith %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endfor %}                      
+            <div class="kCal-cookbook thumbnail" id="cookbook">
+                <div style=" max-width: 350px; *width: 280px;">
+            		<div class="kCookbook-head">
+            			<span class="pull-left" id="cookbook_date"></span>
+            			<a href="javascript:void(0)" class="pull-right thumbnail" onclick="cookbookClose()">x</a>
+            		</div>
+            		<div class="kArrowS" id="arrowS"></div>
+            		<div class="kArrow" id="arrow"></div>
+            		<dl class="kCookbook-body">
+            			<dt style="margin-top: 15px; {% if not set.breakfast.is_show %}display: none;{% endif %}"  class="pull-left" id="breakfast_t">早餐:&nbsp;&nbsp;</dt>
+            			<dd style="margin-left:45px; {% if not set.breakfast.is_show %}display: none;{% endif %}" ><textarea id="breakfast"></textarea></dd>
+            			<dt style="margin-top: 15px; {% if not set.light_breakfast.is_show %}display: none;{% endif %}" class="pull-left" id="light_breakfast_t">早点:&nbsp;&nbsp;</dt>
+            			<dd style="margin-left:45px; {% if not set.light_breakfast.is_show %}display: none;{% endif %}"><textarea id="light_breakfast"></textarea></dd>
+            			<dt style="margin-top: 15px; {% if not set.lunch.is_show %}display: none;{% endif %}" class="pull-left" id="lunch_t">午餐:&nbsp;&nbsp;</dt>
+            			<dd style="margin-left:45px; {% if not set.lunch.is_show %}display: none;{% endif %}"><textarea id="lunch"></textarea></dd>
+            			<dt style="margin-top: 15px; {% if not set.light_lunch.is_show %}display: none;{% endif %}" class="pull-left" id="light_lunch_t">午点:&nbsp;&nbsp;</dt>
+            			<dd style="margin-left:45px; {% if not set.light_lunch.is_show %}display: none;{% endif %}"><textarea id="light_lunch"></textarea></dd>
+            			<dt style="margin-top: 15px; {% if not set.dinner.is_show %}display: none;{% endif %}" class="pull-left" id="dinner_t">晚餐:&nbsp;&nbsp;</dt>
+            			<dd style="margin-left:45px; {% if not set.dinner.is_show %}display: none;{% endif %}"><textarea id="dinner"></textarea></dd>
+            			<dt style="margin-top: 15px; {% if not set.light_dinner.is_show %}display: none;{% endif %}" class="pull-left" id="light_dinner_t">晚点:&nbsp;&nbsp;</dt>
+            			<dd style="margin-left:45px; {% if not set.light_dinner.is_show %}display: none;{% endif %}"><textarea id="light_dinner"></textarea></dd>
+            			<dt>
+            				<span class="pull-left"><b>●</b> 该颜色为“班级自定条目”</span>
+                                            <input type="hidden" value="{{sid}}" name="sid" id="school_pk" />
+            				<a href="javascript:void(0)" class="btn btn-success pull-right"  id="cookbook_save">保存</a>
+            			</dt>
+            		</dl>
+            	</div>
+            </div>
+    </div>    
+</div>
+<input id="usertype" type="hidden" value="{% if request.user|is_agency_user %}1{%else%}0{% endif %}" />
+<script src="{{ STATIC_URL }}kinger/js/cookbook.js"></script>
+<script type="text/javascript">
+$(".menu > ul > li").eq(2).children("a").addClass("on");
+if($("#school_id").val() == '0'){ 
+    var usertype = $("#usertype").val();
+    if(usertype == 1 ){
+        $("#cookbooks").hide();
+    }
+     
+}
+$("#school_id").change(function(){ 
+    var school_id = $(this).find("option:selected").attr("value"); 
+    document.location.href = '?sid=' + school_id;
+    // var school_id = $(this).find("option:selected").attr("value"); 
+    // $("#school_pk").val(school_id);
+    // $("#cookbok_school").val(school_id);
+    // $("#info").attr("data-school",school_id)
+    // if(school_id !="0"){
+    //     $("#cookbooks").show();
+    //     $("#agency_remind").hide();
+    //     url = "{% url oa_get_school_class %}"
+    //     $.get(url,{sid:school_id},function(result){
+    //         data = $.parseJSON(result); 
+    //         $("#groups").html("");
+    //         for(var i=0;i<data.length;i++){
+    //             $("#groups").append('<li><a href=?group=' + data[i].id + '&sid=' + school_id + '>' + data[i].name + '</a></li>')
+    //         }
+    //     });     
+    // }else {
+    //     $("#cookbooks").hide();
+    //     $("#agency_remind").show()
+    // }
+
+    // if($(this).val() != 0){
+
+    // }
+})
+</script>
+{% endblock %}

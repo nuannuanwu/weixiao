@@ -1,0 +1,68 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate teachers 10 %}
+<div class="main">
+    <div class="tab"><span>管理员设置</span></div>
+    <div class="column"> 
+        <div>
+        <form id="admin_form" class="form-inline" action="{% url oa_website_admins site.id %}" method="GET">
+            <select class="span2" name="status">
+            	<option value="-1" {% if s == -1 %}selected="selected"{% endif %}>所有职员状态</option>
+                <option value="0" {% if s == -0 %}selected="selected"{% endif %}>在职</option>
+                <option value="1" {% if s == 1 %}selected="selected"{% endif %}>离职</option>
+                 <option value="2" {% if s == 2 %}selected="selected"{% endif %}>休假</option>
+            </select>
+            <select class="span2" name="active">
+            	<option value="-1" {% if a == -1 %}selected="selected"{% endif %}>所有活动状态</option>
+                <option value="0" {% if a == 0 %}selected="selected"{% endif %}>启用</option>
+                <option value="1" {% if a == 1 %}selected="selected"{% endif %}>未启用</option>
+            </select>
+            <input  type="text" name="name" id="keyW" class="input-medium search-query" style="width:85px;" value="{{n}}" placeholder="姓名">
+            <input type="text" name="username" id="keyW" class="input-medium search-query" style="width:85px; " value="{{u}}" placeholder="用户名">
+            <button style="" type="submit" class="btn" id="searchB" />{% trans "Search" %}</button>
+            </form>
+        </div>
+        <div class="list"> 
+            <table>
+                <tr align="center">
+                    <th width="80" scope="col">姓名</th>
+                    <th width="120" scope="col">用户名</th>
+                    <th scope="col" width="130">在职状态/启用状态</th> 
+                    <th scope="col" width="190">最后登录</th>
+                    <th width="120" scope="col">站点管理员</th>
+                </tr> 
+            {% for t in teachers %}
+                <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                    <td width="80"><div class="td-words w_80">{{t.name}}</div></td>
+                    <td width="120"><div class="td-words w_120">{{t.user.username}}</div></td>
+                    <td width="130"><div class="td-words w_130">{% if t.postjob.status %}离职{% else %}在职{% endif %}</div></td>
+                    <td width="190"><div class="td-words w_190">{{t.user|last_website_access:site|date:"y-m-d G:i"}}</div></td>
+                    <td width="120">
+                    	<div class="td-words w_120"><a href="javascript:;" rel="change_status" alt="{{t.user.id}}"><span id="class_{{t.user.id}}" class="pic_ico {% if t.user_id|in_list_q:admin_pks %}pic_true{% else %}pic_false{% endif %}"> </span></a></div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+        <div class="pagination pagination-centered">{% paginate %}</div>
+	</div>
+</div>
+<script type="text/javascript"> 
+    $("[rel=change_status]").click(function(e){
+        e.preventDefault();
+        url = $("#admin_form").attr("action");
+        user_id = $(this).attr("alt");
+        $.post(url,{uid:user_id},function(result){
+            data = $.parseJSON(result);  
+            if(data.status){ 
+                $("#class_"+user_id).addClass("pic_true"); 
+                $("#class_"+user_id).removeClass("pic_false");
+            }else{ 
+                $("#class_"+user_id).addClass("pic_false"); 
+                $("#class_"+user_id).removeClass("pic_true");
+            }
+        });
+    })
+</script>
+{% endblock %}

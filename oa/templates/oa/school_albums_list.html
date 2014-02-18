@@ -1,0 +1,135 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate albums 10 %}
+<style>
+#item-tab li { float: left; width:90px; }
+#item-tab li a {line-height: 19px;}
+.main .tab li a { float:left; }
+</style>
+<div class="main">
+    <div class="tab">
+       <a id="upphotobtn" class="btn pull_right" href="javascript:;" ><i class="add_btn">&nbsp;</i>添加相册</a>
+       <ul class="nav nav-tabs" id="item-tab" style="margin-rigth:100px;">
+          <li {% if category.id == 17 %}class="active"{% endif %}><a href="{% url oa_album_school_list site.id %}?cid=17">学园活动</a></li>
+          <li {% if category.id == 18 %}class="active"{% endif %}><a href="{% url oa_album_school_list site.id %}?cid=18">幼儿作品</a></li>
+        </ul> 
+    </div>
+    <div class="column">
+    	<div class="list">
+            <form class="form-inline" onsubmit="return check()" id="form_post" action="{% url oa_album_delete site.id %}" method="POST">{% csrf_token %}
+              <table>
+                   <tr align="center">
+                      <th scope="col" width="30"><input type="checkbox" rel="checkall"></th>
+                       <th scope="col" width="250">相册名</th>
+                       <th scope="col" width="90">创建者</th>
+                       <th scope="col" width="110">修改日期</th>
+                   </tr>
+                   {% if not albums|is_empty_list %}
+                    <tr>
+                        <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                            <h4 class="not_date"> 暂无数据</h4>
+                        </td>
+                    </tr>
+                  {% else %}
+                  {% for a in albums %}
+                  <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                      <td width="30"><input type="checkbox" value="{{a.id}}" rel="role" name="album_pks"></td>
+                      <td width="250">
+                      <div class="td-words w_250">
+                      	<a href="{% url oa_album_detail a.id %}">{{a.name}}</a>
+                      </div>
+                      </td>
+                      <td width="90"><div class="td-words w_90">{{a.creator|get_name}}</div></td>
+                      <td width="110"><div class="td-words w_110">{{a.mtime|date:"Y-m-d G:i"}}</div></td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                  <tr>
+                  	<td><input type="checkbox" rel="checkall"></td>
+                    <td colspan="3">
+                        <select id="set_attr" class="span2">
+                          <option value="0">-- 批量操作 --</option>
+                          <option value="1">删除所选</option>
+                        </select>
+                    	<input class="btn btn-success" disabled="disabled" type="submit" id="sub_form" name="" value="执行" >
+                    </td>
+                  </tr>
+              </table>
+              <input type="hidden" name="sid" value="{{site.id}}">
+            </form>
+            <div class="pagination pagination-centered">{% paginate %}</div>
+             <!--<form class="form-inline" action="{% url oa_album_create site.id %}" method="POST">{% csrf_token %}
+                  {{form.name}}
+                  <input type="hidden" name="category" value="{{category.id}}">
+                  <input class="btn btn-success" type="submit" name="" value="保存" >
+             </form>-->
+             <div class="modal add-modal" id="upPhotoModal" style="display:none; top:40%; left:60%; ">
+                <form id="form_albums" class="registerform" action="{% url oa_album_create site.id %}" method="POST">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">×</a>
+                        <h3>添加相册</h3>
+                    </div>
+                    <div class="modal-body" id="content" style="padding:10px 15px;" > 
+                        {% csrf_token %}
+                        <span class="al-name">相册名</span>{{form.name|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入相册名"}}
+                        &nbsp;<span id="id_nameTip" class="erro-tips">{{form.name.errors|striptags}}</span>
+                    </div>
+                    <div class="modal-footer"> 
+                        <p style="margin:0px 0px 0px 75px; text-align:left;"> 
+                            <input type="hidden" name="category" value="{{category.id}}">
+                  	    <input class="btn btn-success" type="submit" name="" value="保存" >
+                            <a class="btn " data-dismiss="modal" href="javascript:;">取消</a> 
+                        </p> 
+                    </div>
+                </form>
+         	</div>
+        </div>  
+    </div>
+</div>
+<script type="text/javascript">
+    //表单验证  
+$(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	 $(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             } 
+	   });
+}); 
+
+$("#upphotobtn").click(function(){
+        albumsModal();
+})
+function albumsModal(){
+        $('#upPhotoModal').modal({
+                backdrop:false
+        });
+}
+var flagType=" ";
+$("#set_attr").click(function(){
+    flagType=$(this).find('option:selected').val();
+});
+function check(){  
+   var rimndText=" ";
+   if(flagType == 1){
+       rimndText="是否删除用所选相册";
+   }else{
+        rimndText="你还没选择操作类型";
+   }
+    var r=confirm(rimndText);
+    if (r) {
+        if(flagType==" "){
+            return false;
+        } //alert("删除成功");
+    } else { 
+            return false;//false:阻止提交表单  
+    }  
+}   
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags umessages_tags %}
+{% block content %}
+<div class="active-content">
+    <div class="act-c-title">
+        <h3><img src="{{ STATIC_URL }}oa/site/images/title_9.jpg" /></h3>
+    </div>
+    <div class="c-wrap">
+        <div class="main-content">
+            <div class="video-box">
+                <div class="see-video">
+                    <div class="v-player">
+                        <a  
+                            href="{{video|video_url}}"
+                            style="display:block;width:640px;height:480px"  
+                            class="video-player"> 
+                        </a>
+                    </div>
+                    <div class="video-info">
+                        <p>
+                            <a href="{% url_site oa_site_video_detail video.id %}" class="float-f-p video-name">{{video.title}}</a>
+                            <span class="float-r-p playtimes">{{video.view_count}}次播放</span>
+                        </p>
+                        <p>{{video.content}}</p>
+                        <p class="up-info">上传者信息</p>
+                        <p class="u-i">{{video.creator|get_name}}<span>{{video.ctime|date:"Y-m-d G:i"}}</span></p>
+                    </div>
+                </div>
+
+                <div class="playvideo-list" id="spec-list">
+                    <!--div class="to-top" id="ttop"></div-->
+                    <!--div class="playbox"-->
+                        <ul class="v-items" id="player">
+                            {% for v in videos %}
+                            <li>
+                                <a href="{% url_site oa_site_video_detail v.id %}" class="v-a"><img src="{% if v.attachment %}{% media_path v.attachment "video_topic" %}{% else %}{{ STATIC_URL }}oa/site/images/bg_video.png{% endif %}" width="190" height="90" /></a>
+                                <p><a href="{% url_site oa_site_video_detail v.id %}">{{v.title}}</a></p>
+                                <p>{{v.view_count}}次播放</p>
+                                <p>发布时间：{{v.ctime|date:"Y-m-d G:i"}}</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    <!--/div>
+                    <div class="to-bottom" id="tbottom"></div-->
+                </div>
+            </div>    
+        </div>  
+    </div>
+</div>
+<script src="{{ STATIC_URL }}oa/site/js/videoplay/flowplayer-3.2.12.js"></script>
+<!-- <script src="{{ STATIC_URL }}kinger/js/html5video.js"></script> -->
+<script type="text/javascript" src="{{ STATIC_URL }}oa/site/js/jquery.jcarousel.pack.js"></script>
+<!--<script type="text/javascript">html5video();</script>-->
+<script type="text/javascript">
+    //video上下滚动
+    $(document).ready(function() { 
+        $("#player").jcarousel({
+            vertical: true,
+            scroll: 4
+        });
+        flowplayer("a.video-player", "{{ STATIC_URL }}oa/site/js/videoplay/flowplayer-3.2.16.swf",{ 
+              clip: {
+                autoPlay: false,  
+                autoBuffering: true  
+              } 
+            }
+        );
+    })
+</script>
+{% endblock %}
+

@@ -1,0 +1,46 @@
+{% extends 'umessages/base_message.html' %}
+{% load i18n kinger_tags umessages_tags %}
+
+{% block content_title %}<h2>{% blocktrans %}Conversation with {{ recipient }}{% endblocktrans %}</h2>{% endblock %}
+
+{% block content %}
+
+<div node-type="messageList" pagenumber="1" class="private_shresults">
+{% for message in message_list %}
+
+
+
+      <dl class="W_linecolor private_list clearfix private_SRL{% if message.sender == user %}r{% else %}l{% endif %}">
+
+		    <dt class="pull-left face span1">
+            
+                <a href="{% url userena_profile_detail message.sender.username %}">
+                    <img alt="" src="{% media_path message.sender.get_profile.get_avatar "big" %}" style="width:48px;height:48px;">
+                </a>
+            </dt>
+            <dd class="content span6">
+                <a class="a_confirm_link close" data-dismiss="alert" href="#">×</a>
+                <p>
+                    {% if message.sender == user %}
+                       我
+                    {% else %}
+                       <a title="{{message.sender.username}}" href="{% url userena_profile_detail message.sender.username %}">{{message.sender.username}}</a>
+                    {% endif %}
+                                     ：
+
+                    {{ message.body|code_to_img|safe }}
+                </p>
+
+		        <p class=" info">
+	                <span class="pull-right">
+	                <i class="W_vline">|</i><a href="{% url userena_umessages_compose_to recipient.username %}">回复</a>
+	                </span>
+	                <small class="date">{{ message.sent_at }}</small>
+                </p>
+            </dd>
+
+      </dl>
+
+{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'kinger/base.html' %}
+{% load i18n kinger_tags comments pagination_tags %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/dateTime.css"> 
+{% endblock %}
+{% block tile_bar %}
+    <div class="kTileBar"> 
+    {% include "kinger/includes/pin_or_board.html" %}
+    <a class="down-btn" style="float:right" href="{% url manage_schedule_student %}" title="周课表下载">周课表下载</a> 
+    </div>
+{% endblock %}
+
+
+{% block content %}
+{% autopaginate dates 4 %}
+<!--<div id="tile_view" style="display:none"></div>
+<div id="daily_record" style="display:none"></div>
+<div id="daily_active" style="display:none"></div>
+<div id="daily_cookbook" style="display:none"></div>-->
+<ul class="axis">  
+{% include "kinger/tile_axis_container.html" with data=data %}
+</ul>
+
+<div id="pagination" style="display:none">
+    {% paginate %}
+</div> 
+{% endblock %}
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/js/tile.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}datepicker/WdatePicker.js" type="text/javascript"></script>
+<script type="text/javascript">
+window.NOAUTOFOOT = 1;
+</script>
+<script type="text/javascript">
+    $(function(){ 
+        var hasdiv=$(".walink > ul > li.hasdata");
+        var hidiv=$(".walink > ul > li.hasdata > .divhidden");
+        hidiv.hide();
+        hasdiv.hover(function(){
+            $(this).children(".divhidden").slideToggle(200);
+        },function(){
+            $(this).children(".divhidden").hide();
+        });
+                
+    });
+
+    //加载更多瓦片
+    $("[rel=more_tile]").live('click',function(){
+        d = $(this).attr("alt");
+        page_count = $(this).find('input').val();
+        //$(this).parent().before("<li>aaaaaaaa<li>")
+        //$(this).find('input').val(Number(page_count) + 1);
+        //url = "{% url kinger_axis_daily_baby_tiles %}";
+        //$.post(url,{date:d,num:page_count},function(result){
+            //data = $.parseJSON(result); 
+            //console.log(data.con);
+            //console.log($(this).parent().find('li'))
+            //$(this).before(data.con);
+        //}); 
+    })
+
+    //设置喜欢
+    $("a[rel=likeable]:not(.disabled)").live("click",function(e){ 
+        $btn_like = $(this);
+        url = $btn_like.data("href");
+        id = $btn_like.data("id");
+        $i = $btn_like.find("i");
+        $btn_like.addClass("disabled");
+        //console.log(url);
+        $.post(url,{"id": id},function(data, status){
+            //console.log(data.n_likers)
+            if(status != "success")
+                return false;
+            if (data.liked) {
+                $i.removeClass("no_like");
+                 $i.addClass("like");;
+                $btn_like.find('.like_type').html("取消喜欢");
+            } else {
+                $i.removeClass("like");
+                 $i.addClass("no_like");
+                $btn_like.find('.like_type').html("喜欢");
+            }
+            $btn_like.removeClass("disabled");
+           $btn_like.parent().siblings('.bottom-assess').find(".like_content").find("span").text(data.n_likers);
+          
+        },"json");
+    });
+
+    //瓦片评论、详情
+    $("a[rel=tile_comment],a[rel=tile_view]").live("click",function(){
+        url = $(this).data("href");
+        //console.log(url);
+        $.post(url,{},function(result){
+            data = $.parseJSON(result); 
+            //console.log(data.con);
+            $("#box_tile_view").html('');
+            $("#box_tile_view").html(data.con).show();
+            $('#box_tile_view').modal('toggle');
+
+        });
+    })
+
+    //鼠标移上显示评论、喜欢按钮
+    $("[rel=tiles]").live("mouseover",function(){ 
+           $(this).find('.assess').show();
+    }).live("mouseout", function(){
+           $(this).find('.assess').hide();
+    });
+     //鼠标移上显示翻页按钮
+    $("#content_box").live("mouseover",function(){ 
+           $("#peg_btn").show();
+    }).live("mouseout", function(){
+           $("#peg_btn").hide();
+    });
+    $("[rel=record_all],[rel=record_child]").live("click",function(){
+        d = $(this).attr("date");
+        t = $(this).attr("alt");
+        url = "{% url kinger_axis_daily_record %}";
+        //console.log(url);
+        $.post(url,{date:d,ty:t},function(result){
+            data = $.parseJSON(result); 
+            //console.log(data.con);
+            $("#box_record").html('');
+            $("#box_record").html(data.con).show();
+        });
+        $('#box_record').modal('toggle'); 
+    })
+
+    $("[rel=active_all]").live("click",function(){
+        d = $(this).attr("date");
+        url = "{% url kinger_axis_daily_activity %}";
+        //console.log(url);
+        $.post(url,{date:d},function(result){
+            data = $.parseJSON(result); 
+            //console.log(data.con);
+            $("#box_active").html('');
+            $("#box_active").html(data.con).show();
+        });
+        $('#box_active').modal('toggle'); 
+    })
+
+    $("[rel=cookbook_all]").live("click",function(){
+        d = $(this).attr("date");
+        url = "{% url kinger_axis_daily_cookbook %}";
+        console.log(url);
+        $.post(url,{date:d},function(result){
+            data = $.parseJSON(result); 
+            console.log(data.con);
+            $("#box_cookbook").html('');
+            $("#box_cookbook").html(data.con).show();
+        });
+        $('#box_cookbook').modal('toggle'); 
+    })
+
+      
+</script>
+{% endblock %}
+

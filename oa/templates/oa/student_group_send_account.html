@@ -1,0 +1,171 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+{% load pagination_tags kinger_tags i18n %}
+<style>
+.table th{font-size:16px;color:#444;font-weight:normal;}
+thead .checkbox{color:#08C;font-size:16px;}
+.tab-content .thumbnail{padding:5px 19px 40px;}
+tr{cursor: pointer;}
+tr:hover{background:#FAFAFA;}
+tr span{display: block;margin-bottom: 5px;font-size: 13px;line-height: 20px;}
+.btnhover{
+  color: #333333;
+  background-color:#e6e6e6;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+	}
+.cclose{ position:relative; top:-25px; right:0px;}	
+.nonecentent{ padding:15px 0px; text-align:right; font-size:1.5em;}
+</style>
+<div class="main">
+      <div class="tab">
+          <span>{{group.name}}</span>
+          <a href="{% url oa_student_send_account %}?s={{group.school_id}}" style="margin-left:15px">返回</a>
+
+          <button type="submit" rel="send" class="btn pull-right"  data-toggle="modal" data-target="#myModal" ><i class="icon-envelope"></i> 发送帐号</button>
+
+          <button type="submit" rel="export" class="btn pull-right"  data-toggle="modal" data-target="#myModal" style="margin-right:10px;">重置账号并导出</button>
+          
+      </div> 
+      <div class="column">
+          <div id="myTabContent" class=" "> 
+              <form class=" " method="GET" style=" display: inline-block; margin-top: 5px; ">
+                  <select name="s" value="{{s}}" class="span2" style=" *float: left; width: auto; margin: 0 5px 0 0;">
+                    <option {% if not s %} selected="selected" {% endif %} value="">-- 发送状态 --</option>
+                    <option {% if s == 'y' %} selected="selected" {% endif %} value="y">已发送</option>
+                    <option {% if s == 'n' %} selected="selected" {% endif %} value="n">未发送</option>
+                  </select>
+                  <input type="text" name="q" id="keyW" class="input-medium" style="*float: left; margin-bottom: 0;" value="{{query}}" placeholder="学生名"> 
+                  <button type="submit" class="btn" id="searchB" style="*float: left;">{% trans "Search" %}</button>
+               </form>
+          </div> 
+           <div class="list">
+              <form action="" method="post" id="send_account">{% csrf_token %}
+                <input type="hidden" name="export" value='' id="export">
+                  <table class=" ">          			
+                          <col class="span1">
+                          <col class="span1">
+                          <col class="span1">
+                    <thead>
+                      <tr rel="selectAll">
+                          <th width="100" ><input type="checkbox" rel="selectAll">&nbsp;学生</th>
+                          <th width="100">手机号</th>
+                          <th width="100">发送状态</th>
+                          <th width="140" >上次发送时间</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                     {% if students %}
+                        {% for s in students %}
+                        <tr rel="check" class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                            <td><span class="checkbox" ><input type="checkbox" rel="check" name="student_list" value="{{ s.pk }}" stuNum="1">&nbsp;{{s.name}}</span></td>
+                          <td>{{ s.getMobile }}</td>
+                          <td rel="stu">{% if s.send_time %}已发送{% else %}<span style=" color:red;">未发送</span>{% endif %}</td>
+                          <td>{% if s.send_time %}{{ s.send_time|date:"Y-m-d G:i"}}{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                     {% else %}
+                        <tr>
+                          <td align="center" colspan="6" style=" font-size: 18px; color: #cecece;">
+                                 <h4 class="not_date"> 暂无数据</h4>
+                          </td> 
+                       </tr>
+                      {% endif %}
+                    </tbody> 
+                  </table>
+              </form>
+          </div>
+    </div> 
+</div>
+<script type="text/javascript">
+//  $('input, textarea').placeholder();
+//$("#keyW").blur(function(){
+//        dissearch();
+//});
+//$("#keyW").keyup(function(){
+//        dissearch();
+//});
+
+$('button[rel=export]').click(function(){
+  $("#export").val('export');
+  $('#send_account').submit();
+});
+
+$('button[rel=send]').click(function(){
+    var num = checkNum();
+    if(num){
+        msg = '已选择学生数量：' + studentNum() + '个，确认发送吗？'       
+        Bconfirm({
+            message: msg,
+            handler: function(){
+               $('#send_account').submit();
+             }
+        });		
+        return false;
+    }
+});
+    $(':checkbox[rel=check]').click(function(event){
+        stop(event);
+        //btnDisabled()
+    });
+    $('tr[rel=check]').click(function(){
+        $select = $(this).find(':checkbox')
+        rowSelect($select)
+        //btnDisabled()
+    })
+    $(':checkbox[rel=selectAll]').click(function(event){
+        stop(event)
+        selectAll($(this).attr('checked'))
+        //btnDisabled()
+    })
+    $('tr[rel=selectAll]').click(function(){
+        $select = $(this).find(':checkbox')
+        rowSelect($select)
+        selectAll($select.attr('checked'))
+        //btnDisabled()
+    })
+    function stop(event){
+        if (event && event.stopPropagation){
+            event.stopPropagation()
+        }else{
+            window.event.cancelBubble=true
+        }
+    }
+    function rowSelect($select){
+        if($select.attr('checked')){
+            $select.attr('checked', false)
+        }else{
+            $select.attr('checked', true)
+        }
+    }
+    function selectAll(checked){
+        var allInput = document.getElementsByTagName("input")
+        var loopTime = allInput.length
+        for(i = 0;i < loopTime;i++)
+        {
+            if(allInput[i].type == "checkbox")
+            {
+              allInput[i].checked = checked
+            }
+        }
+    }
+    function checkNum(){
+        var num = $(':checkbox:checked[rel="check"]').length
+        return num
+    }
+    function studentNum(){
+        var num = 0
+        $(':checkbox:checked[rel="check"]').each(function(){
+          stu_num = Number($(this).attr("stuNum"));
+          num = num + stu_num 
+        })
+        return num
+    }
+
+</script>
+{% endblock %}

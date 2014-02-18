@@ -1,0 +1,45 @@
+<style>
+<!--
+#file_tab li a { 
+	background:#f0efef; 
+	color:#6a6a6a; 
+	line-height:17px;
+ }
+  
+#file_tab li a:hover { 
+	background:#FFF; 
+	line-height:19px; 
+	border: 1px solid #ddd;
+	border-bottom:0px;
+	z-index:10;
+}
+#file_tab li a.on{ 
+  color: #555;
+  cursor:default;
+  background:#FFF; 
+  line-height:19px; 
+  border: 1px solid #ddd;
+  border-bottom:none;
+  z-index:10; 
+}
+.book_ioc{ 
+	background:url('{{ STATIC_URL }}oa/images/book_ico.png') no-repeat center; 
+	padding:6px 5px; margin-right:5px;
+}
+#item-tab li a {line-height: 20px;}
+.main .tab li a { float:left; }
+-->
+</style>
+<div class="tab">
+  {% load i18n kinger_tags oa_tags pagination_tags %}
+  <a style="float:right; color:#6a6a6a; " href="{% url oa_supply_write_document %}" class="btn"><i class="book_ioc">&nbsp;</i>撰写申请</a>
+  <ul id="file_tab" class="nav nav-tabs" style="padding-bottom: opx; border-bottom:none; height:37px; line-height:30px; padding-bottom:0 ;margin:0; margin-right:100px;  ">
+    <li><a href="{% url oa_supply_my_document %}" class="{% oa_activer doc_my %}" >已收公文</a> </li>
+    <li><a href="{% url oa_supply_issued_document %}" class="{% oa_activer doc_send %}">已发公文</a></li>
+    <li><a href="{% url oa_supply_document_need_approval %}" class="{% oa_activer doc_approval %}">需我审批</a></li>
+    <li><a href="{% url oa_supply_having_approvaled %}" class="{% oa_activer doc_approvaled %}">我已审批</a></li>
+    <li><a href="{% url oa_supply_reback_document %}" class="{% oa_activer doc_reback %}">发回给我</a></li>
+    <li><a href="{% url oa_supply_invalid_document %}" class="{% oa_activer doc_invalid %}">作废公文</a></li>
+    <li><a href="{% url oa_supply_personal_document %}" class="{% oa_activer doc_doc %}">个人文档</a></li> 
+  </ul>
+</div>

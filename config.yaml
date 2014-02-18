@@ -1,0 +1,102 @@
+name: pyflask
+version: 1
+libraries:
+- name: django
+  version: "1.4"
+- name: lxml
+  version: "2.3.4"
+  
+handle:
+- expire: if(path ~ ".js$") time 8640000
+- expire: if(path ~ ".css$") time 8640000
+- compress: if ( out_header["Content-Length"]>=50) compress
+- compress: if ( out_header["Content-Type"]=="text/css" ) compress
+- compress: if ( out_header["Content-Type"]=="text/javascript" ) compress
+- compress: if ( out_header["Content-Type"]=="text/html" ) compress
+- compress: if ( out_header["Content-Type"]=="text/plain" ) compress
+- compress: if ( out_header["Use-Compress"] == "1") compress
+
+handlers:
+- url: /_static
+  static_dir: kinger/static
+  gzip: on
+  
+cron:
+- description: 推送apns消息
+  url: backend/cron/push_tile
+  schedule: every 5 mins
+  timezone: Beijing
+  login: cron@c1r2o3n4
+  
+- description: 推送未读消息1
+  url: backend/cron/push_unread_message?cron=1
+  schedule: every 1 mins, offset 0
+  timezone: Beijing
+  login: cron@c1r2o3n4
+- description: 推送未读消息2
+  url: backend/cron/push_unread_message?cron=2
+  schedule: every 1 mins, offset 30
+  timezone: Beijing
+  login: cron@c1r2o3n4
+  
+- description: 发送未读消息1
+  url: backend/cron/send_unread_message?cron=1
+  schedule: every 1 mins, offset 0
+  timezone: Beijing
+  login: cron@c1r2o3n4
+- description: 发送未读消息2
+  url: backend/cron/send_unread_message?cron=2
+  schedule: every 1 mins, offset 30
+  timezone: Beijing
+  login: cron@c1r2o3n4
+  
+- description: 发送紧急消息1
+  url: backend/cron/send_emergency_message?cron=1
+  schedule: every 1 mins, offset 10
+  timezone: Beijing
+  login: cron@c1r2o3n4
+- description: 发送紧急消息2
+  url: backend/cron/send_emergency_message?cron=2
+  schedule: every 1 mins, offset 40
+  timezone: Beijing
+  login: cron@c1r2o3n4
+  
+   
+- description: 发送短信1
+  url: backend/cron/sms2send?cron=1
+  schedule: every 1 mins, offset 0
+  timezone: Beijing
+  login: cron@c1r2o3n4
+- description: 发送短信2
+  url: backend/cron/sms2send?cron=2
+  schedule: every 1 mins, offset 20
+  timezone: Beijing
+  login: cron@c1r2o3n4
+- description: 发送短信3
+  url: backend/cron/sms2send?cron=3
+  schedule: every 1 mins, offset 40
+  timezone: Beijing
+  login: cron@c1r2o3n4
+  
+  
+- description: 发送短信1
+  url: backend/cron/sms2gate?cron=1
+  schedule: every 1 mins, offset 10
+  timezone: Beijing
+  login: cron@c1r2o3n4
+- description: 发送短信2
+  url: backend/cron/sms2gate?cron=2
+  schedule: every 1 mins, offset 30
+  timezone: Beijing
+  login: cron@c1r2o3n4
+- description: 发送短信3
+  url: backend/cron/sms2gate?cron=3
+  schedule: every 1 mins, offset 50
+  timezone: Beijing
+  login: cron@c1r2o3n4
+
+- description: 提醒未读导师数据与客服数据
+  url: backend/cron/send_staff_unread
+  schedule: 0 10 * * 1-5
+  timezone: Beijing
+  login: cron@c1r2o3n4

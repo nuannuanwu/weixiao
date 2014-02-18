@@ -1,0 +1,81 @@
+/************************************************************************
+*
+*    description         : cookbook 公用样式文件，为避免跟其它css框架冲突，采用k为前缀
+*    use                 : 用途:为king中cookbook一些公用组件控件作样式定义   
+*    dependents          : 关联模块    [kinger manage cookbook]
+*    create              : 2012-9-13  Renz
+*
+*
+*************************************************************************/
+.kPointer{cursor: pointer;}
+
+.tileBoard{ margin-left: 20px;}
+.tileBoard .thumbnail{padding:0;}
+.titleBar{ padding: 25px 0 15px 0;height:42px;}
+.titleCal{ position:relative;z-index:1;}
+.titleCal h1{margin:10px 0 0 0;color: #0085B2;font-size:24px; cursor: default;}
+.titleCal h1 span{ margin-left:10px;color:#666;font-size: 20px; }
+.titleBar-date{ font-size: 22px;line-height:30px; color: #999; vertical-align: middle;margin-right: 20px; }
+.titleBar-date span{ font-size: 18px; color: #999;margin-left: 10px; }
+
+.titleBar-chose{ display:none;position:absolute;top:40px;left:-20px;z-index:2010;width:180px;}
+.titleBar-chose ol,.titleBar-chose ul{margin:10px 0;}
+.titleBar-chose ol li,.titleBar-chose ul li{ list-style: none;}
+.titleBar-chose ol li a{display:block;padding:0 20px;font-size:14px;overflow: hidden;}
+.titleBar-chose ol li a:hover{background-color: #EDEDED;text-decoration:none;}
+.titleBar-chose ul{overflow: hidden;}
+.titleBar-chose ul span{margin-left:10px;line-height:30px;}
+.titleBar-chose ul li{display:block;float:left;margin:8px 0;width:60px;}
+.titleBar-chose .checkbox{margin-left:5px;}
+
+.titleCog{position:relative;z-index:1;margin:10px 0 0 5px;font-size:26px;color:#666;}
+.titleCog i{line-height:26px;}
+.titleCog .titleBar-chose{top:25px;left:-10px;padding:0 10px;font-size:14px;}
+.titleCog .titleBar-chose span{color:#999;}
+.titleCog:hover .titleBar-chose{display:block;}
+
+.titleBack{margin:5px 0 0 20px}
+
+.kCal{ margin-right: -20px; zoom:1;position: relative;}
+.kCal-item{ float: left; width: 108px; height: 118px; margin: 0 6px 12px 6px;padding:8px; *padding:8px 7px; _padding:8px 7px; background-color:#FFF;border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+.kCal-item .kBody-bg{ position: absolute; top: 0; left: 0;padding:5px; background-color: #FAFAF9; height: 78px; width: 98px;}
+.kCal-item .kBody-bg span{color:#666;}
+.bgBlue,.bgBlue .kBody-bg{background-color: #EBF2F7;}
+.bgRed,.bgRed .kBody-bg{background-color: #F7EFEB;}
+.bgGray,.bgGray .kBody-bg{background-color: #FEFEFE;opacity:0.6;}
+
+.kCal-cookbook{position:absolute;display:none;background-color:#EDEDED;-moz-box-shadow: 0 0 6px #000;-webkit-box-shadow: 0 0 6px #000;box-shadow: 0 0 6px #000;}
+.kCal-cookbook>div{margin:5px;padding:10px;background-color: #FAFAFA;*zoom:1;}
+.kCookbook-head{overflow: hidden;padding-top:5px;}
+.kCookbook-head span{color:#999;font-size:20px;}
+.kCookbook-head a{margin:-5px 0 0 0;width:20px;height:22px;line-height:18px;text-align:center;font-size:18px;color:#FFF;background-color: #999;}
+.kCookbook-head a:hover{text-decoration:none;background-color: #8B1A2B;border:1px solid #DDD;}
+.kArrow,.kArrowS{position:absolute;top:60px;width: 0;height: 0;font-size: 0;overflow: hidden;border-width: 12px 10px;}
+.kArrowR,.kArrowSR{float:right;border-style: dashed dashed dashed solid;}
+.kArrowL,.kArrowSL{float:left;border-style: dashed solid dashed dashed;}
+.kArrowR{right:-20px;border-color: transparent transparent transparent #EDEDED;}
+.kArrowL{left:-20px;border-color: transparent #EDEDED transparent transparent;}
+.kArrowSR{right:-22px;border-color: transparent transparent transparent #999;}
+.kArrowSL{left:-22px;border-color: transparent #999 transparent transparent;}
+.kCookbook-body{margin:20px 0 40px;}
+.kCookbook-body textarea{word-wrap: break-word;overflow-y: auto;overflow-x: hidden;outline: none;resize: none;}
+.kCookbook-body dd{margin-bottom:10px;}
+.kCookbook-body span{font-size:13px;color:#999;}
+.kCookbook-body span b{ font-size:20px;color:#FF860D; }
+.kCookbook-body .fontOrange{color:#FF860D;}
+
+.kItem-head{ position: relative; height: 30px; font-size: 17px; color: #666; text-align: right; }
+.kItem-head a{display:none;position: absolute; left: 0;top:0; font-size: 15px;}
+.kCal-item:hover .kItem-head a{display:block;}
+.kItem-head-week{ position: absolute; left:68px;top:-1px;font-size: 15px;}
+
+.kItem-body{ position: relative; margin-right: -10px; zoom:1; }
+.kItem-body a{ position: relative; width: 50px; height: 50px; float: left; margin: 0 8px 8px 0; z-index: 2}
+.kItem-body a img{ width: 50px; height: 50px;}
+
+.kBody-imgBg{ position: absolute; left: 0; top:0; list-style: none; margin: 0;}
+.kBody-imgBg li{ float: left; width: 50px; height: 50px; margin: 0 8px 8px 0; background-color: #EDEDED;}
+
+#kGroupSelect{ color: #0085B2 !important; cursor: pointer;}
+.kDailyItem cf h2{ text-align:center; font-size:30px; color:#a3a3a3;}
+.bg{ background:url(../img/datesel.gif) right center no-repeat; padding-right:20px;}

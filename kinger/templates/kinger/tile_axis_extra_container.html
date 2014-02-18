@@ -1,0 +1,12 @@
+{% load pagination_tags kinger_tags i18n%}
+{% for tile in tiles %}
+    <li>
+        <a>
+            <img width="210px" height="210px" src="{% media_path tile.img "img_axis" %}"/>
+        </a>
+        <div>
+            <a>0</a>
+            <a>1</a>
+        </div>
+    </li>
+{% endfor %}

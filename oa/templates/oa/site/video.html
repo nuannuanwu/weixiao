@@ -1,0 +1,42 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags umessages_tags %}
+{% block content %}
+{% autopaginate videos 20 %}
+<div class="active-content">
+	<div class="act-c-title">
+    	<h3><img src="{{ STATIC_URL }}oa/site/images/title_9.jpg" /></h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content">
+        	<div class="video-title">
+            	<p class="float-f-p">共{{videos.count}}个视频</p>
+                <p class="float-r-p">排序：
+                	<a href="{% if order == 'time' %}{% url_site oa_site_videos %}?order=date{% else %}javascript:;{% endif %}" {% if order == 'time' %}class="play-m playthis"{% else %}class="play-n"{% endif %}>最新发布</a>
+                	<a href="{% if order == 'date' %}{% url_site oa_site_videos %}?order=time{% else %}javascript:;{% endif %}" {% if order == 'date' %}class="play-m playthis"{% else %}class="play-n"{% endif %}>最多播放</a>
+                </p>
+            </div>
+            <div class="video-list">
+                {% if not videos|is_empty_list %}
+                    <div style=" margin: 200px 0; text-align: center; font-size: 16px;">暂无数据</div>
+                {% else %}
+            	<ul> 
+                    {% for v in videos %}
+                	<li>
+                    	<a href="{% url_site oa_site_video_detail v.id %}" class="v-img">
+                            <img src="{% if v.attachment %}{% media_path v.attachment "video_topic" %}{% else %}{{ STATIC_URL }}oa/site/images/bg_video.png{% endif %}" width="120" height="90" />
+                        </a>
+                        <p><a href="{% url_site oa_site_video_detail v.id %}">{{v.title|cut_str:8}}</a></p>
+                        <p>{{v.view_count}}次播放</p>
+                        <p>发布时间：{{v.ctime|date:"Y-m-d"}}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="pagination pagination-centered">
+                {% paginate %}
+            </div>
+        </div>  
+    </div>
+</div>
+{% endblock %}

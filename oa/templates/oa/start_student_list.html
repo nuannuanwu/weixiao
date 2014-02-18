@@ -1,0 +1,111 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate students 10 %}
+<style>
+#item-tab li { float: left; width:90px; }
+#item-tab li a {line-height: 19px;}
+.main .tab li a { float:left; }
+</style>
+<div class="main">
+     <div class="tab">
+          <ul class="nav nav-tabs" id="item-tab">
+            <li><a href="{% url oa_star_figure_teacher site.id %}">明星教师</a></li>
+            <li class="active"><a href="{% url oa_star_figure_student site.id %}">明星宝宝</a></li>
+          </ul>
+    </div>
+    <div class="column">
+      <form style="margin:8px 0 5px;"  action="" method="GET">
+        <select id="group" class="span2" name="group">
+          <option value="-1" {% if gid == -1 %}selected="selected"{% endif %}>--所有班级--</option>
+          {% for g in groups %}
+          <option value="{{g.id}}" {% if gid == g.id %}selected="selected" {% endif %}>{{g.name}}</option>
+          {% endfor %}
+        </select>
+        <select id="part_type" class="span2" name="ty">
+          <option value="-1" {% if type == -1 %}selected="selected"{% endif %}>--所有状态--</option>
+          <option value="0" {% if type == 0 %}selected="selected"{% endif %}>首页不显示</option>
+          <option value="1" {% if type == 1 %}selected="selected"{% endif %}>首页显示</option>
+        </select>
+        <button style="margin-bottom:9px; margin-left:10px;" type="submit" class="btn" id="searchB"  >{% trans "Search" %}</button>
+      </form>
+            <div class="list">
+              <form class="form-inline" id="form_post" action="{% url oa_star_student_status %}" method="POST">{% csrf_token %}
+              <table>
+                   <tr align="center">
+                      <th scope="col"><input type="checkbox" rel="checkall"></th>
+                       <th scope="col">姓名</th>
+                       <th scope="col">所在班级</th>
+                       <th scope="col">登录数</th>
+                       <th scope="col">内容发布数</th>
+                       <th scope="col">相片数</th>
+                       <th scope="col">评论数</th>
+                       <th scope="col">状态</th>
+                   </tr>
+                   {% if not students|is_empty_list %}
+                    <tr>
+                        <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                            <h4 class="not_date"> 暂无数据</h4>
+                        </td>
+                    </tr>
+                  {% else %}
+                  {% for t in students %}
+                  <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                      <td width="30"><input type="checkbox" value="{{t.user.figure.id}}" rel="role" name="start_pks"></td>
+                      <td width="90">
+                      	<div class="td-words w_90">
+                      	<a href="{% url oa_star_figure_detail site.id t.user.id %}">{{t.name}}</a>
+                        </div>
+                      </td>
+                      <td width="70"><div class="td-words w_70">{{t.group.name}}</div></td>
+                      <td width="70"><div class="td-words w_70"></div></td>
+                      <td width="90"><div class="td-words w_90"></div></td>
+                      <td width="90"><div class="td-words w_90"></div></td>
+                      <td width="70"><div class="td-words w_70"></div></td>
+                      <td width="70"><div class="td-words w_70">{% if t.user.figure.is_show %}首页显示{% endif %}</div></td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                  <tr>
+                  	<td><input type="checkbox" rel="checkall"></td>
+                  	<td colspan="7">
+                    	<select id="commit_type" name="operate" class="span2">
+                        <option value="">--批量操作--</option>
+                        <option value="show">首页显示</option>
+                        <option value="hide">取消首页显示</option>
+                      </select>
+                      	<input class="btn" disabled="disabled" id="sub_form" type="submit" name="" value="执行" >
+                    </td>
+                  </tr>
+              </table>
+              <input type="hidden" name="sid" value="{{site.id}}">
+            </form>
+            <div class="pagination pagination-centered">{% paginate %}</div>
+        </div>
+    </div>  
+</div>
+<script>
+var flagType="-1";
+$("#commit_type").click(function(){
+    flagType=$(this).find('option:selected').val();
+});
+function check(){  
+   var rimndText="";
+   if(flagType == ""){
+        rimndText="你还没选择操作类型"; 
+   } else  {
+        rimndText="是否执行当前操作";
+   } 
+    var r=confirm(rimndText);
+    if (r) {
+        if(flagType==""){
+            return false;
+        } //alert("删除成功");
+    } else { 
+            return false;//false:阻止提交表单  
+    }  
+}   
+</script>
+
+
+{% endblock %}

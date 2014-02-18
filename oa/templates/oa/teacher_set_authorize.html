@@ -1,0 +1,80 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate teachers 10 %}
+<div class="main">
+      <div class="tab">
+          <span>全员家长群发控制</span>
+      </div> 
+      <div class="column">
+          <div style=" color: #ccc; margin: 10px 0 40px 0; font-size: 14px;">此处可授权用户给全园(所有)学生家长发送消息</div>
+           <p>
+               <form class="form-inline" action="{% url oa_permission_set_authorize %}" method="GET">
+                    <select class="span2" style="width:auto;" name="s" value="{{s}}">
+                        <option {% if not s %} selected="selected" {% endif %} value="0"> --所有机构-- </option>
+                        {% for school in schools %}
+                            <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">{{school.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="span2" style="width:auto;" name="t" value="{{t}}">
+                        <option {% if not t %}selected="selected"{% endif %} value="-1"> --所有状态-- </option>
+                        {% for status in states %}
+                            <option {% if status.0 == t %} selected="selected" {% endif %} value="{{status.0}}">{{status.1}}</option>
+                        {% endfor %}
+                    </select> 
+                    <input type="text" name="n" id="keyW" style="width:85px;" value="{{n}}" placeholder="姓名">
+                    <button type="submit" class="btn" style="">{% trans "Search" %}</button> 
+                </form>
+            </p>
+             <div class="list"> 
+                <table>
+                     <tr align="center">
+                         <th width="120" scope="col">姓名</th>
+                         <th width="120" scope="col">机构</th>
+                         <th width="120" scope="col">职务</th>
+                         <th width="120" scope="col">是否授权</th>
+                     </tr>
+                     {% if not teachers|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="7" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                      {% else %}
+                     {% for t in teachers %}
+                        <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                            <td>{{t.name|default:'...'}}</td>
+                            <td>{{t.school}}</td>
+                            <td>{{t.postjob.position|default:''}}</td>
+                            <td rel="authorize"><a href="javascript:;" rel="{{t.id}}">{% if t.is_authorize %}已授权{% else %}未授权{% endif %}</a></td>
+                        </tr>
+           	      {% endfor %}
+                      {% endif %}
+                </table>
+                <div class="pagination" style="text-align:center;">
+               		{% paginate %}
+               </div>
+           </div> 
+      </div>
+</div> 
+<script> 
+$("#search_more").live('click',function(){  
+	$(this).toggleClass('nav_br');
+	$("[name=p]").toggle();
+	$("[name=a]").toggle();
+});
+$("[rel=authorize] a").click(function(){
+  obj = $(this);
+  var teacher_id = $(this).attr("rel"); 
+  url = "{% url oa_permission_change_authorize %}"
+  $.post(url,{tid:teacher_id},function(result){
+    data = $.parseJSON(result); 
+    if(data.status == 0){
+      obj.text("未授权");
+    }else{
+      obj.text("已授权");
+    }
+  });
+})
+</script>
+{% endblock %}

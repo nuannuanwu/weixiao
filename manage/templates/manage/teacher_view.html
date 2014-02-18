@@ -1,0 +1,89 @@
+{% extends 'manage_base.html' %}
+{% load i18n kinger_tags %}
+{% block content %}
+
+<div class="page-header">
+    <div class="pull-right">
+        <a href="{% url manage_teacher_update teacher.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
+    </div>
+    <div class="pull-right" style="margin-right:5px;">
+        <a href="{% url manage_teacher_list %}" class="btn">{% trans "Back" %}</a>
+    </div>
+    <h1><a href="{% url manage %}">学校管理</a><i class="icon-chevron-right"></i><a href="{% url manage_teacher_list %}">教师管理</a><i class="icon-chevron-right"></i>教师详情</h1>
+</div>
+<div class="form-horizontal form-kPicCon">
+    <div class="control-group">
+        <label class="control-label">
+            <div class="thumbnail">
+                <img src="{% media_path teacher.user.get_profile.get_avatar %}" alt="">
+            </div>
+        </label>
+        <div class="controls form-kPicCon-show">
+            <h2>{{ teacher.name }}</h2>
+            <p>
+                职 务: &nbsp;&nbsp;&nbsp; {{ teacher.appellation }}
+
+            </p>
+            <p>
+                电 话: &nbsp;&nbsp;&nbsp; {{ teacher.getMobile}}
+            </p>
+            <p>
+                {{ teacher.description }}
+            </p>
+         </div>
+    </div>
+</div>
+<hr />
+
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        <li class="active pull-left">
+            <a href="#">{% trans "Working class" %}</a>
+        </li>
+        <li class="pull-right" id="add_user" style="margin-right:5px;">
+        <!-- single dropdown -->
+        <form action="{% url manage_class_add_teacher %}" method="POST"
+            class="pull-right" style="margin: 0 3px 0 0;">
+            {% csrf_token %}
+            <input type="hidden" name="role" value="{{ role }}" />
+
+            <input type="hidden" name="teacher_id" value="{{ teacher.id }}" />
+            <select name="class_id" class="chosen" style="width:200px;">
+                <option value="0">{% trans "choose class" %}</option>
+                {% for u in classes4choose %}
+                <option value={{u.id}}>{{u}}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn btn-success" href="#"><i class="icon-plus-sign"></i> {% trans "Join class" %}</button>
+        </form>
+    	</li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab1">
+            {% load pagination_tags %}
+            {% autopaginate classes 8 %}
+            <ul class="thumbnails kPicList kPicList-normal">
+                {% for class in classes %}
+                <li>
+                <div class="thumbnail">
+                    <a class="a_confirm_link close" data-dismiss="alert" href="{% url manage_class_remove_teacher class.id teacher.id%}">×</a>
+					<br />
+            		<a class="kClassPic" href="{% url manage_class_view class.id %}">
+                		<img src="{% media_path class.logo "normal" %}" alt="" title="{{class.description}}" />
+            		</a>
+            		<div class="caption">
+                		<span title="{{ class.name }}">{{ class.name }}</span>
+            		</div>
+                </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="pagination">
+                {% paginate %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

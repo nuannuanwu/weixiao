@@ -1,0 +1,103 @@
+{% load i18n kinger_tags %}
+
+<div class="form-horizontal form-kPicCon">
+<form action="{{action_url}}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} id="id_form">{% csrf_token %}
+        <div class="control-group">
+            <div class="control-label hidden-clean-label">
+            	{% if teacher %}
+                <a href="{% url manage_teacher_view teacher.id %}" title="{{ teacher.description }}">
+                	<img id="myimg" src="{% media_path teacher.user.get_profile.get_avatar "normal" %}" alt=""> 
+            	</a>
+                {% else %}
+                <a>
+                   <img id="myimg" src="{{ STATIC_URL }}img/avatar_128.png" width="140" height="140" />
+                </a>
+        		{% endif %}
+                 <div id="fileb" class="imghidden">{{ form.avatar }}</div>
+                 <a class="btn hidden" id="change_img" onclick="document.getElementById('id_avatar').click();">选择图片</a>
+                <span class="help-inline" id="id_logo_error"></span>
+            </div>
+            <div class="controls controls_rank">
+                       <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.name.label }}</span>
+                            {{ form.name }}
+                            <span id="id_nameTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;*line-height: 16px;"></span>
+                            <span class="help-inline">{{ form.name.errors }}</span><p class="help-block">{{ form.name.help_text }}</p>
+                        </div>
+
+                       <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.appellation.label }}</span>
+                            {{ form.appellation }}
+                            <span id="id_appellationTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;*line-height: 16px;"></span>
+                            <span class="help-inline">{{ form.appellation.errors }}</span><p class="help-block">{{ form.appellation.help_text }}</p>
+                        </div>
+                       <div class="controls-tipInput">
+                            <span class="tipInput-tip" id="tip-Tip">{{ form.description.label }}</span>
+                            {{ form.description }}                           
+                            <span id="id_descriptionTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <span class="help-inline">{{ form.description.errors }}</span><p class="help-block">{{ form.description.help_text }}</p>
+                        </div>
+                        <div class="controls-tipInput">
+                            <span class="tipInput-tip">号码</span>
+                            {{ form.mobile }}
+                            <span id="id_mobileTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            {% if form.mobile.errors %}
+                            <script>
+            					$(function() {
+            						$('#id_mobileTip').html(
+										'<span><span class="onError_top">{{ form.mobile.errors }}</span><span class="onError_bot"></span></span>'    
+									)
+								})
+							</script>	
+                            {% endif %}
+                            {% if teacher %}
+                               <!--<span id="kc-tipText" class="kc-tipText">不可编辑</span>-->
+                            {% endif %}
+                        </div>
+                </div>
+        </div>
+    <div class="form-actions">
+        <input class="btn btn-success" type="button" name="" value="{% trans "Save" %}" onclick="checkSubmit()">
+        <input type="button" class="btn btn_w" onclick="history.back(-1);"value="{% trans "Cancel" %}" />
+    </div>
+
+     {% if teacher %}
+    <div class="control-group control_separate">
+        <div class="controls">
+            <a href="{% url manage_teacher_delete teacher.id %}" title="删除这位教师" class="a_confirm_link btn btn-danger">&nbsp;&nbsp;&nbsp;<i class="icon-trash icon-white"></i>&nbsp;{% trans "Delete" %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+    </div>
+    {% endif %}
+
+</form>
+</div>
+<!--<script src="{{ STATIC_URL }}kinger/plugins/jquery.hope12580.plugins.min.js"></script>-->
+<script type="text/javascript">
+ $(function(){
+  if ($.browser.msie){
+		  $("#fileb").removeClass("imghidden");
+		  //$("#fileb").children("#id_avatar").attr("onchange","previewImage(this,'myimg')")
+		  /*$("#fileb").children("#id_avatar").live("change",function(){
+			  previewImage(this,'myimg')
+		  })*/
+	 }else{
+		  $("#change_img").removeClass("hidden");
+		 
+	}
+   $("#fileb").children("#id_avatar").change(function(){
+	         previewImage(this,'myimg')
+   })	
+  function previewImage(file,imgId){  
+           if (file.files && file.files[0]){  
+               var img = document.getElementById(imgId);  
+               var reader = new FileReader();  
+               reader.onload = function(evt){img.src = evt.target.result;}  
+               reader.readAsDataURL(file.files[0]);  
+           }else{  
+               file.select();  
+               var src = document.selection.createRange().text;  
+               $("#"+imgId).attr("src",src);
+           }  
+  } 	
+})	
+</script>

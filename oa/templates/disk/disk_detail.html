@@ -1,0 +1,32 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %} 
+{% block content %}
+<style type="text/css">
+.main .column .title h4 { font-size:21px; font-weight: 100; margin: 0; text-align: center; padding-bottom: 10px;}
+.main .column .title .info { text-align: center;  }
+.main .column .title .info span {font-size: 13px; color: #666666; }
+.main .column .content_disk{ border-bottom: 1px solid #ddd; min-height: 300px; padding: 10px 5px;margin-bottom: 15px;}
+.main .column .content_disk p { margin: 0; }
+</style>
+<div class="main">
+	<div class="tab"><span>文档查看</span> 
+       <a href="{% url oa_disk_index %}">返回</a>
+    </div>
+    <div class="column">  
+        <div class="title">
+        	<h4>{{disk.title}}</h4>
+        	<div class="info"><span>作者: </span>{{disk.creator|get_name}}<span style="margin-left:10px;">{{disk.mtime}}</span></div>
+        </div>
+        <div class="content_disk"> 
+    		{{disk.content|safe}} 
+        </div>
+        <div>附件：{% if files.count %}
+            <a style="color: #4eabe3; text-decoration: none;" href="{% url oa_supply_download_zip_document disk.id %}">全部下载(共{{files.count}}附件)</a>
+        {% else %}<span style="color:#999; ">全部下载(共{{files.count}}附件)</span> {% endif %}
+             <div class="file" style="margin-left: 40px; color: #4eabe3;"> {% for f in files %} <a  style="color: #4eabe3; text-decoration: none; padding:2px 0 3px 15px; background: url('{{ STATIC_URL }}oa/images/add_files.gif') no-repeat;"class="pic_file" href="{% url oa_supply_download_document f.id %}">{{f.name}}</a>{% endfor %} </div>
+        </div> 
+	</div>
+</div>
+{% endblock %}
+
+ 

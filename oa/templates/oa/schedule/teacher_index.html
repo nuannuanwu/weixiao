@@ -1,0 +1,132 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags umessages_tags %}
+{% block content %} 
+<div class="main">
+    <div class="tab">
+      <span>周课表管理</span>
+          <a id="add_schedule" class="btn" href="{% url oa_create_schedule %}" style="color:#353535;"><i class="add_btn">&nbsp;</i>添加</a>
+    </div>
+    <div class="column">
+    	<div class="inbox">
+            <div class="up-title">
+                <div class="t-zhkb">
+                  <p class="t-inclass">
+                    <form style="margin-bottom:10px;" class="form-inline" method="GET"> 
+                    {% if request.user|is_agency_user %}
+                    <select id="school_id" name="sid" style=" width: auto" value="{{school.id}}">
+                            <option  value="-1"> --所有学园-- </option>
+                        {% for s in schools %}
+                        <option  value="{{s.id}}" {% if s.id == school.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                    <select id="group_id" name="gid" style="width:140px;" vlaue="{{group.id}}">
+                        {% if not request.user|is_agency_user or request.user.teacher|user_is_school_admin %}
+                            {% if group_count > 1 or request.user|is_agency_user %}<option  value="-1"> --所有班级-- </option>{% endif %}
+                            {% for g in groups %}
+                            <option  value="{{g.id}}" {% if g.id == group.id %}selected="selected"{% endif %}>{{g.name}}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <button type="submit" class="btn" id="searchB" />{% trans "Search" %}</button>
+                </form>
+                  </p>
+                </div>
+            </div>
+            <div class="uploadfile-list list">
+                {% if not request.user|is_agency_user or request.user.teacher|user_is_school_admin %}
+                    {% autopaginate schedules 10 %}
+                {% endif %}
+                <table>
+                    <tr>
+                        <th>名称</th>
+                        <th>所属机构</th>
+                        <th>所属班级</th>
+                        <th>上传时间</th>
+                        <th>操作</th>
+                    </tr> 
+                    {% if not schedules|is_empty_list %}
+                    <tr>
+                        <td align="center" colspan="5" style=" font-size: 18px; color: #cecece;">
+                            <h4 class="not_date"> 暂无数据</h4>
+                        </td>
+                    </tr>
+                    {% else %}
+                    {% for s in schedules %}
+                    <tr>
+                        <td width="250">
+                        	<div calss="td-words w_250">
+                            	<a href="{% url oa_download_schedule s.id %}">{{s.name}}</a>
+                            </div>
+                        </td>
+                        <td width="110"><div class="td-words w_110">{{s.group.school.name}}</div></td>
+                        <td width="110"><div class="td-words w_110">{{s.group}}</div></td>
+                        <td width="100"><div class="td-words w_100">{{s.start_time|date:'Y-m-d H:i'}}</div></td>
+                        <td>
+                        	<a class="" rel="delete_schedule" href="{% url oa_delete_schedule s.id %}">删除</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+            <form action="" method="get" id="delete_schedule">{% csrf_token %}</form>
+        </div>
+    </div>
+        {% if not request.user|is_agency_user %}
+        <div id="pagination" class="pagination" style="text-align:center;">{% paginate %}</div>
+        {% endif %}
+    </div>
+<script type="text/javascript">
+    $("#school_id").change(function(){
+        var school_id = $(this).val();
+        var group_id = $("#group_id").val();
+        url = "{% url oa_get_school_class %}"
+        $.get(url,{sid:school_id},function(result){
+            data = $.parseJSON(result); 
+            $("#group_id").html("");
+            for(var i=0;i<data.length;i++){
+                $("#group_id").append('<option value="' + data[i].id + '">' + data[i].name + '</option>')
+            }
+        });
+    });
+
+ /* $("#add_schedule").click(function(){
+        var sid = $("#school_id").val();
+        var gid = $("#group_id").val();
+        if(sid==-1 && gid==-1){
+			$("#add_schedule").attr("disabled",true);
+        }else{
+			$("#add_schedule").removeAttr("disabled");
+			javascript:location.href = '{% url oa_create_schedule %}';
+		}
+    });*/
+
+    $("a[rel='delete_schedule']").click(function(){
+        $("#delete_schedule").attr("action",$(this).attr('href'))
+        Bconfirm({
+            message: '确认删除此课表?',
+            handler: function(){
+                $("#delete_schedule").submit()
+            }
+        });  
+        return false;     
+    })
+
+    function getOptionValue(){
+        var sid = $("#school_id").val();
+        var gid = $("#group_id").val();
+        if (sid && gid) {
+            if(sid==-1 || gid==-1){
+                $("#add_schedule").attr("disabled",true);
+            }else if (sid==-1 && gid==-1) {
+                $("#add_schedule").attr("disabled",true);
+            }else{
+                $("#add_schedule").attr("disabled",false);
+            }
+        }else{
+            $("#add_schedule").attr("disabled",true);
+        }
+    }      
+</script>   
+{% endblock %}

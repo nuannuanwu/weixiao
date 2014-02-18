@@ -1,0 +1,125 @@
+{% extends 'cookbook/base.html' %}
+{% load i18n kinger_tags %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/cookbook.css">
+{% endblock %}
+{% block content %}
+
+<div class="tileBoard">
+    <div class="titleBar">
+    	<div class="titleCal kPointer pull-left" >
+            
+    		<h1 data-groupID="{{ group.id }}" {% if type == 'school' %}data-school="1"{% endif%}>
+                <span id="kGroupSelect" class="bg">
+                {% if type == 'school' %} 
+                    全校 
+                {% else %} 
+                    {{ group.name }}
+                {% endif%}
+                </span>
+                <span>食谱设置</span>
+            </h1>
+    		<div class="titleBar-chose thumbnail" id="kGroupSelect-con">
+    			<ol>
+                    <li><a href="?school=True">全校</a></li>
+                    {% for g in groups %}
+                        <li><a href="?group={{g.pk}}">{{ g.name }}</a></li>
+                    {% endfor %}    				
+    			</ol>
+   			</div>
+    	</div>
+    	<div class="titleCog kPointer pull-left">
+    		<i class="icon-cog"></i>
+            <form action="{% url manage_cookbook_save_cookbook_set %}" method="post" style="margin:0">
+                {% csrf_token %}
+        		<div class="titleBar-chose thumbnail">
+        			<ul>
+        				<span>请勾选您需要使用的类型</span>
+        				<li><label class="checkbox"><input type="checkbox" name="breakfast" {% if set.breakfast.is_show %} checked="checked" {% endif %}>早餐</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="light_breakfast" {% if set.light_breakfast.is_show %} checked="checked" {% endif %}>早点</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="lunch" {% if set.lunch.is_show %} checked="checked" {% endif %}>午餐</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="light_lunch"{% if set.light_lunch.is_show %} checked="checked" {% endif %}>午点</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="dinner" {% if set.dinner.is_show %} checked="checked" {% endif %}>晚餐</label></li>
+        				<li><label class="checkbox"><input type="checkbox" name="light_dinner" {% if set.light_dinner.is_show %} checked="checked" {% endif %}>晚点</label></li>
+        				<button type="submit" class="btn btn-success">保存</button>
+        			</ul>   			
+       			</div>
+            </form>
+    	</div>
+    	<a class="pull-left btn titleBack" href="{% url manage %}">返回</a>
+        <div class="btn-group pull-right">        
+            <a class="btn" href="?{% if type == 'school' %}school=True{% else %}group={{ group.id }}{% endif %}&date={{prev_month|date:"Y-m"}}"><i class="icon-chevron-left"></i>&nbsp;</a>
+            <a class="btn" href="{% url manage_cookbook %}?{% if type == 'school' %}school=True{% else %}group={{ group.id }}{% endif %}">{% trans "This Month" %}</a>
+            <a class="btn" href="?{% if type == 'school' %}school=True{% else %}group={{ group.id }}{% endif %}&date={{next_month|date:"Y-m"}}{{new_query_string}}"><i class="icon-chevron-right"></i>&nbsp;</a>
+        </div>
+        <span class="titleBar-date pull-right">{{date.month}}<span>/{{date.year}}</span></span>
+    </div>
+
+    <div class="kCal cf">
+            {% for week in month_cal %}
+            	{% for day in week %}
+                <div class="kCal-item {% if forloop.parentloop.counter == 3 or forloop.parentloop.counter == 5 %}bgBlue{% endif %} {% if day %}kPointer{% else %}bgGray{% endif %}" {% if day %}onclick="cookbook(this,{{date.year}},{{ date.month}},{{ day }})"{% endif %}>
+                    <div class="kItem-head">
+                    	{% if day %}
+                        	<a href="javascript:void(0)" class="close" onclick="cookbookClear(event,{{date.year}},{{ date.month}},{{ day }})">x</a>
+                        {% endif %}
+                        <span class="kItem-head-week">
+                        	{% if forloop.parentloop.counter == 1 %}
+                            	{{forloop.counter|chinese_weekday}}
+                        	{% endif %}
+                        </span>
+                        {% if day %}
+                            {{day|zfill:2}}
+                        {% endif %}
+                    </div>                
+                    <div class="kItem-body cf">
+                        <div class="kBody-bg" id="bg-{{date.year}}-{{ date.month}}-{{ day }}">
+                            {% if day > 0 %}
+                                {% with newday=day|add:"-1" %}
+                                    {% with cookbook_day=cookbook|list:newday %}
+                                        {% for i in cookbook_day.items %}
+                                            {{i}} 
+                                        {% endfor %}                                        
+                                    {% endwith%}
+                                {% endwith %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endfor %}                      
+            <div class="kCal-cookbook thumbnail span4" id="cookbook">
+            	<div>
+            		<div class="kCookbook-head">
+            			<span class="pull-left" id="cookbook_date"></span>
+            			<a href="javascript:void(0)" class="pull-right thumbnail" onclick="cookbookClose()">x</a>
+            		</div>
+            		<div class="kArrowS" id="arrowS"></div>
+            		<div class="kArrow" id="arrow"></div>
+            		<dl class="kCookbook-body">
+            			<dt {% if not set.breakfast.is_show %} style="display: none;" {% endif %} class="pull-left" id="breakfast_t">早餐:&nbsp;&nbsp;</dt>
+            			<dd {% if not set.breakfast.is_show %} style="display: none;" {% endif %}><textarea id="breakfast"></textarea></dd>
+            			<dt {% if not set.light_breakfast.is_show %} style="display: none;" {% endif %} class="pull-left" id="light_breakfast_t">早点:&nbsp;&nbsp;</dt>
+            			<dd {% if not set.light_breakfast.is_show %} style="display: none;" {% endif %}><textarea id="light_breakfast"></textarea></dd>
+            			<dt {% if not set.lunch.is_show %} style="display: none;" {% endif %} class="pull-left" id="lunch_t">午餐:&nbsp;&nbsp;</dt>
+            			<dd {% if not set.lunch.is_show %} style="display: none;" {% endif %}><textarea id="lunch"></textarea></dd>
+            			<dt {% if not set.light_lunch.is_show %} style="display: none;" {% endif %} class="pull-left" id="light_lunch_t">午点:&nbsp;&nbsp;</dt>
+            			<dd {% if not set.light_lunch.is_show %} style="display: none;" {% endif %}><textarea id="light_lunch"></textarea></dd>
+            			<dt {% if not set.dinner.is_show %} style="display: none;" {% endif %} class="pull-left" id="dinner_t">晚餐:&nbsp;&nbsp;</dt>
+            			<dd {% if not set.dinner.is_show %} style="display: none;" {% endif %}><textarea id="dinner"></textarea></dd>
+            			<dt {% if not set.light_dinner.is_show %} style="display: none;" {% endif %} class="pull-left" id="light_dinner_t">晚点:&nbsp;&nbsp;</dt>
+            			<dd {% if not set.light_dinner.is_show %} style="display: none;" {% endif %}><textarea id="light_dinner"></textarea></dd>
+            			<dt>
+            				<span class="pull-left"><b>●</b> 该颜色为“班级自定条目”</span>
+            				<a href="javascript:void(0)" class="btn btn-success pull-right"  id="cookbook_save">保存</a>
+            			</dt>
+            		</dl>
+            	</div>
+            </div>
+    </div>    
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{{ STATIC_URL }}kinger/js/cookbook.js"></script>
+{% endblock %}

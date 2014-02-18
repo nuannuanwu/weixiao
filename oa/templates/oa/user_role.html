@@ -1,0 +1,96 @@
+{% load i18n kinger_tags oa_tags %}
+
+<div id="role_box"> 
+    <div class="title">
+        <a class="clear_role" href="javascript:;">清除</a> <div>已选角色</div> 
+    </div>
+    <div class="delAll pick_list">
+       <ul>
+       {% for r in user_roles %}
+          <li>{{r.name}}<a name="role_{{r.id}}" rel="{{r.id}}" class="role_{{r.id}} delRole" href="javascript:;">X</a></li> 
+        {% endfor %}
+       </ul>
+    </div> 
+     <p style="margin-top:10px; overflow: hidden;">
+         <select class="span2 inline" style="margin:0 0px; *float: left; *margin-right: 10px;"  name="s" value="{{s}}">
+            <option {% if not s %} selected="selected" {% endif %} value="0">-- 所有机构 --</option>
+            {% for school in schools %}
+                <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">{{school.name}}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="q" id="keyW" class="input-medium search-query" style="*float: left;" value="{{query}}" placeholder="角色名称">
+        <button class="btn" id="searchB" style="*float: left;">{% trans "Search" %}</button>
+    </p>
+    <div style="max-height:260px; width:640px; overflow-x:hidden;">       
+        <div class="list">
+             <table>
+                <tr>  
+                    <th width="80">角色名称</th>
+                    <th width="80">创建机构</th>
+                    <th width="220">角色描述</th>
+                    <th width="60">访问模块</th>
+                    <th width="60">添加角色</th>
+                </tr>
+                {% for r in roles %}
+                <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}"> 
+                    <td><a href="{% url oa_permission_update_role r.id %}">{{r.name}}</a></td>
+                    <td>{{r.school}}</td>
+                    <td>{{r.description}}</td>
+                    <td class="role_detail"><a href="javascript:;" data-show="0" class="look" rel="{{r.id}}">查看</a></td>
+                    <td rel="add_role"><a id="add_id_{{r.id}}" class="addRole" href="javascript:;"  name="{{r.name}}" rel="{{r.id}}">添加</a></td>
+                </tr>
+                <tr class="role_info_{{r.id}} role_info_text" style="display:none;" >
+                	<td colspan="5"  >
+                    	<div class=" role_info" rel="{{r.id}}" id="infos_{{r.id}}" style="width:600px;">
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+             </table>
+        </div>
+    </div>
+</div>
+ <form id="role_form" method="post" action="{% url oa_permission_add_role user.id %}"> {% csrf_token %}
+<div id="input_checkde" style="display:none">
+{% for r in roles %}
+        <input id="checked_{{r.id}}" class="checked_role" type="checkbox" name="role_list" value="{{r.id}}" {% if r|in_list_q:user_roles %}checked="checked"{% endif %}>
+{% endfor %} 
+</div>  
+ </form>
+  <input id="user_role_pks" type="hidden" name="user" value="{{user_role_pks}}"> 
+<!--<div>
+    <div id="role_list"></div>
+    <div>
+        
+            <select name="s" value="{{s}}">
+                <option {% if not s %} selected="selected" {% endif %} value="0">-- 所有机构 --</option>
+                {% for school in schools %}
+                    <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">{{school.name}}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="q" id="keyW" class="input-medium search-query" style="*float: left;" value="{{query}}" placeholder="角色名称">
+            <button class="btn" id="searchB" style="*float: left;">{% trans "Search" %}</button>
+
+    <div>
+     
+        <table>
+            <th><td><input type="checkbox" rel="selectAll"></td><td>角色名称</td><td>创建机构</td><td>角色描述</td><td>访问模块</td><td>添加角色</td></th>
+            {% for r in roles %}
+                <tr>
+                    <td><input type="checkbox" rel="role" name="roles" value="{{r.id}}"></td><td><a href="{% url oa_permission_update_role r.id %}">{{r.name}}</a></td><td>{{r.school}}</td><td>{{r.description}}</td><td rel="role_detail"><a href="javascript:;" rel="{{r.id}}">查看</a></td rel="add_role"><a href="javascript:;" rel="{{r.id}}">添加</a>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type="hidden" id="user_id" value="{{user.id}}">
+        <form action="{% url oa_permission_add_role user.id %}" method="post">{% csrf_token %}
+            <div style="display:none">
+                {% for r in roles %}
+                <input type="checkbox"  name="role_list" value="{{r.id}}" {% if r.pk|in_list_q:role_pks %}checked="checked"{% endif %}>
+                {% endfor %}
+            </div>
+            <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+        </form>
+    </div>
+</div>
+-->
+ 

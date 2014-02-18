@@ -1,0 +1,56 @@
+{% load i18n kinger_tags comments pagination_tags %} 
+    {% for comment in comments %}
+        {% if not comment.is_removed and comment.is_public %}
+        <div class="list clearfix" style=" overflow: hidden; width: 240px; position: relative;" id="comment_div_{{comment.id}}">
+                <div class="list_itme" style="margin-top: 20px;">
+                    <div class="centent"><a href="javascript:" class="" rel="namecard" data-uid="{{ comment.user.pk }}">{{comment.user.get_profile.chinese_name_or_username}}</a>{{comment.comment|code_to_img|safe}}</div>
+                    {% get_comment_reply comment as reply %} 
+                    {% if reply %}{% include "kinger/revision/includes/reply.html" with reply=reply %}{% endif %}
+                    <div class="info">
+                        <div class="manipulate pull-right" style=""  >
+                            {% if comment.user_id == request.user.id %}<a class="delete" href="javascript:;" style=" display: none;" rel="delete_tile_comment" data-href="{% url rev_tile_delete_comment comment.id %}" >删除  </a> <span class="delete"  style=" display: none;">|</span>{% endif %}
+                            <a rel="{{comment.user}}" href="javascript:;" alt="{{comment.id}}" class="add_comment">回复</a>
+                        </div>
+                        <div class="comment_time" style="margin-right: 90px">{{comment.submit_date|natural_time}}</div> 
+                    </div>
+                    <div class="controls">
+                        <div class="comment_input" rel="comments_{{comment.id}}"  style=" display: none;">
+                            <div style="border: 1px solid #44a6cd; margin: 10px 0 5px 0; position: relative;">
+                                  <span style=" background:url('{{ STATIC_URL }}kinger/img/nav_input.jpg') no-repeat; float: left; height: 10px; width:15px;  position: absolute; top:-6px; right: 5px; z-index: 5;">&nbsp;</span>
+                                  <textarea style="-moz-resize: vertical;-webkit-resize: vertical;resize: vertical; font-size: 13px; color:#4e4e4e; height: 25px; border: none; width: 94%; margin-bottom: 0; box-shadow: none;" id="ext_comment_{{comment.id}}" name="ext_comment" placeholder="">回复{{comment.user.get_profile.chinese_name_or_username}}:</textarea>
+                            </div> 
+                            <div style=" float: left; width: 185px;">
+                                <div id="facewH" rel="facewC" class="facew face-ico rpico" alt="{{comment.id}}" ty="0">
+                                </div>
+                            </div>  
+                            <!--<input type="submit" name="post" class="btn btn-success submit-post " value="{% trans "Comment" %}"/>-->
+                            <a href="javascript:;" alt="{{comment.id}}" class="ext_comment_btn" ><img src="{{ STATIC_URL }}kinger/img/comment_btn_bg.jpg" /></a>
+                        </div>
+                    </div>
+<!--                    <div class="controls">
+                        <div class="comment_input" style=" display: none; padding-top: 5px;" >
+                            <div style="border: 1px solid #44a6cd; margin: 5px 0;position: relative;">
+                                <span style=" background:url('{{ STATIC_URL }}kinger/img/nav_input.jpg') no-repeat; float: left; height: 10px; width:15px;  position: absolute; top:-6px; right: 5px; z-index: 5;">&nbsp;</span>
+                                <textarea style=" font-size: 13px; color:#4e4e4e; height: 25px; border: none; width: 94%; margin-bottom: 0; box-shadow: none;" id="ext_comment_{{comment.id}}" name="ext_comment" placeholder="">回复{{comment.user}}:</textarea> 
+                                 
+                            </div> 
+                            <div style=" float: left; width: 185px;">
+                                <div id="facewH" rel="facewC" class="facew face-ico rpico" alt="{{comment.id}}" ty="0">
+                                </div>
+                            </div>  
+                            <a href="javascript:;" alt="{{comment.id}}" class="ext_comment_btn" ><img src="{{ STATIC_URL }}kinger/img/comment_btn_bg.jpg" /></a>
+                        </div>
+                    </div>-->
+                </div> 
+            </div>
+        {% endif %}
+    {% endfor %}
+    {% if not is_last_page %}
+    <div class="clearfix">
+      <a href="javascript:;" id="more_comment" data-href="{% url axis_more_comment tile.id %}?cpage={{cpage|add:1|default:1}}">加载更多评论</a>
+    </div>
+    {% endif %}
+    <script type="text/javascript">
+        $('a[rel=namecard]').namecard();
+    </script>
+

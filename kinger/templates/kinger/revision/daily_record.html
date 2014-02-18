@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load pagination_tags kinger_tags i18n%}
+
+{% block extra_css %}
+<style type="text/css">
+#footer{position:fixed;left:0;bottom:0;}
+.thumbnails, .row{margin-left:0; padding-bottom: 10px;}
+.thumbnails ul{margin-left:0;}
+.thumbnails > li{margin:0 14px 14px 0;}
+.kBabyA:hover{ text-decoration: none;}
+.kTileBar { padding-bottom: 0; *padding-bottom: 20px;}
+.kTileBar .btn-group{ margin-bottom: 20px; }
+.kTileBar, .row{padding-left:15px;}
+#container{width: 960px;}
+.kCategory{ margin-bottom: 20px; background-color: #FFF;}
+.kCategory td{ border: 1px solid #DDD; vertical-align: top; width: 458px }
+.kCategory td.single{ width: 919px}
+.kCategory-item{ padding: 15px 30px; margin-bottom: -8px}
+.kCategory .item-icon{ float: left; width: 48px; height: 48px; display: inline-block; }
+.kCategory .item-body{ margin:0 -6px 0 61px}
+.kCategory .body-title{ line-height: 1.6; font-size: 14px; font-weight: normal; color: #AAA; margin: 0; margin-bottom: 5px}
+.kCategory .body-categorys a{ float: left; line-height: 1; white-space: nowrap; color: #545454; font-size: 14px;  padding: 5px 6px; margin:0 3px 8px 0; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius:4px;}
+.kCategory .body-categorys a:hover,.kCategory .body-categorys a.ac{background-color: #EDEDED; text-decoration: none;}
+</style>
+{% endblock %}
+{% block tile_bar %}
+<div class="kTileBar">   
+    {% if request.user.is_authenticated %} 
+    <span class="btn-group" data-toggle="buttons-radio">
+        <a href="/?channel=all" class="btn span1 {% if not channel or channel = "all" %}
+            active
+          {% endif %}">{% trans "All" %}</a>         
+        <a href="/?channel=tips" class="btn span1 {% if channel == "tips" %}
+            active
+          {% endif %}">育儿频道</a>
+        <a href="/?channel=baby" class="btn span1 {% if channel == "baby" %}
+            active
+          {% endif %}">宝宝日记</a>
+    </span>
+    {% if not channel or channel == "baby" %}
+    {% include "kinger/includes/pin_or_board.html" %}
+    {% endif %}  
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{% block content %}
+{% load pagination_tags %}
+{% autopaginate group_date 7 %}
+               
+<div class="lb-items">
+   <ul>
+      <li class="data"><span style="color:#a9a9a9;">日期</sapn></li>
+      <li>考勤</li>
+      <li>体温</li>
+      <li>用餐</li>
+      <li>情绪</li>
+      <li>排便</li>
+      <li>午睡</li>
+      <li>喝水</li>
+   </ul>
+</div>
+<div class="act_items">
+	{% for d in record_list %}
+		<ul>
+			<li class="datashow {% if d.is_first %}monthshow{% endif %}">
+              <div class="ds_bgico"><strong>{{d.day.day|zfill}}</strong><span>{% if d.day|isToday %}今天{% else %}星期{{d.day.isoweekday|chinese_weekday}}{% endif %}</span><div class="month"><span>{% if d.is_first %}{{d.day.month}}{% endif %}</span></div></div>
+           </li>
+			{% for c in d.data %}
+        	{% if not c.tiles %}
+           		<li class="{{c.id|rev_category_report_img:c.tiles}}"><em class="icobg" id="hstb"></em><i></i></li>
+           	{% else %}
+           		<li class="{{c.id|rev_category_report_img:c.tiles}} {% if c.num > 1 %}hasdata{% endif %}"><em class="icobg" id="shangico"></em><i id="shangwz">{{c.top.description}}</i>
+           			{% if c.num > 1 %}
+                      <div class="hiddenceng">
+                      <ul>
+	           			{% for t in c.tiles %}
+	           				
+                                <li><span>{{t.start_time|date:"H:i A"}}</span><em class="icobg {{c.id|rev_category_img:c.tiles}}"></em><b>{{t.description}}</b></li>
+                            
+	           			{% endfor %}  
+	           		</ul>
+                      </div>
+           			{% endif %}
+           		</li>
+           	{% endif %}	
+        {% endfor %}
+		</ul>
+	{% endfor %}
+
+</div>
+<!-- /分类筛选 -->
+             <script type="text/javascript">
+			     $(function(){
+					  /*$(".act_items > ul > li.hasdata").hover(function(){
+						  $(this).addClass("lipst")
+						  },function(){
+							  setTimeout($(this).removeClass("lipst"),200)
+							})*/
+					  var hasdiv=$(".act_items > ul:lt(3) > li.hasdata");
+					  var hidiv=hasdiv.find("div");
+					  var gtfdiv=$(".act_items > ul:gt(3) > li.hasdata");
+					  var gtxd=gtfdiv.find("div");
+					  var sdiv=$(".act_items > ul:eq(3) > li.hasdata");
+					  var eqxd=sdiv.find("div");
+					  hidiv.hide();
+					  eqxd.hide();
+					  gtxd.hide();
+					  hasdiv.hover(function(){
+						  $(this).children("div").slideToggle(200).addClass("dingwei");
+						  })
+					  gtfdiv .hover(function(){
+						   $(this).children("div").slideDown(200).addClass("dw");
+						  },function(){
+							   $(this).children("div").slideUp(200);
+							  }) 
+					  sdiv.hover(function(){
+						    $(this).children("div").slideToggle(200).addClass("dingwei");
+						  })
+					  if($(".hiddenceng > ul > li > b").html("")){
+						  
+						  $(".hiddenceng > ul > li > b").html("&nbsp;&nbsp;")
+					  }	  		  
+				 })
+             </script> 
+<div class="pagination">
+    {% paginate %}
+</div>
+{% endblock %}
+

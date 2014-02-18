@@ -1,0 +1,10 @@
+body{font-family:"Helvetica Neue", Ubuntu, "Hiragino Sans GB", "WenQuanYi Micro Hei","Microsoft YaHei","微软雅黑", sans-serif; font-size:12px; background-color:#f7f5f5;}
+.cb-info{ margin:0 auto; width:940px;}
+.cb-title{ font-size:20px; color:#555; margin:0;}
+.cb-content,.cb-data p{ padding:0; margin:0; line-height:2em; font-size:14px;}
+.cb-content span{ margin-right:0.5em; color:#0088cc;}
+.cb-content span em,.cb-data p span em{ font-style:normal; color:#F90; padding:0 4px;}
+.cb-data{ margin-bottom:15px;}
+.table tr .mt{ text-align:center;}
+.cb-data p span{ margin-right:0.5em; color:#454545;}
+#cbtable{ border-collapse:collapse;}

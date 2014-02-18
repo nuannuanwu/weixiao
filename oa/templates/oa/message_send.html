@@ -1,0 +1,266 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags umessages_tags pagination_tags %}
+{% block content %}
+ <script src="{{ STATIC_URL }}oa/js/jquery-1.9.1.js"></script>
+ <!--<script src="{{ STATIC_URL }}oa/js/jquery-migrate-1.2.1.js"></script>-->
+ <script type="text/javascript">
+    var jQ19 = $.noConflict(true); // JQ19
+</script> 
+<script src="{{ STATIC_URL }}oa/js/checkbox_mian.js"></script>
+<div class="main">
+     <div class="tab">
+     	<span>发消息</span>
+     	<a href="{% url oa_message_list %}">返回</a>
+     </div>
+     <div class="column">
+     	<div class="chat-form">
+            <form id="post_form"  class="send-wrap" method="POST">{% csrf_token %}
+                   <div id="class_hide" class="hide">
+                       {% for s in schools %}
+                                <input id="school_cache_{{s.id}}" sname="school_cache" rel="school_cache" type="hidden" alt="{{s.id}}" value="{% if doc %}{{s|get_document_user:doc}}{% endif %}">
+                        {% endfor %} 
+                    </div>  
+                <div class="selectp">
+                      <a href="javascript:;" class="rem-btn" id="clear">清空</a>
+                      <span style="height: 25px; display: inline-block;" class=" btn select-btn" id="receivers">选择收信人</span>
+                      <span style="display:none; color: red; " class="Validform_checktip Validform_wrong ">请选择收信人</span>  
+                  </div>
+                  <div class="selected-box">
+                        <div class="sl-title">已选名单</div>
+                        <div id="server_name" class="name-list">
+                            <ul style="overflow: hidden;"> 
+                            </ul> 
+                        </div>
+                  </div>
+                  <div class="edit-wrap">
+                        <div class="sl-title">内容</div>
+                        <div class="editword"> 
+                            <textarea id="Memo" class="m-content-ta" value='' name="body" placeholder="请输入内容" onKeyDown="gbcount(this.form.Memo,this.form.totals,this.form.useds,this.form.remains);" onKeyUp="gbcount(this.form.Memo,this.form.totals,this.form.useds,this.form.remains);"></textarea>
+                             <p class="set-msg">
+                                <input type="hidden" maxLength="4" id="totals" size="3" value="140" class="inputtext" /> 
+                                <input type="hidden" maxLength="4" id="useds" size="3" value="0" class="inputtext" /> 
+                                您还可以输入<span id="remains_text">140</span>字
+                                <input readonly type="hidden" maxLength="4" id="remains" value="140" />
+                             </p>
+                            <input id="post_bnt" disabled="disabled" type="button" value="发 送" class="btn btn-success pull-right" />
+                            <div class="send-seting">
+                                <label>{{form.toself}}&nbsp;&nbsp;同时发送给自己</label>
+                                <label>{{form.emergency}}&nbsp;&nbsp;紧急消息</label>
+                                <label class="settime"><input type="checkbox" />&nbsp;&nbsp;定时发送</label>
+                                {{form.timing|attr:"style:display:none"}}
+                            </div>
+                            <div class="set-time" >
+                                <div class="s-t-tip">
+                                    <p>发送时间：</p>
+                                     <div class="datatimeSelelct">
+                                         <input type="text" name="reg_time" readonly="readonly" class="selectdata" style=" cursor:pointer;" value="{% now "Y-m-d" %}" />
+                                        
+                                        <select id="shi"> 
+                                             <option value="{% now "G" %}">{% now "G" %}</option>
+                                            {% for h in hour %}
+                                                <option value="{{h|zfill:2}}">{{h|zfill:2}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span>时</span>
+                                        <select id="fen">
+                                             <option value="{% now "i" %}">{% now "i" %}</option>
+                                            {% for m in minite %}
+                                                <option value="{{m|zfill:2}}">{{m|zfill:2}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span>分</span> 
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                   </div>
+                  <div class="modal" id="myModal" style=" display:none;">
+                      <div class="modal-header">
+                             <!--<a class="close" data-dismiss="modal">×</a>--> 
+                             <input class="btn" style=" float: right; vertical-align: auto;" data-dismiss="modal" type="button" value=" 取 消 "/>
+                             <input style=" vertical-align: auto; margin-right: 30px; float: right;" id="server_role" type="submit" data-dismiss="modal" class="btn btn-success" value="保&nbsp;&nbsp;存" /> 
+                             <h3 style="margin-right: 200px;">选择收信人</h3> 
+                         </div>
+                         <div class="opendiv" id="content" style="padding:10px; " > 
+                            <div class="member">
+                                <p class="slt-title"><span>已选成员</span><a href="javascript:;" class="rem-btn">清空</a></p>
+                                <div id="data_panel" class="name-list" style="max-height: 60px; overflow-x: hidden; "> 
+                                    <ul>
+                                    </ul> 
+                                </div>
+                            </div> 
+                             <div id="data-up"> 
+                                 <span style="color:#616161; margin-left: 30px;" ><img src="{{ STATIC_URL }}oa/images/import.gif" />正在加载请稍等...</span>
+                             </div>
+                         </div>
+                      <div class="modal-footer" >
+                            <div class="sub-btn" style="height: 5px; margin: 0;">
+<!--                              <input id="server_role" type="submit" data-dismiss="modal" class="btn " value="确&nbsp;&nbsp;定" style="margin-right:20px" />
+                              <input type="button" data-dismiss="modal" class="btn" value="取&nbsp;&nbsp;消" />-->
+                            </div>
+                            <!--<p style="text-align:center; padding:0; margin:0;" > 
+                                <input type="hidden" id="user_id" value="{{user.id}}"> 
+                                <a id="server_role" class="btn btn-success" data-dismiss="modal" href="javascript:;">{% trans "Save" %}</a>
+                                <a class="btn " data-dismiss="modal" href="javascript:;">取消</a> 
+                           </p> -->
+                        </div>
+                  </div>
+              </form>
+	      </div>
+     </div>
+</div>
+<div id="cheak_dis" style="display:none;">
+   <ul> 
+   </ul>
+</div> 
+<input id="box_type" type="hidden" value="0" />  
+<script type="text/javascript"> 
+jQ19(function(){
+    $("#post_bnt").attr("disabled", true); 
+	var boxCheck= $("#userName"),//已选box 对象
+	strVal= ",";
+	boxCheck.find("input").each(function(k,v){  //存储以选对象id 到strVar
+		id = v.getAttribute('id');
+		$mms = $("#"+id);
+		strVal +=$mms.val()+',';
+ });
+ 
+ $("[name=judgment]").live('click',function(){//老师分类选择
+	var csName = $(this).attr('class');
+	if($(this).attr("checked")){
+		$(".box_"+csName).show();
+		$(".box_"+csName).siblings('.box').hide();
+	}  
+});
+  
+ $("#post_bnt").click(function(){
+    var len =$("#server_name ul li").length;
+      if(len>0){
+         $("#post_form").submit(); 
+      }else{
+         alert("请选择收信人");
+      } 
+});
+$("#receivers").click(function(e){ //添加成员面板数据、显示 
+        url = '{% url oa_message_set_receiver %}';
+        $('#myModal').modal('toggle'); 
+	if($("#box_type").val()==0){ 
+	    $.post(url,{},function(result){
+	        data = $.parseJSON(result); 
+	        $("#data-up").empty();
+	        $("#data-up").html(data.con);
+	        $("#box_type").val('1'); 
+	    }); 
+	} 
+});
+
+//选择学园
+var  schoolUserList = " ";
+var  userid = [];
+$(document).on('click' , "[alt=school_item]" ,function(){
+    $('.message_add_remind').show();
+    url = "{% url oa_message_set_receiver %}"
+    school_id = parseInt($(this).attr('rel'));  
+    cache = $("#school_cache_"+school_id).val(), 
+    userid = cache.split(','),
+    cacheuserid =userid.toString();
+    $.post(url,{sid:school_id,data:cacheuserid},function(result){
+        data = $.parseJSON(result);  
+        $("#data-up").empty();
+        $("#data-up").html(data.con);
+	    $("#box_type").val('1');
+    });  
+        schoolUserList = " ";
+        var boxAdd = $("#cheak_dis ul input"); 
+        $.each(boxAdd, function(k,v){  
+            boxId = parseInt(v.getAttribute("schoolid"));
+            dataId = parseInt(v.getAttribute('data-id'));
+            var index = $.inArray(dataId,userid);
+            //alert(boxId);
+            if(boxId == school_id){ 
+               schoolUserList +="<li>"+ $(this).parent('li').html()+"</li>";
+               if(index < 0){
+                    userid.push(dataId);
+                } 
+               $(this).parent('li').remove(); 
+            }
+        });  
+        //alert(schoolUserList + "schoolUserList")
+        var addUserHtml=$("#data_panel ul").html(); 
+        //alert(addUserHtml);
+        //schoolUserList = $("#cheak_dis ul").html();
+        $("#cheak_dis ul").append(addUserHtml);
+        $("#data_panel ul").empty();
+        $("#data_panel ul").append(schoolUserList);
+        $("#school_cache_"+school_id).val(userid);
+});
+ 
+$(".rem-btn").on('click',function(){ //删除全部已选成员 
+	 $(".name-list ul").html("");
+	 $('[type="checkbox"]:checked').prop('checked', false);
+ });
+
+$("#server_role").live('click',function(){//保存选中
+//	var serverChecked =$("#data_panel ul").html();
+//	$("#server_name ul").html("");
+//	$("#server_name ul").append(serverChecked);
+         var serverEndbox = $("#data_panel ul").html();
+         var cacheChecked = $("#cheak_dis ul").html();
+//        $("#cheak_dis ul").append(serverEndbox);
+//        var serverChecked =$("#cheak_dis ul").html(); 
+        $("#server_name ul").empty();
+        $("#server_name ul").append(serverEndbox+cacheChecked);
+        //alert(serverChecked )
+});
+
+$(".set-time").hide();
+$(".settime").click(function(){//设置时间 
+	if($(this).children("input").attr("checked")){
+		$(".set-time").slideDown();
+	}else{
+		$(".set-time").slideUp();
+	}
+}) 
+$("#Memo").keyup(function(){//输入框键盘事件
+	var len = $("#Memo").val();
+	if(len==""){
+		$("#post_bnt").attr('disabled',true);
+	}else{
+		$("#post_bnt").attr('disabled',false);
+	}
+});
+$("#Memo").focus(function(){ 
+        var _this = $(this);
+        tt = setInterval(function(){_this.keyup()},100);
+    }).blur(function(){
+        clearInterval(tt);
+    }); 
+
+//日期选择 
+$(".selectdata").datepicker({dateFormat: 'yy-mm-dd',changeYear: true}); 
+$(function(){
+	$(".selectdata").change(function(){
+		var year = $(this).val();
+		var s = $("#shi").val();
+		var f = $("#fen").val();
+		$("#id_timing").attr("value",year+"\u0020"+s+":"+f);
+	})
+	$("#shi").change(function(){
+		var shi = $(this).val();
+		var n = $(".selectdata").val();
+		var f = $("#fen").val();
+		$("#id_timing").attr("value",n+"\u0020"+shi+":"+f);
+	})
+	$("#fen").change(function(){
+		var fen = $(this).val();
+		var n = $(".selectdata").val();
+		var s = $("#shi").val();
+		$("#id_timing").attr("value",n+"\u0020"+s+":"+fen);
+	})
+    }) 
+})
+
+</script>
+{% endblock %}
+
+

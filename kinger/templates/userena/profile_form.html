@@ -1,0 +1,34 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n bootstrap %}
+
+{% block title %}{% trans "Account setup" %}{% endblock %}
+
+{% block content_title %}<h2>{% blocktrans with profile.user.username as username %}Account &raquo; {{ username }}{% endblocktrans %}</h2>{% endblock %}
+
+{% block content %}
+<form action="" enctype="multipart/form-data" method="post" class="form-horizontal">
+  <div class="nav-tabs" style="margin-bottom: 10px"><h4>个人资料设置</h4></div>
+  {% csrf_token %}
+  <fieldset>
+    {# <legend>{% trans "Edit Profile" %}</legend> #}
+    {{ form|bootstrap}}
+  </fieldset>
+  <div class="form-actions" style="background: none; border: none">
+    <input type="submit" class="btn btn-primary" value="{% trans "Save changes" %}" />
+  </div>
+</form>
+<style>
+	#id_mugshot{width:220px;font-size:9pt;}
+</style>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/plugins/formValidator-4.1.3.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/plugins/formValidatorRegex.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.formValidator.initConfig({formID:"form1",theme:"ArrowSolidBox"});
+		$("#id_identification").formValidator({onFocus:"请输入邮箱地址或用户名"}).inputValidator({min:1,onError:"不能为空"});
+		$("#id_password").formValidator({onShow:"请输入密码",onFocus:"至少6位长度",onCorrect:"密码合法"}).inputValidator({min:6,empty:{leftEmpty:false,rightEmpty:false,emptyError:"密码两边不能有空符号"},onError:"密码不能为空,请确认"});
+	})
+</script>
+{% endblock %}

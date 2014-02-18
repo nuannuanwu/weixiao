@@ -1,0 +1,92 @@
+{% load i18n kinger_tags %}
+<div class="form-horizontal form-kPicCon">
+<form action="{{action_url}}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} id="id_form">{% csrf_token %}
+        <div class="control-group">
+            <div class="control-label hidden-clean-label">                
+                {% if class %}
+                <a href="{% url manage_class_view class.id %}" title="{{ class.description }}">
+                    <img id="myimg" src="{% media_path class.logo "big" %}" alt="">
+                </a>
+                {% else %}
+                <a>
+                   <img id="myimg" src="{{ STATIC_URL }}img/avatar_128.png" width="140" height="140" />
+                </a>
+                {% endif %}
+                <div id="fileb" class="imghidden">{{ form.logo }}</div>
+                <a class="btn hidden" id="change_img" onclick="document.getElementById('id_logo').click();">选择图片</a>
+                <span class="help-inline" id="id_logo_error"></span>
+            </div>
+            <div class="controls controls_rank">			
+                       <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.name.label }}</span>
+                            {{ form.name }}
+                            <span id="id_nameTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.name.help_text }}</p>
+                        </div>  
+                         <div class="controls-tipInput">
+                            <span class="tipInput-tip" id="tip-Tip">{{ form.description.label }}</span>
+                            {{ form.description }}
+                         
+                            <span id="id_descriptionTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.description.help_text }}</p>
+                        </div>
+                        <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.grade.label }}</span>
+                            {{ form.grade }}
+
+                            <span id="id_gradeTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.grade.help_text }}</p>
+                        </div>
+                        <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.year.label }}</span>
+                            {{ form.year }}
+
+                            <span id="id_yearTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.year.help_text }}</p>
+                        </div>
+                        <div class="controls-tipInput">
+                            <span class="tipInput-tip">{{ form.sn.label }}</span>
+                            {{ form.sn }}
+
+                            <span id="id_snTip" style="display: inline-block;width:250px;height:30px;vertical-align:top;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></span>
+                            <p class="help-block">{{ form.sn.help_text }}</p>
+                        </div>                          
+              </div>
+        </div>
+        <div class="form-actions">
+            <input class="btn btn-success" type="button" name="" value="{% trans "Save" %}" onclick="checkSubmit()">
+            <input type="button" class="btn btn_w" onclick="history.back(-1);"value="{% trans "Cancel" %}" />
+        </div>
+        {% if class %}
+        <div class="control-group control_separate">
+            <div class="controls">
+                <a href="{% url manage_class_delete class.id %}" title="删除这个班" class="a_confirm_link btn btn-danger">&nbsp;&nbsp;&nbsp;<i class="icon-trash icon-white"></i>&nbsp;{% trans "Delete" %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>               
+            </div>
+        </div>
+        {% endif %}
+    </form>
+</div>
+<script type="text/javascript">
+ $(function(){
+  if ($.browser.msie){
+		  $("#fileb").removeClass("imghidden");
+	 }else{
+		  $("#change_img").removeClass("hidden");
+	}
+   $("#fileb").children("#id_logo").change(function(){
+	         previewImage(this,'myimg')
+   })
+  function previewImage(file,imgId){  
+           if (file.files && file.files[0]){  
+               var img = document.getElementById(imgId);  
+               var reader = new FileReader();  
+               reader.onload = function(evt){img.src = evt.target.result;}  
+               reader.readAsDataURL(file.files[0]);  
+           }else{  
+               file.select();  
+               var src = document.selection.createRange().text;  
+               $("#"+imgId).attr("src",src);
+           }  
+  } 	
+ })	
+</script>

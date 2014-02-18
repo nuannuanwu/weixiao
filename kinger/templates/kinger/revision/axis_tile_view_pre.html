@@ -1,0 +1,108 @@
+{% load i18n kinger_tags comments pagination_tags %} 
+<div id="tile" style="background-color: white;"> 
+     <div class="box_sidebar" style="zoom:1; ">
+         <div class="sidebar_content" style="position: relative;">
+            {% include "kinger/revision/includes/comment_form.html" %} 
+         </div>
+           <!--评论列表-->
+            <div id="faceBG_tile" class="faceBG_W" style=" ">
+               <div class="facebox">
+                   <div class="facej facej_2"></div>
+                   <ul>
+                   </ul>
+               </div>
+            </div>
+    </div>
+    <div class="box_main" style=" position: relative; background-color: #f1f1f1; padding: 10px 20px;"> 
+        <div  style=" position: relative; background-color: #efefef;">
+            <!--标题-->
+            {% if channel != "baby" and tile.is_tips != 0 %}
+            <div class="comment" style=" padding: 5px 20px; background: #f1f1f1; ">  
+               <div class="theme_title"><span>[{{tile.new_category.name}}]</span>{{tile.title}}</div>
+               <div>
+                   <span style="float: left; margin-right: 5px;">来自</span> 
+                   <a style="float: left; margin-right: 5px;" rel="namecard" data-uid="{{tile.creator_id}}" href="javascript:;"> {{tile.creator.get_profile.chinese_name_or_username}}</a >
+                   <span>{{ tile.pub_time|date:"Y年m月d日 G:i" }}</span> 
+               </div> 
+           </div>
+            {% endif %}
+           <!--/标题-->
+            <div class="pic_box" style="position: relative; min-height: 500px;"> 
+                <!--评语等内容--> 
+                <div class="kDetail-record" style=" " >
+                    {% if tile.is_report %}
+                    <div class="kDailyItems cf">
+                        <span class="kDailyItem-date">
+                            {{tile.pub_time.day}}
+                        </span>
+                        <div class="kDailyItem cf">
+                            <div class="kDailyItem-icon kSt_{{tile.type_id}}">
+                                <span class="kSt_Img"></span>
+                            </div>
+
+                            <div class="kDailyItem-con" >
+                                <h2>{{tile.title}}</h2>
+                                <p>{{tile.description}}</p>
+                            </div>
+                        </div>
+                    </div> 
+                    {% endif %}
+                    <!--评语等内容-->
+                    <!--文字内容--> 
+                    {% if tile.new_type_id == 4 %}
+                    <div class="tell_box">
+                        <div class="tell_conent">
+                            {{tile.content|code_to_img|safe}}
+                        </div>
+                    </div> 
+                    {% endif %}
+                    <!--文字内容-->
+                    <!--图片内容-->
+                    {% if not tile.is_report and not tile.new_type_id == 4 %}  
+                        <img src="{% media_path tile.img "img_large" %}" alt="" > 
+                    {% endif %}
+                    <!--图片内容-->
+                </div>
+                {% if not tile.is_report %}
+                <div class="assess" style=" display: none; position: fixed; top:80px; right:40%;"> 
+                    <a class="external_link border_r" rel="comment_input" href="javascript:;" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}&for_comment=1"><span><i class="pic external"> </i></span> <span>评论</span></a>
+                    <a rel="likeable"  data-href="{% url api_web_tiles_like_rev %}" href="javascript:;" data-id="{{tile.id}}" data-tips="{{tile.is_tips}}"><span><i class="pic {% if tile|liked_by_user:request.user %}like{% else %}no_like {% endif %}"></i></span ><span class="like_type">{% if tile|liked_by_user:request.user %}取消喜欢{% else %}喜欢{% endif %}</span></a>
+                </div>
+                {% endif %}
+                {% if channel == "baby" %}
+                <div class="comment" style=" margin: 10px 10px; padding-left: 10px;">  
+                    <div style=" float: left;">
+                        <span style="float: left; margin-right: 5px;">来自</span> 
+                        <a style="float: left; text-align: left; margin-right: 5px;" rel="namecard" data-uid="{{tile.creator_id}}" href="javascript:;"> {{tile.creator.get_profile.chinese_name_or_username}}</a >
+                    </div>
+                    <div class="pic_comment" style=" margin-left: 120px; text-align: left;" rel="picComment" >&nbsp;
+                        {% if not tile.is_report %}
+                            <span>{{tile.description|truncatestr:":40"|safe}}</span>
+                            <input class="input_textarea" width="500px" type="text" name ="" value="{{tile.description|safe}}"/> 
+                        {% endif %}
+                    </div> 
+                    {% if tile.new_type_id != 4 %}
+                        <div style="text-align: left;"> 
+                            <span>{{ tile.pub_time|date:"Y年m月d日 G:i" }}</span>
+                            {% if tile.creator_id == request.user.id %} 
+                            &nbsp;<a rel="delete_tile" href="javascript:;" data-href="{% url axis_delete_tile tile.id %}">删除</a><span>&nbsp;|&nbsp;</span>
+                            <a id="upDatecomment" href="javascript:;">修改</a>
+                            <a id="serverDatecomment" style="display: none;" href="javascript:;" rel="{{tile.id}}" data-href="{% url axis_edit_tile_description %}">保存</a>
+                            <span style="display: none;" class="line_nav">&nbsp;|&nbsp;</span>
+                            <a id="resetComment" style="display: none;" href="javascript:;">取消</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %} 
+                <div class="kpicInfo-pic" style=" padding:0 20px 10px 20px; margin-bottom: 0; margin-left: 35px;">
+                     {% if tile.is_tips != 0 %}
+                        {% if tile.is_content %}
+                            {{tile.content|code_to_video|safe}}
+                        {% endif %}
+                    {% endif %} 
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>

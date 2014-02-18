@@ -1,0 +1,191 @@
+{% extends "layout.html" %}
+{% load uni_form_tags %}
+
+{% block title %}{{ client.name }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ client.name }}</h1>
+
+{% if error_description %}
+<div class="error_container">
+	<p>{{ error_description }}</p>
+</div>
+{% endif %}
+
+<div class="content_container">	
+<br/>
+    {% if client %}
+<h2>测试客户端</h2>
+        <table class="table">
+            <tr><td></td><td></td><td></td></tr>
+            <tr><td>client_id</td><td>{{client.key}}</td><td></td></tr>
+            <tr><td>client_secret</td><td>{{client.secret}}</td><td></td></tr>
+        </table>
+<h2>接口文档</h2>
+<table class="table" border="0" cellspacing="0" cellpadding="0" style="width:100%">
+<tbody><tr>
+<th class="wiki_table_thfirst" style="width:180px">接口 
+</th><th>说明
+</th></tr>
+<tr>
+<td class="wiki_table_tdfirst"><a href="#" title="Oauth2/authorize">OAuth2/authorize</a>
+</td><td>请求用户授权Token
+</td></tr>
+<tr>
+<td class="wiki_table_tdfirst"><a href="#" title="OAuth2/access token">OAuth2/access_token</a>
+</td><td>获取授权过的Access Token
+</td></tr>
+</tbody></table>
+
+
+<p>接口请参照 <a href="http://open.weibo.com/wiki/Oauth2">新浪oauth2</a> </p>
+
+
+
+<h2>测试接口</h2>
+<table class="table" border="0" cellspacing="0" cellpadding="0" style="width:100%">
+<tbody><tr>
+<th class="wiki_table_thfirst" style="width:180px">接口 
+</th><th>说明
+</th></tr>
+<tr>
+<td class="wiki_table_tdfirst"><a href="#" title="api/users/show">api/users/show</a>
+</td><td>请求用户信息
+</td></tr>
+</tbody></table>
+
+
+<h2>模拟操作</h2>
+
+<table class="table" border="0" cellspacing="0" cellpadding="0" style="width:100%">
+<tbody><tr>
+<th class="wiki_table_thfirst" style="width:180px">字段
+</th><th>说明
+</th></tr>
+<tr>
+<td class="wiki_table_tdfirst"><a href="#" title="api/users/show">username</a>
+</td><td>u2
+</td></tr>
+<tr>
+<td class="wiki_table_tdfirst"><a href="#" title="api/users/show">password</a>
+</td><td>123456
+</td></tr>
+</tbody></table>
+
+<p>1.获取token</p>
+<pre>{{url1 }}</pre>
+<p>返回值:{{response1.content}}</p>
+<div class="alert alert-info">
+    当使用app调用接口时，需要在http request的 Header附加 一个特殊值<br/>
+     <strong>HTTP_AUTHORIZATION</strong>
+    值为：<span class="label label-important"> "Basic " + b64encode(client.key + ":" + client.secret)</span>
+</div>
+<p>2. 使用获得的OAuth2.0 Access Token调用API</p>
+<p>请求用户信息</p>
+<pre>{{url2 }}</pre>
+<p>返回值:{{response2.content}}</p>
+
+
+
+
+    {% endif %}
+    
+<div class="progress">
+        <div class="bar" style="width: 60%;"></div>
+      </div>
+	{% if access_tokens %}
+    <h2>历史获得token值</h2>
+	<p>This client has been issued the following access tokens. Click the refresh token button to make a refresh request.</p>
+	<table class="data">
+			<tr>
+				<th>Token</th>
+				<th>Refresh Token</th>
+				<th>Expire</th>
+				<th>Scope</th>
+				<th>Refreshable</th>
+			</tr>
+		{% for token in access_tokens %}
+			<tr>
+				<td>{{ token.token }}</td>
+				<td>
+					<form method="post" action="/oauth2/token" class="authenticate">
+						<input type="hidden" name="grant_type" value="refresh_token" />
+						<input type="hidden" name="refresh_token" value="{{ token.refresh_token }}" />
+						<input type="hidden" name="client_id" value="{{ token.client.key }}" />
+						<input type="hidden" name="scope" value="{% for access_range in token.scope.all %}{{ access_range.key }} {% endfor %}" />
+						<input type="submit" value="{{ token.refresh_token }}"/>
+					</form>
+				</td>
+				<td>{{ token.expire }}</td>
+				<td>
+					{% for access_range in token.scope.all %}
+						{{ access_range.key }}
+					{% endfor %}
+				</td>
+				<td>{{ token.refreshable }}</td>
+			</tr>		
+		{% endfor %}
+	</table>
+	{% else %}
+	<p>This client has no access tokens.</p>
+	{% endif %}
+	
+	{% if codes %}
+	<p>This client has been issued the following authorization code. Click the authorize code button to make an authorization request.</p>
+	<table class="data">
+			<tr>
+				<th>Key</th>
+				<th>Expire</th>
+				<th>Scope</th>
+			</tr>
+		{% for code in codes %}
+			<tr>
+				<td>
+					<form method="post" action="/oauth2/token" class="authenticate">
+						<input type="hidden" name="grant_type" value="authorization_code" />
+						<input type="hidden" name="code" value="{{ code.key }}" />
+						<input type="hidden" name="redirect_uri" value="{{ code.redirect_uri }}" />
+						<input type="hidden" name="client_id" value="{{ code.client.key }}" />
+						<input type="submit" value="{{ code.key }}"/>
+					</form>
+				</td>
+				<td>{{ code.expire }}</td>
+				<td>
+					{% for access_range in code.scope.all %}
+						{{ access_range.key }}
+					{% endfor %}
+				</td>
+			</tr>		
+		{% endfor %}
+	</table>
+	{% else %}
+	<p>This client has no authorization codes.</p>
+	{% endif %}
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('form.authenticate').submit(function(e){
+				e.preventDefault();
+				var values = {};
+				$.each($(this).serializeArray(), function(i, field) {
+				    values[field.name] = field.value;
+				});
+				$.ajax({
+					url: this.action,
+					data: values,
+					dataType: "jsonp",
+					beforeSend: function(xhr){
+					    xhr.setRequestHeader("Authorization", "{{basic_auth}}")
+					},
+					success: function(data) {window.location.reload();}
+				});
+			});
+		});
+	</script>
+
+</div>
+
+	
+
+{% endblock %}

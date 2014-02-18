@@ -1,0 +1,68 @@
+{% extends 'kinger/base.html' %}
+{% block content %}
+<link href="{{ STATIC_URL }}kinger/css/intro.css" rel="stylesheet" />
+<style>
+    #body { background: url(../img/paper.jpg) repeat scroll 0 0 #F7F5F5; padding-top: 60px; }
+</style>
+<div id="Client"></div>
+<div class="kintro span12">
+  <h1 class="chzh"><span class="introBG">记忆童年是什么?</span></h1>
+  <div class="w-growup">
+     <div class="intro-text1">
+        <h2 class="introBG">记忆童年是宝宝校园生活的网络日志</h2>
+        <p>你可以看到孩子在学校的一切动态，你可以了解教育知识，写上自己的留言。</p>
+     </div>
+     <img src="{{ STATIC_URL }}kinger/img/intro_img1.png" width="370" height="268" alt="成长是什么"  class="w-img"/>
+  </div>
+  <h1 class="chzh"><span class="introBG ibg">记忆童年怎么用？</span></h1>
+  <div class="w-growup">
+     <div class="intro-text2">
+        <h3>Step1&nbsp;&nbsp;&nbsp;浏览</h3>
+        <p>浏览丰富的成长内容，里面记载着众多宝宝的成长事迹和教育信息。</p>
+     </div>
+     <img src="{{ STATIC_URL }}kinger/img/intro_img2.png" width="425" height="270" alt="成长怎么用？" class="h-img" />
+  </div>
+  <div class="w-growup">
+     <div class="intro-text2">
+        <h3>Step2&nbsp;&nbsp;&nbsp;交流</h3>
+        <p>对你感兴趣的内容进行收藏和评论，与更多宝宝家长交流。</p>
+     </div>
+     <img src="{{ STATIC_URL }}kinger/img/intro_img3.png" width="425" height="270" alt="成长怎么用？" class="h-img" />
+  </div>
+  <div class="w-growup">
+     <div class="intro-text2">
+        <h3>Step3&nbsp;&nbsp;&nbsp;互动</h3>
+        <p>与老师沟通，给我们建议。互动中一起成长。</p>
+     </div>
+     <img src="{{ STATIC_URL }}kinger/img/intro_img4.png" width="425" height="270" alt="成长怎么用？" class="h-img" />
+  </div>
+  <div class="f-growup">
+     <div class="l-gorwup">
+        <img src="{{ STATIC_URL }}kinger/img/glogo.png" width="120" height="120" alt="成长" />
+        <h4>微校客户端</h4>
+     </div>
+     <div class="m-gorwup">
+        <p class="pinfo introBG">记忆童年与您一起见证孩子的点滴每一天，随时随地的校园动态，科学专业的教育业信息。</p>
+        <ul>
+           <li>展示宝宝在校园的一切动态</li>
+           <li>为宝宝建立成长档案</li>
+           <li>发布专业教育信息</li>
+           <li>提供家长与老师的交流平台</li>
+        </ul>
+     </div>
+     <div class="r-gorwup" id="appD">
+        <a href="http://app.hopejy.cn/jytn" target="_blank" class="iph introBG">iphone</a>
+        <p>与iPad兼容。需要5.0或更高版本。</p>
+        <a href="http://app.hopejy.cn/jytn_android" target="_blank" class="andr introBG">android</a>
+        <p>适用于安卓2.0以上版本。</p>
+     </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){
+  $('#Client').click(function(){
+    $('html,body').animate({scrollTop:$('#appD').offset().top}, 800);
+  });
+})
+</script>
+{% endblock %}

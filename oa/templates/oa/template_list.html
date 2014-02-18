@@ -1,0 +1,56 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="main">
+    <div class="tab"><span>更换模板</span><a href="javascript:;">使用</a><!-- <a href="{% url oa_change_template 1 %}">使用</a> --></div>
+  	<div class="column">
+            <ul id="template_list">
+                <li>
+                    <img src="{{ STATIC_URL }}oa/images/temp.jpg"/> 
+                    <div class="info_box" >
+                        <label style="float: right; margin-left: 0; " class="radio" style="margin-top: 5px;"> 
+                            <input type="radio" value="0"  name="t" checked="checked" /> 预览 
+                        </label>
+                         <div style="margin-right: 20px;">儿童节主题</div>
+                    </div>
+                </li> 
+                <li>
+                    <img src="{{ STATIC_URL }}oa/images/temp.jpg"/>
+                    <div class="info_box">
+                         <label style="float: right; margin-left: 0; " class="radio" style="margin-top: 5px;"> 
+                              <input type="radio" value="0"  name="t" checked="checked" />  
+                              预览 
+                         </label>
+                          <div style="margin-right: 20px;">儿童节主题</div>
+                     </div>
+                </li>
+                <li>
+                   <img src="{{ STATIC_URL }}oa/images/temp.jpg"/>
+                   <div class="info_box">
+                        <label style="float: right; margin-left: 0; " class="radio" style="margin-top: 5px;"> 
+                             <input type="radio" value="0"  name="t" checked="checked" />  
+                             预览 
+                        </label>
+                         <div style="margin-right: 20px;">儿童节主题</div>
+                    </div>
+                   </li>
+             {% for t in templates %}
+             <li>
+                <img src="{{t.img}}">
+                <div class="info_box">
+                    <label style="float: right; margin-left: 0; " class="radio" style="margin-top: 5px;"> 
+                         <input  type="radio" value="{{t.id}}" name="t" {% if t.is_show %}checked="checked"{% endif %} >  
+                         预览
+                    </label>
+                    <div style="margin-right: 20px;">{{t.title}}</div>
+                </div>
+<!--           {{t.title}}
+                <input type="checkbox" value="{{t.id}}" name="t" {% if t.is_show %}checked="checked"{% endif %} >-->
+             </li>	
+                {% endfor %}
+            </ul>
+  	</div>
+<div>
+<script>
+
+{% endblock %}

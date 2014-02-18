@@ -1,0 +1,102 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<style type="text/css">
+.main .column p label {
+    float: left; font-size: 13px; margin-top: 5px; width: 65px; }
+</style>
+<div class="main">
+      <div class="tab"><span>物资详情</span><a class="tbbtn" href="{% url oa_supply_index %}">返回</a></div>
+      <div class="column">
+          <div class="form-horizontal form-kPicCon"> 
+              <form id="post_form" class="registerform" action="" method="post">{% csrf_token %}
+                    <input type="hidden" value="{{school.id}}" name="school">
+                    <div class="uers-info"> 
+                        <p {% if not request.user|is_agency_user %}style="display:none;"{% endif %}> 
+                            <label>所属机构*:</label> 
+                            <select id="id_school" style="width: auto;" name="school"  datatype="*" errormsg="" nullmsg="请选择机构">  
+                                {% for s in schools %}
+                                <option value="{{s.id}}" {% if sid == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                                {% endfor %}
+                            </select><span id="id_schoolTip" class="erro-tips">{{form.school.errors|striptags}}</span>
+                         </p>
+                         <p>
+                             <label> 物资名称*: </label>
+                             {{form.name|attr:"class:span2"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入物资名称"}}
+                             &nbsp;<span class="erro-tips">{{form.name.errors|striptags}}</span>
+                          </p>
+                         <p>
+                              <label>物资类别*:</label>
+                                {{ form.category|attr:"style:width: auto"|attr:"datatype:*"|attr:"errormsg:"|attr:"nullmsg:请填选择物资类别"}}
+                          </p>
+                         <p>
+                             <label>总量:</label><span>{{form.num.value}}</span>
+                             {{form.num|attr:"class:hide"}}
+                         </p>
+                         <p>
+                             <label>库存提醒:</label>{{form.min|attr:"class:span1"}} <span class="remind_info"> 请填写数量,当物资数量小于或等于填写数量时,系统会自动给出提醒</span>
+                         </p>
+                         <p>
+                            <label>更新时间:</label><span>{{supply.mtime|date:"Y-m-d H:i"}} &nbsp;</span> 
+                         </p>
+                         <p>
+                            <label>物资状态:</label><span>{% if supply.is_show %}启用{% else %}禁用{% endif %}&nbsp;</span> {{form.is_show|attr:"class:hide"}}
+                         </p>  
+                         <p>
+                              <label>备注:</label>
+                                {{ form.remark|attr:"class:span6"|attr:"style:height:80px" }}
+                          </p>
+                          <p><label>物资记录:</label><a href="{% url oa_supply_record_index %}?q={{supply.name}}&qty=1">点击查看</a></p>
+                     </div> 
+                     <p> 
+                        <label>&nbsp;</label>
+                        <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+                        <!--<input class="btn" style=" margin-left:15px;" type="reset"  value="取 消"/>-->
+                         <a class="btn" href="{% url oa_supply_index %}" style=" margin-left:28px;">取 消</a>
+                     </p> 
+             </form> 
+         </div>
+     </div>
+</div> 
+<script> 
+   //表单验证 
+   $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             } 
+	});
+}); 
+
+$("#id_school").change(function(){ 
+    var sid = $(this).val();
+    if(sid){
+        url = "{% url oa_supply_school_realtes %}";
+        $.get(url,{school_id:sid},function(result){
+            data = $.parseJSON(result);
+            $("#id_category").html('<option value="">--物资类别--</option>');
+            var cats = data.categorys;
+            var htmls = ''
+            for(var i=0;i<cats.length;i++){
+                htmls += '<option class="optgroup" value="' + cats[i].pid + '" class="optgroup">' + cats[i].pname + '</option>'; 
+                sub = cats[i].member; 
+                for(var j=0;j<sub.length;j++){  
+                  htmls += '<option value="' + sub[j].sid + '">&nbsp;&nbsp;&nbsp;' + sub[j].sname + '</option>'; 
+                } 
+            } 
+            $("#id_category").append(htmls); 
+            cat_id = {{supply.category_id|default:0}};
+            if(cat_id){
+                $("#id_category ").val(cat_id);
+            }
+        }); 
+    } 
+});
+$("#id_school").change();
+  
+</script>
+{% endblock %}

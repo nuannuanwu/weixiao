@@ -1,0 +1,18 @@
+{% load i18n kinger_tags oa_tags%}
+<h5>角色可访问 <a style="font-size:14px;" rel="{{role.id}}" class="close" href="javascript:;">X</a></h5>
+</dl>
+ <dl>
+{% if agency %}
+    {% for p in agency %}
+        <dt>{{p.parent}}</dt>  
+            <dd style="word-wrap: break-word; word-break: normal; width: 580px;">
+                {% for s in p.sub_roles %}
+                    <span>{{ s.name }}&nbsp;</span>
+                {% endfor %}
+            </dd>
+     {% endfor %}
+    </dl>
+{% else %}
+   <div>(无)</div>
+{% endif %}
+</dl> 

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load kinger_tags %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/plugins/themes/ArrowSolidBox/style/fix.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ STATIC_URL }}kinger/plugins/formValidator-4.1.3.min.js"></script>
+<script src="{{ STATIC_URL }}kinger/plugins/formValidatorRegex.js"></script>
+{% endblock %}
+
+{% block content %}
+<style type="text/css">
+.pwdBack-title{ color: #555; font-weight: normal; margin: 15px 0}
+.pwdBackBody ul.nav > li { width: 50%; text-align: center;}
+.nav-body{ margin: -20px 2px 0 0; padding-top: 50px; border: 1px solid #DDD;  border-top: none; background-color: #FFF;-moz-border-radius: 0 0 4px 4px; -webkit-border-radius: 0 0 4px 4px; border-radius:0 0 4px 4px;}
+.kTips{ background:#FBFCFC; font-size: 13px; margin-top: 75px; }
+.kTips h5{ color: #666; margin: 0; padding-bottom: 5px;}
+.kTips hr{margin: 0}
+.kTips-body{padding: 10px 0; padding-left: 160px}
+.kTips-body ul {margin-bottom: 0}
+.kBtnGet{ display: inline-block; font-size: 14px; vertical-align: middle; color: #333; padding: 0 10px; margin-left: 1px; text-align: center; line-height: 28px; background: #FBF6D1; border: 1px solid #BFB4B1; cursor: pointer; }
+.kBtnGet:hover{ text-decoration: none;}
+
+.nav-tabs-mail .icon, .nav-tabs-phone .icon{ display: inline-block; background: url({{ STATIC_URL }}kinger/img/kinger/pwd_back.png) no-repeat; width:25px; height:25px; vertical-align: middle;margin-right: 5px }
+.nav-tabs-mail .icon{background-position: 0 1px}
+.nav-tabs-phone .icon{background-position: -43px 0;}
+
+.help-inline { vertical-align: top !important;}
+</style>
+
+<div id="pwdBack" class="span12">
+	<h4 class="pwdBack-title">密码取回</h4>
+	<div class="pwdBackBody">
+		<ul class="nav nav-tabs">
+		  <li class="{% if mail %} active {% endif %}"><a href="{% url kinger_pwd_back_mail %}" class="nav-tabs-mail " ><span class="icon"></span>通过邮箱</a></li>
+		  <li class="{% if mobile %} active {% endif %}"><a href="{% url kinger_pwd_back_mobile %}" class="nav-tabs-phone"><span class="icon"></span>通过手机短信</a></li>		  
+		</ul>		
+		<div class="nav-body">
+			{% block pwd_back_main %}{% endblock %}
+			{% block pwd_back_form %}{% endblock %}
+			{% block pwd_back_tips %}{% endblock %}
+		</div>
+	</div>	
+</div>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate teachers 50 %}
+<div class="main">
+      <div class="tab">
+          <span>职员管理 <i style="font-style:normal" title="查询总数">({{count}})</i></span>
+          <a class="btn" href="{% url oa_teacher_create %}"><i class="add_btn">&nbsp;</i>添加</a>
+          <a class="btn" href="{% url oa_teacher_batch_import %}">批量导入</a>
+      </div> 
+      <div class="column">
+           <p>
+               <form class="form-inline" action="{% url oa_teacher_list %}" method="GET">
+                    <select class="span2" style="width:auto;" name="s" value="{{s}}">
+                        <option {% if not s %} selected="selected" {% endif %} value="0"> --所有机构-- </option>
+                        {% for school in schools %}
+                            <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">{{school.name}}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="span2" style="width:auto;" name="t" value="{{t}}">
+                        <option {% if not t %}selected="selected"{% endif %} value="-1"> --所有状态-- </option>
+                        {% for status in states %}
+                            <option {% if status.0 == t %} selected="selected" {% endif %} value="{{status.0}}">{{status.1}}</option>
+                        {% endfor %}
+                    </select> 
+                    <input type="text" name="n" id="keyW" style="width:85px;" value="{% if n == '' %}{% else %}{{n}}{% endif %}" placeholder="姓名">
+                     
+                    <input type="text" name="p" id="keyW_1"  style="width:110px; display:none" value="{% if p == '' %}{% else %}{{p}}{% endif %}" placeholder="电话号码">
+				     
+                    <input type="text" name="a" id="keyW_2" style=" width:85px; display:none; " value="{% if a == '' %}{% else %}{{a}}{% endif %}" placeholder="登录帐号">
+                     	 
+                    <button rel="btn" type="submit" class="btn" style="">{% trans "Search" %}</button> 
+                     <a class="search_more"  id="search_more" href="javascript:;">高级搜索 </a>
+                </form>
+            </p>
+             <div class="list">
+                 <form class="form-inline" id="form_post" onsubmit="return check()" action="" method="POST">{% csrf_token %}
+                    <table>
+                        <tr align="center">
+                            <th width="110" scope="col">姓名</th>
+                            <th width="130" scope="col">机构</th>
+                            <th width="80" scope="col">部门</th> 
+                            <th width="80" scope="col">职务</th>
+                            <th width="80" scope="col">登录帐号</th>
+                            <th width="70" scope="col">电话号码</th>
+                            <th width="40" scope="col">状态</th>
+                            <th width="70" scope="col">是否园长</th>
+                        </tr>
+                        {% if not teachers|is_empty_list %}
+                           <tr>
+                               <td align="center" colspan="7" style=" font-size: 18px; color: #cecece;">
+                                   <h4 class="not_date"> 暂无数据</h4>
+                               </td>
+                           </tr>
+                         {% else %}
+                        {% for t in teachers %}
+                            <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                                <td>
+                                    <input type="checkbox" value="{{t.id}}" rel="role" name="start_pks">
+                                    <a href="{% url oa_teacher_update t.id %}" title="{{t.name}}">{{t.name|default:'修改名称'}}</a>
+                                </td>
+                                <td>{{t.school}}</td>
+                                <td>{{t.postjob.department|default:''}}</td>
+                                <td>{{t.postjob.position|default:''}}</td>
+                                <td>{{t.user.username}}</td>
+                                <td>{{t.user.get_profile.mobile}}</td>
+                                <td>{{t.postjob.state}}</td>
+                                <td>{% if t|user_is_school_admin %}是{% else %}否{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            <tr>
+                                 <td colspan="8">
+                                    <input type="checkbox" rel="checkall"> 
+                                    <select id="commit_type" name="operate" style="margin-bottom: 0;" class="span2">
+                                        <option value="-1">--批量操作--</option>
+                                        <option value="2">删除所选</option>
+                                        <option value="0">在职</option>
+                                        <option value="1">离职</option>
+                                        <option value="3">设为园长</option>
+                                        <option value="4">取消园长</option>
+                                    </select>
+                                    <input class="btn btn-success" disabled="disabled" id="sub_form" type="submit" name="" value="执行" >
+                                </td>
+                            </tr>
+                        </table>
+                </form>
+                <div class="pagination" style="text-align:center;">
+               		{% paginate %}
+               </div>
+           </div> 
+      </div>
+</div> 
+<script> 
+$("#search_more").click(function(e){  //高级搜索
+        e.preventDefault()
+	$(this).toggleClass('nav_br');
+	$("[name=p]").toggle();
+	$("[name=a]").toggle();
+         
+});
+$("[rel=teacher_status] a").click(function(){ //在职离职操作
+  obj = $(this);
+  var teacher_id = $(this).attr("rel"); 
+  url = "{% url oa_teacher_status %}"
+  $.post(url,{tid:teacher_id},function(result){
+    data = $.parseJSON(result); 
+    if(data.status == 0){
+      obj.text("在职");
+    }else{
+      obj.text("离职");
+    }
+  });
+})
+var flagType="-1";
+$("#commit_type").click(function(){
+    flagType=$(this).find('option:selected').val();
+});
+
+$(':checkbox[rel=checkall]').change(function(){ //全选
+	$(':checkbox[rel=role]').attr('checked',this.checked);
+	$(':checkbox[rel=checkall]').attr('checked',this.checked);
+	chekck();
+})
+$(':checkbox[rel=role]').change(function(){
+	var flag = true;
+	$(':checkbox[rel=role]').each(function() {
+        if(!this.checked){
+            flag = false;
+        }
+    });
+    $(':checkbox[rel=checkall]').attr('checked',flag);
+    chekck();
+})
+
+function chekck(){
+    var formChek = $("#form_post"),
+    checkedlen = formChek.find('input[rel=role]:checked').length; 
+    if(checkedlen){
+            $("#sub_form").attr('disabled',false);
+    }else{
+            $("#sub_form").attr('disabled',true);
+    }
+}
+function check(){  
+   var rimndText="";
+   if(flagType == "-1"){
+        rimndText="你还没选择操作类型";
+   } else {
+        rimndText="是否执行当前操作";
+   } 
+    var r=confirm(rimndText);
+    if(r) {
+        if(flagType=="-1"){
+            return false;
+        } //alert("删除成功");
+    } else { 
+            return false;//false:阻止提交表单  
+    }  
+}   
+</script>
+{% endblock %}

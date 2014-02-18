@@ -1,0 +1,47 @@
+ /* 
+    Created on : 2013-9-13, 9:23:57
+    Author     : heting
+*/
+/* 物资链表*/
+.leveltip_list { float: left; margin:10px 0 0px 80px; width:500px; }
+.leveltip_list table { border: 1px solid #DDDDDD; background:#ffffff; margin-bottom: 10px; width: 100%;}
+.leveltip_list table th {background-color:#f8f8f8; text-align:left; padding:0 5px 0 15px; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD;color: #343434; font-size: 13px; font-weight: 100; height: 40px;}
+.leveltip_list table tr { border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; }
+.leveltip_list table tr.bg_color{ background-color:#f8f8f8;}
+.leveltip_list table tr.atr {background-color:#f8f8f8; }
+.leveltip_list table td { padding:1px 5px 1px 15px; border-bottom: 1px solid #DDDDDD;  border-right: 1px solid #DDDDDD; line-height:20px; height: 35px;color:#6a6a6a; overflow:hidden;} 
+.leveltip_list table td.font_color { color:#4EABE3; }
+.leveltip_list table td .info-td{ height:35px; line-height:35px; overflow:hidden;white-space:nowrap; text-overflow:ellipsis; padding-right:10px;}
+.leveltip_list table td input ,.list table th input{ margin-right:10px; }
+.leveltip_list table td a:hover { color:#B98600; text-decoration:none; }
+.leveltip_list table td span.no_book { color: #4b8340; }
+.leveltip_list table .not_date { color: #9c9c9c; padding: 200px 0; }
+.list td .form-table { width: 100%; background:#ffffff; margin-bottom: 0; }
+.list td .form-table th { background: #cfe4fd; border: 1px solid #e5e5e5; padding:1px 5px 1px 5px; height: 30px; }
+.list td .form-table tr { border: 1px solid #e5e5e5; }
+.list td .form-table td { padding:1px 5px 1px 5px; border: 1px solid #e5e5e5; height: 30px; line-height:20px; height: 35px; color:#6a6a6a; overflow:hidden;} 
+.nav_brss {padding-right:15px; background:url('../images/hideUp.png') no-repeat right; }
+/*物资清单*/
+.detailed_list {  }
+.detailed_list_item { background-color:#f1f1f1; border: 1px solid #DDDDDD;  } 
+.uers-info span.remind_info { color: #999; margin-left: 5px;}
+.uers-info p label { text-align: right; margin-right: 10px; }
+.detailed_list .operate { margin: 10px 0 20px 0; }
+.detailed_list .operate a { margin-right: 10px; }
+
+/*弹框table*/
+.popp_table { width: auto; margin: 0 auto; }
+.popp_table table { border: 1px solid #DDDDDD; background:#ffffff; margin-bottom: 10px; width: 100%;}
+.popp_table table th {background-color:#f8f8f8; text-align:left; padding:0 5px 0 15px; border-bottom: 1px solid #DDDDDD; border-right: 1px solid #DDDDDD;color: #343434; font-size: 13px; font-weight: 100; height: 40px;}
+.popp_table table tr { border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; }
+.popp_table table tr.bg_color{ background-color:#f8f8f8;}
+.popp_table table tr.atr {background-color:#f8f8f8; }
+.popp_table table td { padding:1px 5px 1px 15px; border-bottom: 1px solid #DDDDDD;  border-right: 1px solid #DDDDDD; line-height:20px; height: 35px;color:#6a6a6a; overflow:hidden;} 
+.popp_table table td.font_color { color:#4EABE3; }
+.popp_table table td .info-td{ height:35px; line-height:35px; overflow:hidden;white-space:nowrap; text-overflow:ellipsis; padding-right:10px;}
+.popp_table table td input ,.list table th input{ margin-right:10px; }
+.popp_table table td a:hover { color:#B98600; text-decoration:none; }
+.popp_table table td span.no_book { color: #4b8340; }
+.popp_table table .not_date { color: #9c9c9c; padding: 200px 0; }
+
+

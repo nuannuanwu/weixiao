@@ -1,0 +1,42 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="main">
+    <div class="tab">
+    	<span>添加新闻</span>
+        <a href="{% url oa_part_con_news_list site.id %}">返回</a>
+    </div>
+    <div class="column">
+            <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{form.media}}	
+            <div class="form-div">
+                <label>标题文字*</label>
+                {{form.title|attr:"datatype:*"|attr:"errormsg:"|attr:"nullmsg:请填写标题"}}&nbsp;
+                <span id="id_titleTip" class="erro-tips">{{form.title.errors|striptags}}</span>
+                {{form.creator|attr:"class:hide"}}
+            </div>
+            <div class="cbox">
+                <label>内容* &nbsp;&nbsp; <span id="id_contentTip" class="erro-tips">{{form.content.errors|striptags}}</span></label>
+                <div>
+                {{form.content}}
+                </div>
+            </div>
+            <div class="form-div" style="overflow:hidden; padding-top:5px;">{{form.type|attr:"class:span2"|attr:"style:float:left;"}} 
+            {{form.is_show|attr:"class:hide"}}
+            </div> 
+            {{form.video_type|attr:"class:hide"}}         
+            <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+        </form>
+    </div>
+</div>
+<script>
+//表单验证 
+  $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true
+	});
+}); 
+</script>
+{% endblock %}

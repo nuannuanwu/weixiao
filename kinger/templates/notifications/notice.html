@@ -1,0 +1,5 @@
+{% load url from future %}
+{% load i18n kinger_tags umessages_tags notifications_tags humanize %}
+<li class="pl_list">
+        <a href="{% url 'notifications:reply_notify' %}?id={{notice.id}}"><em class="{% if notice.action_object|notify_info:"logo" == "tile"%}new_pl{% else %}new_hf{% endif %}"></em><p>{{notice.action_object|notify_info:"title"}}<b class="masg">“{{notice.action_object|notify_info:"content"|safe|cut_str:28|code_to_img|safe}}”</b>，有<b class="nubmer">{{notice.read_num}}</b>条新评论</p><span class="pl_data">{{notice.timestamp|natural_time}}</span></a>
+</li>

@@ -1,0 +1,14 @@
+{% extends "kinger/tile_index.html" %}
+{% load kinger_tags i18n %}
+
+{% block category-tile-list %}
+<p>
+    <a href="/?channel={{channel|default:"baby"}}" class="tags {% if not type_id %}
+        tags-active
+    {% endif %}">{% trans "All" %}</a>
+    {% for type in types %}
+    <a class="tags {% if type.id|in_tag_q:type_id %}
+    tags-active {% endif %}" href="?channel={{channel|default:"baby"}}&type_id={% gen_type type 'type_id' %}">{{type}}</a>
+    {% endfor %}
+</p>
+{% endblock category-tile-list %}

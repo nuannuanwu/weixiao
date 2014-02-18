@@ -1,0 +1,339 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="content">
+	<div class="ct-left">
+    	<div class="school-nwes">
+        	<div class="new-flash">
+            	<div class="f-title">
+                    <h3><img src="{{ STATIC_URL }}oa/site/images/title_1.jpg" /></h3>
+                    <a href="{% url_site oa_site_album %}?cty=17"><img src="{{ STATIC_URL }}oa/site/images/more.png" /></a>
+                </div>
+                <div class="flash-pic">
+                	<div class="flash-bg" id="idPicShow">
+                        <ul id="pub_slideplay">
+                        {% if not school_actives|is_empty_list %}
+                        <li>
+                              <img rel="" src="{{ STATIC_URL }}oa/site/images/default_max.png " />
+                        </li>
+                        {% else %}
+                        {% for p in school_actives %} 
+                        {% if forloop.counter <= 5 %}
+                            <li {% if forloop.counter > 1 %}style="display:none"{% endif %}>
+                                <a href="{% url_site oa_album_photo p.id %}">
+                                	<img src="{% media_path p.img "album_big" %}" width="350" height="225"/>
+                                <p style="width:120px; overflow:hidden; padding-right:5px;" title="{{p.description}}" >{{p.description|cut_str:10}}</p> 
+                                </a>
+                            </li>
+                        {% endif %} 
+                        {% endfor %}
+                        {% endif %} 
+                        </ul>
+                        <!--<p class="flash-p" id="idNum">
+                            <span class="on">4</span>
+                            <span>3</span>
+                            <span>2</span>
+                            <span>1</span>
+						</p>
+                        <p id="idPicText">
+                        	<a></a>
+                        </p>-->
+                    </div>
+                </div>
+            </div>
+            <div class="noteandnwes">
+            	<div class="note">
+                	<div class="n-title">
+                    	<h4><img src="{{ STATIC_URL }}oa/site/images/title_2.jpg" /></h4>
+                        <a href="{% url_site oa_site_announce %}"><img src="{{ STATIC_URL }}oa/site/images/more.png" /></a>
+                    </div>
+                    <ul class="n-list">
+                        {% for n in announces %}
+                    	<li {% if forloop.counter > 4 %}style="display:none"{% endif %}><a href="{% url_site oa_site_part_detail n.id %}" title="{{n.title}}">{{n.title|cut_str:17}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="note news">
+                	<div class="n-title">
+                    	<h4><img src="{{ STATIC_URL }}oa/site/images/title_4.jpg" /></h4>
+                        <a href="{% url_site oa_site_news %}"><img src="{{ STATIC_URL }}oa/site/images/more.png" /></a>
+                    </div>
+                    <ul class="n-list">
+                    	{% for n in news %}
+                        <li {% if forloop.counter > 4 %}style="display:none"{% endif %}><a href="{% url_site oa_site_part_detail n.id %}" title="{{n.title}}">{{n.title|cut_str:17}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="school-works">
+        	<div class="s-w-title">
+            	<h3><img src="{{ STATIC_URL }}oa/site/images/title_6.jpg" /></h3>
+                <a href="{% url_site oa_site_album %}?cty=18"><img src="{{ STATIC_URL }}oa/site/images/more.png" /></a>
+            </div>
+            <div class="s-w-list">
+                <div class="box-list">
+                    <div class="list-img">
+                        <ul class="scroll-box scrollBox">
+                            {% if not student_actives|is_empty_list %}
+                            <li class="scroll-img scrollImg"><a href="javascript:;"><img rel="" src="{{ STATIC_URL }}oa/site/images/default_min.png "/> </a> </li>
+                            <li class="scroll-img scrollImg"><a href="javascript:;"><img rel="" src="{{ STATIC_URL }}oa/site/images/default_min.png "/> </a> </li>
+                            <li class="scroll-img scrollImg"><a href="javascript:;"><img rel="" src="{{ STATIC_URL }}oa/site/images/default_min.png "/> </a> </li>
+                            {% else %}
+                            {% for p in student_actives %}
+                            <li class="scroll-img scrollImg">
+                                <a href="{% url_site oa_album_photo p.id %}">
+                                    <img src="{% media_path p.img "album_normal" %}" />
+                                </a>
+                            </li>
+                            {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="homeland">
+        	<div class="hl-title">
+            	<h3><img src="{{ STATIC_URL }}oa/site/images/title_10.jpg" /></h3>
+                <a href="{% if parent_domain %}{{parent_domain}}{% endif %}{% url kinger_edu_index %}" target="_blank"><img src="{{ STATIC_URL }}oa/site/images/more.png" /></a>
+            </div>
+            <div class="hl-content">
+            	<ul>
+                    {% for t in tiles %}
+                	<li><a href="{% if parent_domain %}{{parent_domain}}{% endif %}{% url axis_tile_view t.id %}?channel={{t|get_tile_channel}}" title="{{t.description}}" target="_balnk">{{t.description|cut_str:27}}</a></li>
+                    {% endfor %}
+                </ul>
+                <a target="_blank" href="{% if parent_domain %}{{parent_domain}}{% endif %}{% url axis_tile_view tiles.0.id %}?channel={{tiles.0|get_tile_channel}}" class="hl-img"><img src="{% media_path tiles.0.img "album_normal" %}" width="196" height="100" /></a>
+            </div>
+        </div>
+        <div class="school-star">
+        	<div class="stars">
+                 <div class="st-teacher">
+                    <div class="st-t-title">
+                        <h3><img src="{{ STATIC_URL }}oa/site/images/title_11.jpg" /></h3>
+                        <a href="{% url_site oa_site_teacher_starts %}"><img src="{{ STATIC_URL }}oa/site/images/more.png" /></a>
+                    </div>
+                    <div class="st-t-list">
+                        <div class="t-list-img">
+                            <ul class="scroll-box">
+                                {% if not start_teachers  %}
+<!--                                    <li class="scroll-img" ><a href="javascript:;"><img width="100px" height="100px" src="{{ STATIC_URL }}/img/avatar_128.png" /></a></li>
+                                    <li class="scroll-img" ><a href="javascript:;"><img width="100px" height="100px" src="{{ STATIC_URL }}/img/avatar_128.png" /></a></li>
+                                    <li class="scroll-img" ><a href="javascript:;"><img width="100px" height="100px" src="{{ STATIC_URL }}/img/avatar_128.png" /></a></li>-->
+                                {% else %}
+                                    {% for t in start_teachers %}
+                                    <li class="scroll-img" {% if forloop.counter > 3 %}style="display:none"{% endif %}><a href="{% url_site oa_site_teacher_starts %}#start_{{t.id}}"><img width="100px" height="100px" src="{% media_path t.user.profile.mugshot "album_small" %}" /></a></li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="st-teacher">
+                    <div class="st-t-title baby-t-title">
+                        <h3><img src="{{ STATIC_URL }}oa/site/images/title_13.jpg" /></h3>
+                        <a href="{% url_site oa_site_student_starts %}"><img src="{{ STATIC_URL }}oa/site/images/more.png" /></a>
+                    </div>
+                    <div class="st-t-list">
+                        <div class="t-list-img">
+                            <ul class="scroll-box">
+                                {% if not start_students  %}
+<!--                                    <li class="scroll-img" ><a href="javascript:;"><img width="100px" height="100px" src="{{ STATIC_URL }}/img/avatar_128.png" /></a></li>
+                                    <li class="scroll-img" ><a href="javascript:;"><img width="100px" height="100px" src="{{ STATIC_URL }}/img/avatar_128.png" /></a></li>
+                                    <li class="scroll-img" ><a href="javascript:;"><img width="100px" height="100px" src="{{ STATIC_URL }}/img/avatar_128.png" /></a></li>-->
+                                {% else %}
+                                    {% for s in start_students %}
+                                    <li class="scroll-img" {% if forloop.counter > 3 %}style="display:none"{% endif %}><a href="{% url_site oa_site_student_starts %}#start_{{s.id}}"><img width="100px" height="100px" src="{% media_path s.user.profile.mugshot "album_small" %}" /></a></li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="good-words">
+            	<div class="note">
+                	<div class="n-title">
+                    	<h4><img src="{{ STATIC_URL }}oa/site/images/title_12.jpg" /></h4>
+                        <a href="{% url_site oa_site_articals %}"><img src="{{ STATIC_URL }}oa/site/images/more.png" /></a>
+                    </div>
+                    <ul class="n-list">
+                    	{% for a in articals %}
+                        <li {% if forloop.counter > 12 %}style="display:none"{% endif %}><a href="{% url_site oa_site_part_detail a.id %}" title="{{a.title}}" target="_blank">{{a.title|cut_str:16}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ct-right">
+    	<div class="tips">
+        	<div class="tip-title r-title">
+                 <h4><img src="{{ STATIC_URL }}oa/site/images/title_3.jpg" /></h4>
+            </div>
+            <div class="tip-content">
+            	<div class="t-c-bg">
+                	<p>{{tip.content}}</p>
+                </div>
+            </div>
+        </div>
+        {% if not user_login %}
+        <div class="tips login">
+        	<div class="login-title r-title">
+                 <h4><img src="{{ STATIC_URL }}oa/site/images/title_5.jpg" /></h4>
+            </div>
+            <div class="tip-content">
+            	<form id="form1" class="login-form t-c-bg" method="post" action="">{% csrf_token %}
+                	<p>
+                    	<label>用户名：</label>
+                        {{form.identification|attr:"class:u-name"}}
+                        <!--input type="text" class="u-name"-->
+                    </p>
+                    <p>
+                    	<label>密码：</label>
+                        {{form.password|attr:"class:u-pass"}}
+                        <!--input type="text" class="u-pass" /-->
+                    </p>
+                    <p id="login_error" class="erro-tips" style="color:#f30;display:none">您输入的用户名或密码不正确</p>
+                    <p class="f-sub-btn">
+                    	<!--input  type="button" value="登&nbsp;录" /-->
+                        <a id="login" class="login-btn"  href="javascript:;">登&nbsp;录</a>
+                    </p>
+                    
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        <div class="r-itmes">
+        	<div class="online signup">
+            	<h4><a href="{% url_site oa_site_regist %}"><img src="{{ STATIC_URL }}oa/site/images/title_7.jpg" /></a></h4>
+            </div>
+        </div>
+        <div class="r-itmes">
+        	<div class="online email">
+            	<h4><a href="{% url_site oa_site_mailbox %}"><img src="{{ STATIC_URL }}oa/site/images/title_8.jpg" /></a></h4>
+            </div>
+        </div>
+        <div class="r-itmes">
+        	<div class="online vidoes">
+            	<h4><a href="{% url_site oa_site_videos %}"><img src="{{ STATIC_URL }}oa/site/images/title_9.jpg" /></a></h4>
+            </div>
+        </div>
+        <div class="firend-link">
+            <div class="CRselectBox">
+                <input type="hidden" value=""  name="abc" id="abc"/>
+   				<input type="hidden" value=""  name="abc_CRtext" id="abc_CRtext"/>
+    			<a class="CRselectValue select_box" href="#">---友情链接---</a>  
+                <ul class="son_ul CRselectBoxOptions">
+                    {% for l in links %}
+                    <li><a href="{{l.url}}" target="_blank">{{l.title}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">  
+	$(".CRselectValue").click(function(){
+		$(this).blur();
+		$(".CRselectBoxOptions").show();
+		return false;
+	})
+	$(".CRselectBoxItem a").click(function(){
+		$(this).blur();
+		var value = $(this).attr("rel");
+		var txt = $(this).text();
+		$("#abc").val(value);
+		$("#abc_CRtext").val(txt);
+		$(".CRselectValue").text(txt);
+		$(".CRselectBoxOptions").hide();
+		return false;
+	})
+	/*点击任何地方关闭层*/
+	$(document).click(function(event){
+		if( $(event.target).attr("class") != "CRselectBox" ){
+			$(".CRselectBoxOptions").hide();
+		}
+	})
+
+    $("#form1 input").blur(function(){
+        uname = $("#id_identification").val()
+        pwd = $("#id_password").val()
+        if(uname && pwd){
+            $.ajax({ // create an AJAX call...
+                data: $("#form1").serialize(), // get the form data
+                type: $("#form1").attr('method'), // GET or POST
+                url: $("#form1").attr('action'), // the file to call
+                success: function(response) { // on success..
+                    if(response.status){
+                        $("#login_error").hide();
+                    }else{
+                        $("#login_error").show();
+                    }
+                }
+            });
+        }
+    })
+
+    $("#login").click(function(){
+        uname = $("#id_identification").val()
+        pwd = $("#id_password").val()
+        if(uname && pwd){
+            url = "{% url_site oa_ajax_login %}"
+            $.post(url,{username:uname,password:pwd},function(data){
+                result = $.parseJSON(data);
+                if(result.uid){
+                    $("#login_error").hide();
+                    cross_domain_login(result.uid,result.salt,result.hash)
+                    
+                }else{
+                    $("#login_error").show();
+                }
+            });  
+        }else{
+            $("#login_error").show();
+        }
+        return false;
+    })
+    
+
+    function cross_domain_login(u,s,h){
+        domain = "{{parent_domain|default:'http://weixiao178.com'}}";
+        $.ajax({
+            url:domain + "/cross_domain/login",
+            data:{uid:u,salt:s,hash:h},
+            type: 'GET',
+            dataType: 'jsonp', // Notice! JSONP <-- P (lowercase)
+            success:function(result){
+                if(result.is_teacher){
+                    jNotify("登录成功，正在跳转页面");
+                    javascript:location.href = domain + '/oa'
+                }else{
+                    $("#form1").submit();
+                } 
+            },
+            error:function(){
+             return false;
+            }
+        })
+    }
+
+    //首页图片滚动
+    $(".list-img").jCarouselLite({
+        auto:800,
+        speed:5000,
+        scroll:3
+    })
+
+    $(function(){
+        new dk_slideplayer("#pub_slideplay",{width:"350px",height:"260px",fontsize:"12px",time:"5000"});
+    });
+    $('#id_password,#id_identification').keypress(function (e) {
+        if (e.which == 13) {
+          $("#login").click();
+        }
+    });
+</script>
+{% endblock %}
+

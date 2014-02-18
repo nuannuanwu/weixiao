@@ -1,0 +1,183 @@
+{% extends 'umessages/base_message.html' %}
+{% load i18n kinger_tags umessages_tags humanize %}
+
+
+{% block message_return_link %}
+{% if type == "1" %}
+	<a href="{% url userena_umessages_quick_contact %}" class="btn">{% trans "Back" %}</a>
+{% else %}
+	<a href="{% url userena_umessages_list %}" class="btn">{% trans "Back" %}</a>
+{% endif %}
+{% endblock %}
+{% block content_title %}
+    {% if recipient.get_profile.chinese_name_or_username %}
+    <h2>与{{ recipient.get_profile.chinese_name_or_username }}的对话</h2>
+    {% else %}
+    <h2>与{{ recipient }}的对话</h2>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{% load pagination_tags %}
+{% autopaginate message_list paginate_by %}
+<div class="kspan8 kthumbnail">
+<div class="send_private_msg" node-type="publisher_wrap">
+    <dl class="private_SRLr clearfix">
+        <form action="" method="post" id="compose_message_form">
+          {% csrf_token %}
+        <div style="display:none">
+        {{ form.to }}
+        </div>
+        <div class="control-group {% if form.body.errors %} error {% endif %}" {% ifequal form.body.name "honeypot" %} style="display:none;"{% endifequal %}>
+            <div class="offset2 span5 kthumbnail kchat_trian">
+                <span class="ktrian_out"></span>
+                <span class="ktrian_in"></span>
+                <textarea id="id_body" name="body" class="kmessage"></textarea>
+                <div class="kSend">
+                    <input id="send_button" class="btn btn-info pull-right disabled" style="margin-left: 7px;*padding: 0 10px;" type="submit" name="send" value="{% trans "Send" %}" />
+                    <span class="pull-right" id="wordNum">200</span>
+                </div>
+            </div>
+            <a href="javascript:void(0)" class="kUserhead_right">
+                <img alt="" src="{% media_path request.user.get_profile.get_avatar "avatar" %}" class="kHeadborder" style="width:40px;height:40px;">
+            </a>
+        </div>
+        </form>
+    </dl>
+</div>
+
+<div node-type="messageList" pagenumber="1" class="private_shresults">
+{% for message in message_list %}
+<div id="msg-area-{{message.id}}" style="display: block;" class="kDialog W_linecolor private_list clearfix private_SRL{% if message.sender == user %}r{% else %}l{% endif %}">
+    {% if message.sender_id == user.id %}
+    <a href="javascript:void(0)" class="kUserhead_right" rel="namecard" data-uid="{{ message.sender.pk }}">
+        <img alt="" src="{% media_path message.sender.get_profile.get_avatar "avatar" %}" class="kHeadborder" style="width:40px;height:40px;">
+    </a> 
+    <div class="thumbnail kChat_right">
+        <p class="kchat_p">{{ message.body|code_to_img|safe }}</p>
+           
+            <small class="date" rel="tooltip" data-title="{{ message.sent_at|date:"具体时间: Y-m-d G:i"}}">
+                {{ message.sent_at|natural_time}}</small>
+        <a data-mid="{{message.id}}" data-is_send="1" class="delMessage kclose" data-dismiss="alert" href="#"></a>
+        <span class="ktrian_out"></span>
+        <span class="ktrian_in"></span>
+    </div>
+    {% else %}
+    <div class="kUserhead_left pull-left">
+        <a href="javascript:void(0)" rel="namecard" data-uid="{{ message.sender.pk }}">
+            <img alt="" src="{% media_path message.sender.get_profile.get_avatar "avatar" %}" class="kHeadborder" style="width:40px;height:40px;">
+            
+            <!--<span class="kListName" title="{{ message.sender.get_profile.chinese_name_or_username }}">{{ message.sender.get_profile.chinese_name_or_username }}</span>-->
+            
+        </a>
+    </div>
+    <div class="thumbnail kChat_left pull-left">
+        <p class="kchat_p">{{ message.body|code_to_img|safe }}</p>
+            <small class="date" rel="tooltip" data-title="{{ message.sent_at|date:"具体时间: Y-m-d G:i"}}">
+                {{ message.sent_at|natural_time}}</small>
+        <a data-mid="{{message.id}}" data-is_send="0" class="delMessage a_confirm_link kclose" data-dismiss="alert" href="#"></a>
+        <span class="ktrian_out"></span>
+        <span class="ktrian_in"></span>
+    </div>
+    {% endif %}
+    </div>
+{% endfor %}
+<div class="pagination" style="text-align: center;">
+    {% paginate %}
+    </div>
+</div>
+</div>
+
+{% include 'umessages/message_right.html' %}
+
+<script type="text/javascript">
+ $(document).ready(function(){
+        var $content_publish = $("#id_body");
+        var Interval;
+        $content_publish.keypress(function(event){
+            var key = event.keyCode?event.keyCode:event.which?event.which:event.charCode;
+            if (key == 27) {
+                clearInterval(Interval);
+            }
+            checkInputLength(this,200);
+        }).blur(function(){
+            clearInterval(Interval);
+            checkInputLength(this,200);
+        }).focus(function(){
+            clearInterval(Interval);
+            Interval = setInterval(function(){
+                checkInputLength('#id_body',200);
+            },300);
+        });
+        checkInputLength('#id_body',200);
+    });
+
+    //检测输入字符数
+    function checkInputLength(obj,num){
+        var len = $(obj).val().length;
+        var wordNumObj = $('#wordNum');
+        var id_body = $('#id_body');
+        if(len==0){
+            textareaStatus('off');
+            wordNumObj.css('color','').html("还可输入"+(num-len)+"字");
+        }else if( len > num ){
+            wordNumObj.css('color','red').html("已经超过"+(len-num)+"字"); 
+            textareaStatus('off');
+        }else if( len <= num){
+            if($(obj).val().replace(/<(?!img|input|object)[^>]*>|\s+/ig, "") == ""){
+                wordNumObj.css('color','').html("还可输入"+(num-len)+"字");
+                textareaStatus('off');
+            }else{
+                wordNumObj.css('color','').html("还可输入"+(num-len)+"字");
+                textareaStatus('on');
+            }
+        }
+    }
+
+    //发布窗口、按钮状态
+    function textareaStatus(type){
+        var obj = $('#send_button');
+        if(type=='on'){
+            obj.removeAttr('disabled').attr('class','btn btn-info pull-right');
+            //}else if( type=='sending'){
+            //	obj.attr('disabled','true').attr('class','btn_big_disable hand');
+        }else{
+            obj.attr('disabled','true').attr('class','btn btn-info pull-right disabled');
+        }
+    }
+
+
+    //确认操作
+    $('.delMessage').bind('click', function(){
+        $self = $(this);
+        mid = $self.attr('data-mid');
+        is_send = $self.attr('data-is_send');
+        recipient = {{recipient.id}};
+
+        message = $self.data('title');
+        data = { message_pks: mid,is_send:is_send,recipient:recipient };
+
+        url = '{% url userena_umessages_remove %}';
+        Bconfirm({
+            message: '确认删除该消息吗？',
+            handler: function(){
+                $.post(url, data, function(result){
+                var type = result.type;
+                if (type == 'ok') {
+                    Notice.success(result.message)
+                    $("#msg-area-"+mid).hide(100);
+                    setTimeout(function(){AutoFoot()},200);
+                }
+                else {
+                    Balert(result.message + '失败');
+                }
+                },"json");
+            }
+        });		
+        return false;
+    });
+
+</script>
+{% endblock %}
+
+

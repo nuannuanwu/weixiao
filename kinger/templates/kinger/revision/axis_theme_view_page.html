@@ -1,0 +1,159 @@
+{% extends 'kinger/base.html' %}
+{% load i18n kinger_tags comments pagination_tags %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/dateTime.css">
+{% endblock %}
+{% block content %}
+<div id="tile" style="background-color: white; ">
+    <div class="box_sidebar" style="zoom:1;">
+         <div class="sidebar_content" style="position: relative;">
+            {% include "kinger/revision/includes/comment_form.html" %}
+         </div>
+        <!--评论列表-->
+        <div id="faceBG_tile" class="faceBG_W" style=" ">
+           <div class="facebox">
+               <div class="facej facej_2"></div>
+               <ul>
+                 {% for key, value in emo_config.items %}
+                  <li rel="emo" title="{{value.title}}"><img src="{{value.url}}" width="28" height="28"/></li> 
+                 {% endfor %}
+               </ul>
+           </div>
+        </div>
+    </div>
+    <div class="box_main" style=" position: relative; background-color: #f1f1f1; padding: 10px 20px;">
+        <div  style=" position: relative; background-color: #efefef;">
+            <div class="assess" style=" display: none; position: fixed; top:65px; right:40%; z-index: 1;"> 
+                <a class="external_link border_r" rel="comment_input"  href="javascript:;" data-href="{% url axis_tile_view tile.id %}?channel={{channel|default:"edu"}}&for_comment=1"><span><i class="pic external"> </i></span> <span>评论</span></a>
+                <a rel="likeable" href="javascript:;"  data-href="{% url api_web_tiles_like_rev %}" data-id="{{tile.id}}" data-tips="{{tile.is_tips}}"><span><i class="pic {% if tile|liked_by_user:request.user %}like{% else %}no_like {% endif %}"></i></span ><span class="like_type">{% if tile|liked_by_user:request.user %}取消喜欢{% else %}喜欢{% endif %}</span></a>
+            </div>
+            <div class="comment" style=" background: #f1f1f1; ">  
+                <div class="theme_title"><span>[{{tile.new_category.name}}]</span>{{tile.title}}</div>
+                <div>
+                    <span style="float: left; margin-right: 5px;">来自</span> 
+                    <a style="float: left; margin-right: 5px;" rel="namecard" data-uid="{{tile.creator_id}}" href="javascript:;"> {{tile.creator.get_profile.chinese_name_or_username}}</a >
+                    <span>{{ tile.pub_time|date:"Y年m月d日 G:i" }}</span> 
+                </div> 
+            </div>
+            <div class="pic_box" style=" position: relative; width: 620px; margin:20px 0 0 0;"> 
+                <!--图片内容-->
+                    <img src="{% media_path tile.img "img_large" %}" alt="" > 
+                <!--图片内容-->
+                <!-- 翻页工具条 -->
+                <div class="kToolbar" style="position: absolute; top:50%; float: 0; width: 100% " > 
+                        <div class="kToolbar-turn">
+                            {% if yesterday.id %}
+                                <a href="{% url kinger_rev_theme_view %}?tid={{yesterday.id}}" class="left-btn" rel="theme_pre" data-title="{% trans "Previous" %}">&nbsp;</a>
+                            {% endif %}
+                            {% if next_day.id %}
+                                <a href="{% url kinger_rev_theme_view %}?tid={{next_day.id}}" class="right-btn1" rel="theme_next" data-title="{% trans "Next" %}">&nbsp;</a>
+                            {% endif %} 
+                        </div>
+                </div>
+                <!-- /翻页工具条 -->
+            </div>
+            {% if tile.description %}
+                <div class="theme_description"> 
+                     <span>{{tile.description|safe}}</span> 
+                </div>
+            {% endif %}
+            <div class="kpicInfo-pic" style="">
+                {% if tile.is_tips != 0 %}
+                    {% if tile.is_content %}
+                      {{tile.content|code_to_video|safe}} 
+                    {% endif %}
+                {% endif %}
+            </div> 
+          </div> 
+     </div>
+     
+    <!--推荐主题-->
+     <div class="pinned_title">你可能还喜欢</div>
+     <div class="pinned_to" style=" float: left; overflow: hidden; clear: both; margin:0px; padding: 0; ">
+            <ul style="margin: 0px; padding: 0;">
+                {% for y in year_tiles %}
+                <li rel="tm_itme" class="t_itme" style="{% if forloop.last %} margin-right:0;{% endif %}">  
+                    <div>
+                        <a class="btn_box" style="display: inline-block; overflow: hidden; padding: 0; width:220px; height:230px;" href="{% url kinger_rev_theme_view %}?tid={{y.id}}" >
+                            <button class="img_box_btn"><img src="{% media_path y.img "img_middle" %}"/></button>
+                        </a>
+                    </div> 
+                    <div class="assess" style="  display: none; position: absolute; top:5px; right:5px;"> 
+                        <a class="external_link border_r"  href="{% url kinger_rev_theme_view %}?tid={{y.id}}"><span><i class="pic external"> </i></span> <span>评论</span></a>
+                        <a rel="likeable"  data-href="{% url api_web_tiles_like_rev %}" href="javascript:;" data-id="{{y.id}}" data-tips="{{y.is_tips}}"><span><i class="pic {% if y|liked_by_user:request.user %}like{% else %}no_like {% endif %}"></i></span ><span class="like_type">{% if y|liked_by_user:request.user %}取消喜欢{% else %}喜欢{% endif %}</span></a>
+                    </div>
+                    <div style=" padding: 5px 10px; height: 21px; ">{{y.description}}</div>
+                    <div class="bottom_describe" style=" display: block; clear: both; background: none; width: 220px;">
+                        <a class="external_content"><i class="ioc ioc_external"></i>&nbsp;<span id="tile_comments_{{y.id}}">{{y.n_comments}}</span></a>
+                        <a class="like_content"><i class="ioc ioc_like"></i>&nbsp;<span>{{y.n_likers}}</span></a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul> 
+        </div>
+      <!--推荐主题--> 
+ </div>
+ <div style=" height:60px; width: 100%; overflow: hidden; ">
+        </div>
+ <!--当月主题-->
+ <div class="now_theme" style="z-index: 1; border-top:1px solid #535252; width: 100%; height: 85px; padding: 0; position: fixed; bottom: 0px; left:0%; background: #3a3939;">
+        <div  style="width: 960px; height: 50px; padding: 5px 0; margin: 0 auto;">
+            {% for m in month_tiles %}
+            <a class="{% if tile.id == m.id %}on{% endif %}"  href="{% url kinger_rev_theme_view %}?tid={{m.id}}">
+                <button style="padding: 0; margin: 0; width:100%; height:100%; border:0; background:none;"><img alt=""  src="{% media_path m.img 'img_small' %}" /></button>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+<script type="text/javascript">
+    $("#footer").hide();
+    //video上下滚动
+    $(document).ready(function(){ 
+        $("#id-comments").focus();
+        //设置喜欢
+        $("a[rel=likeable]:not(.disabled)").click(function(e){  
+            $btn_like = $(this);
+            url = $btn_like.data("href");
+            id = $btn_like.data("id");
+            $i = $btn_like.find("i"); 
+            $btn_like.addClass("disabled");
+            $.post(url,{"id": id},function(data, status){ 
+                if(status != "success")
+                    return false;
+                if (data.liked) {
+                    $i.removeClass("no_like");
+                     $i.addClass("like");;
+                    $btn_like.find('.like_type').html("取消喜欢");
+                } else {
+                    $i.removeClass("like");
+                    $i.addClass("no_like");
+                    $btn_like.find('.like_type').html("喜欢");
+                }
+                $btn_like.removeClass("disabled");
+                $btn_like.parent().siblings('.bottom-assess').find(".like_content").find("span").text(data.n_likers);
+                $btn_like.parent().siblings('.bottom_describe').find(".like_content").find("span").text(data.n_likers);
+            },"json");
+        });
+         //鼠标移上显示评论、喜欢按钮
+        $("[rel=tiles],.t_itme,.box_main,.img_box_btn").live("mouseover",function(e){
+                e.stopPropagation();
+                e.preventDefault();
+               $(this).find('.assess').show();
+        }).live("mouseout", function(e){
+                 e.stopPropagation();
+                e.preventDefault();
+               $(this).find('.assess').hide();
+        });
+        $(".img_box_btn").live("mouseover",function(){  
+               $(this).parents("[rel=tiles],.t_itme,.box_main").find('.assess').show(); 
+                //alert(1111);
+        }).live("mouseout", function(){ 
+                $(this).parents("[rel=tiles],.t_itme,.box_main").find('.assess').hide();
+        });
+         //获取评论框的焦点
+        $("[rel=comment_input]").click(function(){
+            $("#id-comments").focus();
+        })
+    })
+</script>
+{% endblock %}

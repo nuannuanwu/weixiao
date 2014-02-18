@@ -1,0 +1,29 @@
+{% load i18n kinger_tags %} 
+<div class="hfbox" style=" width: auto; margin-left: 0;">
+    <div class="wj" style="z-index: 1;"></div>
+     <div class="hf-contentbox" style=" position: relative; width: auto; margin-left: 0;">
+        <div class="zw">
+            <h5 class="v-name"><span>{{reply.target_object.user.get_profile.chinese_name_or_username}}</span></h5>
+            <p class="hfct"><span>
+                    {{reply.target_object.comment|code_to_img|safe}}
+            </span></p>
+            <div class="manipulate" style="width: 100%; height: 20px;">
+                <a href="javascript:;" style=" bottom:0px; right: -1px;"  class="hf-butG" minid="{{reply.id}}" name="reply" alt="{{comment.id}}" rel="{{reply.target_object.id}}" uname="{{reply.target_object.user.get_profile.chinese_name_or_username}}" content="{{reply.target_object.comment|code_to_img}}"><span>回复</span></a>
+            </div>  
+        </div> 
+     </div>
+</div>
+<div class="controls">
+    <div class="comment_input" rel="reply_{{comment.id}}_{{reply.target_object.id}}"  style=" display: none;">
+        <div style="border: 1px solid #44a6cd; margin: 10px 0 5px 0; position: relative;">
+              <span style=" background:url('{{ STATIC_URL }}kinger/img/nav_input.jpg') no-repeat; float: left; height: 10px; width:15px;  position: absolute; top:-6px; right: 5px; z-index: 5;">&nbsp;</span>
+              <textarea style=" font-size: 13px; color:#4e4e4e; height: 25px; border: none; width: 94%; margin-bottom: 0; box-shadow: none;" id="sub_comment_{{reply.id}}_{{reply.target_object.id}}" name="ext_comment" placeholder="">回复{{reply.target_object.user.get_profile.chinese_name_or_username}}:</textarea> 
+        </div> 
+        <div style=" float: left; width: 185px;">
+            <div id="facewB" rel="facewC" class="facew face-ico rpico" alt="{{reply.target_object.id}}" ty="1"> 
+            </div>
+        </div>  
+        <!--<input type="submit" name="post" class="btn btn-success submit-post " value="{% trans "Comment" %}"/>-->
+        <a href="javascript:;" alt="{{reply.target_object.id}}"  class="sub_comment_btn" ><img src="{{ STATIC_URL }}kinger/img/comment_btn_bg.jpg" /></a>
+    </div>
+</div>

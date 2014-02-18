@@ -1,0 +1,53 @@
+{% load bootstrap kinger_tags%}
+
+<div class="control-group{% if field.field.required %} required{% endif %}">
+    {% if field|is_checkbox %}
+                <div class="controls">
+                    <label class="checkbox">
+                        {{ field }} <span>{{ field.label }}</span>
+                    </label>
+
+                    {% for error in field.errors %}
+                        <span class="help-inline">{{ error }}</span>
+                    {% endfor %}
+
+                    {% if field.help_text %}
+                    <p class="help-block">
+                        {{ field.help_text|safe }}
+                    </p>
+                    {% endif %}
+                </div>
+    {% else %}
+        <label class="control-label" for="{{ field.auto_id }}">{{ field.label }}</label>
+
+        <div class="controls">
+
+            {{ field }}
+			<div id="{{ field.auto_id }}Tip" style="display: inline-block;width:250px;height:30px;vertical-align:middle;overflow-x:visible; font-size: 12px; line-height: 12px;*line-height: 16px;"></div>
+
+            {% for error in field.errors %}
+            <script>
+            $(function() {
+            $('#{{ field.auto_id }}Tip').html(
+				'<span><span class="onError_top">{{ error }}</span><span class="onError_bot"></span></span>'    
+			)
+			})
+			</script>
+			{% empty %}			
+			{% endfor %}
+									
+            {% if field.help_text %}
+            <script>
+            $(function() {
+            $('#{{ field.auto_id }}Tip').html(
+				'<span><span class="onFocus_top">{{ field.help_text|safe }}</span><span class="onFocus_bot"></span></span>'    
+			)
+			})
+			</script>
+            {% else %}
+			{% endif %}
+			
+
+        </div>
+    {% endif %}
+</div>

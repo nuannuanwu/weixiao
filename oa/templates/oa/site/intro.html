@@ -1,0 +1,68 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="active-content">
+	<div class="act-c-title recruit-title">
+    	<h3><img src="{{ STATIC_URL }}oa/site/images/title_17.jpg" /></h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content recruit-content">
+        	<div class="top-bg"></div>
+            <div class="m-c-bg">
+            	<div class="m-c">
+                    <h4>{{school.name}}</h4>
+                    <div class="intro-words">
+                        <p>{{intro.content|safe}}</p>
+                    </div>
+                    <h4>园景园貌</h4>
+                    <div class="fc-show">
+                    	<p>{{appearance.content|safe}}</p>
+                    </div>
+                    <h4>园丁风采</h4>
+                    <div class="fc-show">
+                    	<p>{{elegant.content|safe}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-bg"></div>
+        </div>  
+    </div>
+</div>
+<script type="text/javascript">
+	
+	$(".fc-show > p img").load(function(){
+		DrawImage(this);
+	})
+	//等比例缩放图片
+	
+	function DrawImage(ImgD){ 
+		var flag=false; 
+		var image=new Image(); 
+		image.src=ImgD.src; 
+		if(image.width>0 && image.height>0){ 
+			flag=true; 
+			//if(image.width/image.height>= 180/145){ 
+				if(image.width>825){ 
+					ImgD.width=825; 
+					ImgD.height=(image.height*825)/image.width; 
+				}else{ 
+					ImgD.width=image.width; 
+					ImgD.height=image.height; 
+				} 
+				ImgD.alt=image.width+"x"+image.height; 
+			//} 
+			/*else{
+				if(image.height>145){ 
+					ImgD.height=145; 
+					ImgD.width=(image.width*145)/image.height; 
+				}else{ 
+					ImgD.width=image.width; 
+					ImgD.height=image.height; 
+				} 
+				ImgD.alt=image.width+"x"+image.height; 
+			} */
+		} 
+	} 
+</script>
+{% endblock %}
+        

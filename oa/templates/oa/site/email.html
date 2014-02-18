@@ -1,0 +1,88 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %} 
+<div class="active-content">
+	<div class="act-c-title" id="maibox-c-title">
+    	<h3 style=" margin-top:-10px;"><img src="{{ STATIC_URL }}oa/site/images/title_8.jpg" /></h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content">
+        	<div class="top-bg"></div>
+            <div class="m-c-bg">
+            	<div class="m-c">
+                    <form id="form_post" class="registerform" style="margin-top: 20px;" action="" method="post">{% csrf_token %}
+                    	<div class="e-form">
+                            <label>留言主题</label>
+                            {{form.title}}
+                            <!--span class="erro-tips">{{form.title.errors|striptags}}</span-->
+                        </div>
+                        <div class="e-form e-textarea">
+                            <label>留言内容<span class="must-words">*</span></label>
+                            {{form.body|attr:"class:levemassege"|attr:"datatype:*"|attr:"errormsg: "|attr:"nullmsg:请输入留言内容"}}
+                            <span class="Validform_checktip "></span>
+                            <span class="erro-tips">{{form.body.errors|striptags}}</span> 
+                            <!--textarea class="levemassege"></textarea-->
+                        </div>
+                        <div class="e-form">
+                            <label>留言人<span class="must-words">*</span></label>
+                            {{form.name|attr:"datatype:*"|attr:"errormsg: "|attr:"nullmsg:请输入自己姓名"}}
+                            <span class="erro-tips">{{form.name.errors|striptags}}</span>
+                        </div>
+                        <div class="e-form">
+                            <label>电子信箱<span class="must-words">*</span></label>
+                            {{form.email|attr:"datatype:e"|attr:"errormsg:输入邮箱有误"|attr:"nullmsg:请输入邮箱"}}
+                            <span class="erro-tips">{{form.email.errors|striptags}}</span>
+                        </div>
+                        <div class="e-form">
+                            <label>联系电话<span class="must-words">*</span></label>
+                            {{form.phone|attr:"datatype:m|tel-3"|attr:"errormsg:输入联系电话有误"|attr:"nullmsg:请留联系电话"}}
+                            <span class="erro-tips">{{form.phone.errors|striptags}}</span>
+                        </div>
+                        <div class="e-form">
+                            <label>联系地址</label>
+                            {{form.address}}
+                        </div>
+                        <div class="e-form" style="position:relative;">
+                            <label>验证码<span class="must-words">*</span></label>
+                             <input type="hidden" name="captcha_0" value="" id="id_captcha_0"> 
+                             <input style=" margin-top: 0; margin-right:10px; " type="text" name="captcha_1" id="id_captcha_1" datatype="*" errormsg="" nullmsg="输入验证信息">
+                             <img src="" alt="captcha" class="captcha">
+                             <span  class="Validform_checktip "></span>
+                             <span class="erro-tips captcha-erro-tips">{{form.captcha.errors}}</span>
+                        </div>
+                        <div class="e-form">
+                            <input type="submit" class="btn bc-btn" value="保&nbsp;&nbsp;存" style="margin-left:75px;" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="bottom-bg"></div>
+        </div>  
+    </div>
+</div>
+<script>
+  $(function(){
+    $(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ; 
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/ 
+             } 
+	});
+}); 
+    var url = window.location.href;
+    $(".email-box").attr("action",url);
+    $('[alt=captcha]').click(function(){
+        $.get("?newsn=1", function(result){
+            $('[alt=captcha]').attr("src",result);
+            $('#id_captcha_0').attr("value",result.replace("http://", "").split('/')[3]);
+        });
+        return false;
+    });
+
+    $(function() {
+        $('[alt=captcha]').trigger("click");
+    });
+</script>
+{% endblock %}
+        

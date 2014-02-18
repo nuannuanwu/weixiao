@@ -1,0 +1,179 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+{% load pagination_tags kinger_tags i18n %}
+{% autopaginate teacher_list 10 %}
+<style>
+.table th{font-size:16px;color:#444;font-weight:normal;}
+thead .checkbox{color:#08C;font-size:16px;}
+.tab-content .thumbnail{padding:5px 19px 40px;}
+tr{cursor: pointer;}
+tr:hover{background:#FAFAFA;}
+tr span{display: block;margin-bottom: 5px;font-size: 13px;line-height: 20px;}
+.btnhover{
+  color: #333333;
+  background-color:#e6e6e6;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+	}
+.cclose{ position:relative; top:-25px; right:0px;}	
+.nonecentent{ padding:15px 0px; text-align:right; font-size:1.5em;}
+</style>
+<div class="main">
+      <div class="tab">
+          <span>职员帐号</span> 
+          <button type="submit" rel="send" class="btn pull-right"  data-toggle="modal" data-target="#myModal"><i class="icon-envelope"></i> 发送帐号</button>
+      </div> 
+      <div class="column">
+            <div id="myTabContent" class=" "> 
+                <form class="" method="GET" style=" display: inline-block; margin-top: 5px;">
+                        <select name="s" value="{{s}}" class="span2" style="  *float: left; margin: 0 5px 0 0px;  width: auto;">
+                          <option {% if not s %} selected="selected" {% endif %} value="0">-- 所有学园 --</option>
+                          {% for school in schools %}
+                              <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">{{school.name}}</option>
+                          {% endfor %}
+                        </select>
+                        <input type="text" name="q" id="keyW" class="input-medium" style="*float: left; margin: 0 5px 0 0;" value="{{query}}" placeholder="教师名">
+                        <button type="submit" class="btn" id="searchB" style="*float: left;">{% trans "Search" %}</button> 
+                </form>
+            </div> 
+            <div class="list">
+                <form action="" method="post" id="send_account">{% csrf_token %}
+                    <table class="  ">          			
+                        <col class="span1">
+                        <col class="span1">
+                        <col class="span1">
+                      <thead>
+                        <tr rel="selectAll">
+                          <th width="120" ><input type="checkbox" rel="selectAll">&nbsp;姓名</th>
+                          <th width="90">手机号</th>
+                          <th width="105">所属机构</th>
+                          <th width="105">所在部门</th>
+                          <th width="100" >所在班级</th>
+                          <th width="95">上次发送时间</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                       {% if not teacher_list|is_empty_list %} 
+                            <tr>
+                              <td align="center" colspan="6" style=" font-size: 18px; color: #cecece;">
+                                 <h4 class="not_date"> 暂无数据</h4>
+                              </td> 
+                           </tr>
+                          {% else %}
+                            {% for t in teacher_list %}
+                            <tr rel="check" class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                                  <td><span class="checkbox" style=" margin-bottom: 0;"><input type="checkbox" rel="check" name="teacher_list" value="{{ t.pk }}">&nbsp;{{t.name}}</span> </td>
+                                  <td>{{ t.user.get_profile.mobile }}</td>
+                                  <td>{{ t.school }}</td>
+                                  <td>{{ t.postjob.department|default:'' }}</td>
+                                  <td>{% for g in t.getgroups %}{{g.name}} {% endfor %}</td>
+                                  <td>{% if t.send_time %}{{ t.send_time|date:"Y-m-d G:i" }}{% endif %}</td>
+                            </tr>
+                            {% endfor %} 
+                        {% endif %}
+                      </tbody>
+
+    <!--                  <thead>
+                        <tr rel="selectAll">
+                          <th><span class=" " style=" margin-bottom: 0; font-size: 12px;"><input type="checkbox" rel="selectAll">全选</span></th>
+                          <th>姓名</th>
+                          <th>手机号</th>
+                          <th>所属机构</th>
+                          <th>所在部门</th>
+                          <th>所在班级</th>
+                          <th>上次发送时间</th> 
+                        </tr>
+                      </thead>-->
+                    </table>
+                    <div class="controls-group" style=" text-align: center; ">
+    <!--                    <button type="submit" rel="send" class="btn btn-success pull-right"  data-toggle="modal" data-target="#myModal">发送帐号</button>-->
+                        {% paginate %}
+                    </div>
+                </form> 
+        </div>
+    </div> 
+</div>
+<script type="text/javascript">
+//		$("#keyW").blur(function(){
+//			dissearch()
+//			})
+//		$("#keyW").keyup(function(){
+//			dissearch()
+//			})
+    $('button[rel=send]').click(function(){
+    		 var num = checkNum();
+    		 if(num){
+    			 msg = '已选择教师数量：'+checkNum()+'个，确认发送吗？'       
+                Bconfirm({
+                message: msg,
+                handler: function(){
+                    $('#send_account').submit()
+                  }
+              });		
+                  return false;
+    		}
+    })
+    $(':checkbox[rel=check]').click(function(event){
+        stop(event)
+        //btnDisabled()
+    })
+    $('tr[rel=check]').click(function(){
+        $select = $(this).find(':checkbox')
+        rowSelect($select)
+        //btnDisabled()
+    })
+    $(':checkbox[rel=selectAll]').click(function(event){
+        stop(event)
+        selectAll($(this).attr('checked'))
+        //btnDisabled()
+    })
+    $('tr[rel=selectAll]').click(function(){
+        $select = $(this).find(':checkbox')
+        rowSelect($select)
+        selectAll($select.attr('checked'))
+        //btnDisabled()
+    })
+    function stop(event){
+        if (event && event.stopPropagation){
+            event.stopPropagation()
+        }else{
+            window.event.cancelBubble=true
+        }
+    }
+    function rowSelect($select){
+        if($select.attr('checked')){
+            $select.attr('checked', false)
+        }else{
+            $select.attr('checked', true)
+        }
+    }
+    function selectAll(checked){
+        var allInput = document.getElementsByTagName("input")
+        var loopTime = allInput.length
+        for(i = 0;i < loopTime;i++)
+        {
+            if(allInput[i].type == "checkbox")
+            {
+              allInput[i].checked = checked
+            }
+        }
+    }
+    function checkNum(){
+        var num = $(':checkbox:checked[rel="check"]').length
+        return num
+    }
+    function studentNum(){
+        var num = 0
+        $(':checkbox:checked[rel="check"]').each(function(){ 
+          stu_num = Number($(this).attr("stuNum"));
+          num = num + stu_num 
+        });
+        return num
+    }
+</script>
+{% endblock %}

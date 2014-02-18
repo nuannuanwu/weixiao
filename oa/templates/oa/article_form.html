@@ -1,0 +1,63 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="form-horizontal form-kPicCon main">
+    <div class="tab">
+        <span rel="{{category.id}}">精彩文章</span>
+        <a href="{% url oa_article_list site.id %}">返回</a>
+    </div>
+    <div class="column">
+        <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{form.media}}
+            <div class="form-div">
+                <label>标题文字*</label>
+                {{form.title|attr:"datatype:*"|attr:"errormsg:"|attr:"nullmsg:请填写标题"}}
+                <span class="Validform_checktip "></span>
+                &nbsp;<span class="erro-tips">{{form.title.errors|striptags}}</span>
+<!--            <span id="id_creatorTip" class="erro-tips">{{form.creator.errors|striptags}}</span> 
+                {{form.creator|attr:"class:span2 pull-right"}}
+                <span class="pull-right">作者*</span> -->
+            </div>
+            <div class="cbox">
+                <label>内容* &nbsp;&nbsp; <span class="erro-tips">{{form.content.errors|striptags}}</span></label>
+                {{form.content}}
+            </div>
+
+            <div class="form-div" style="overflow:hidden;">
+            <select class="span2" name="type" style="float:left;" id="id_type">
+                <option selected="selected" value="1">发布</option>
+                <option value="0" {% if article.type == 0 %}selected="selected"{% endif %}>草稿</option>
+            </select>
+             <label id="show_index" class="checkbox" style="margin-left:20px;">{{form.is_show}}首页显示</label>
+          </div>
+            {{form.video_type|attr:"class:hide"}}            
+            <div class="form-div">
+                <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+            </div>
+        </form>
+    </div>        
+</div> 
+<script type="text/javascript">
+ ///表单验证 
+  $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+           showAllError:true
+	});
+});
+if($("#id_type").val()== 0){
+       $("#show_index").hide(); 
+    }else{
+        $("#show_index").show(); 
+    }
+$("#id_type").click(function(){ 
+    if($(this).val()== 0){
+       $("#show_index").hide(); 
+    }else{
+        $("#show_index").show(); 
+    }
+});
+$("#id_type option[value=2]").hide();
+</script>
+{% endblock %}

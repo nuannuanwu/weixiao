@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load i18n kinger_tags comments %}
+
+{% block extra_css %}
+<style type="text/css">
+.row{padding-left:15px;margin-left:0; padding-bottom: 10px; }
+#container{width: 960px;}
+.titleBar{ padding: 30px 0 20px 0}
+.titleBar-date{ font-size: 24px; color: #545454; margin:5px 20px 0 0; }
+.kCal{ 
+/*    position: relative;*/
+      margin-right: -21px; zoom:1;}
+.kCal-item{ float: left; width: 108px; height: 138px; margin: 0 12px 12px 0; padding: 8px; background-color:#FFF; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+.kCal-item .kBody-bg{ 
+    /*position: absolute;*/ 
+          top: 0; left: 0; background-color: #FAFAF9; height: 108px; width: 108px;}
+.kItem-head{
+    /*position: relative;*/ 
+    height: 30px; font-size: 14px; color: #999; text-align: right; }
+.kItem-head-week{ 
+    /*position: absolute;*/
+    left: 73px}
+.kItem-body{ 
+    /*position: relative;*/ 
+    margin-right: -10px; zoom:1; }
+.kItem-body a{
+    line-height:50px;font-size:0;
+    /*position: relative;*/ 
+    width: 50px; height: 50px; float: left; margin: 0 8px 8px 0; z-index: 2;overflow: hidden;text-align:center;vertical-align:middle; }
+.kItem-body a img{ vertical-align:middle;}
+.kBody-imgBg{ 
+    /*position: absolute;*/ 
+    left: 0; top:0; list-style: none; margin: 0;}
+.kBody-imgBg li{ float: left; width: 50px; height: 50px; margin: 0 8px 8px 0; background-color: #EDEDED;}
+.bgGray{background-color: #FEFEFE;opacity:0.6;}
+.tileBar .btn.active, .tileBar .btn:active {color: #B88500;}
+.tileBar .btn {width: 90px;}
+</style>
+{% endblock %}
+{% block content %}
+<div class="tileBoard">
+    <div class="titleBar">
+        <div class="btn-group pull-right">
+          <a class="btn" href="{% url kinger_cal %}?month={{prev_month|date:"Y-m"}}"><i class="icon-chevron-left"></i>&nbsp;</a>
+          <a class="btn" href="/cal/">{% trans "This Month" %}</a>
+          <a class="btn" href="{% url kinger_cal %}?month={{next_month|date:"Y-m"}}"><i class="icon-chevron-right"></i>&nbsp;</a>
+        </div>
+        <span class="titleBar-date pull-right">{{cur_month_date.year}}年{{cur_month_date.month}}月</span>
+        {% include "kinger/includes/pin_or_board.html" %}
+    	<span class="btn-group tileBar" data-toggle="buttons-radio">
+        	<a href="/?channel=all" class="btn span1 {% if channel == "all" %}
+                active
+              {% endif %}">{% trans "All" %}</a> 
+         	<a href="/?channel=tips" class="btn span1 {% if channel == "tips" %}
+                active
+              {% endif %}">育儿频道</a>
+        	<a href="/?channel=baby" class="btn span1 {% if not channel or channel == "baby" %}
+                active
+              {% endif %}">宝宝日记</a>
+        </span> 
+    </div>
+    <div class="kCal cf">
+    	{% if tiles.count == 0 %}
+    	<div class="kNoContent" style="top:56px;left:240px;">
+            <span style="font-size:20px;display:block;margin-top: 50px;">{{cur_month_date.year}}年{{cur_month_date.month}}月，本月暂无数据内容</span>
+    	</div>
+    	{% endif %}
+        {% for week in month_cal %}
+            {% for day in week %}
+            <div class="kCal-item {% if not day %}bgGray{% endif %}">
+                <div class="kItem-head">
+                    <span class="kItem-head-week">
+                        {% if forloop.parentloop.counter == 1 %}
+                            {{forloop.counter|chinese_weekday}}
+                        {% endif %}
+                    </span>
+                    {% if day %}
+                        {{day|zfill:2}}
+                    {% endif %}
+                </div>
+                <div class="kItem-body cf">
+                    {% if day != 0 %}
+                        {% latest_tiles_by_date cur_month_date.year cur_month_date.month day as tiles %}
+                        <ul class="kBody-imgBg">
+                            
+                            {% for tile in tiles %}
+                            <li>
+                            {% if tile.is_report %}
+                                <a class="kSt_{{ tile.type_id }}" href="{% url tile_view tile.id %}?channel=baby&ty=cal&month={{cur_month_date.year}}-{{cur_month_date.month|zfill:2}}" rel="popover" title="{{tile.title}}" data-content=
+                                "
+                                    {% if tile.is_daily %}
+                                        {{tile.title}}
+                                    {% else %}
+                                        {{ tile.description|default:"暂无描述" }}
+                                    {% endif %}                                
+                                " 
+                                data-trigger="hover">
+                                    <img src="{{ STATIC_URL }}kinger/img/babystate{{ tile.type_id }}.png">
+                                </a>
+                            {% else %}
+                            <a href="{% url tile_view tile.id %}?channel=baby&ty=cal&month={{cur_month_date.year}}-{{cur_month_date.month|zfill:2}}" rel="popover" title="{{tile.title}}" data-trigger="hover" data-content="{{tile.description|default:"暂无描述"}}">
+                                <img src="{% media_path tile.img "img_small" %}">
+                            </a>
+                            {% endif %}
+                            </li>
+                            {% endfor %} 
+                            {% if tiles.count < 4 %}
+                                {% for i in 4|subtraction:tiles.count|times %}
+                                <li></li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                    <div class="kBody-bg"></div>
+                    {% endif%}
+                </div>
+            </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

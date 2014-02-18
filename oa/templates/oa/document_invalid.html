@@ -1,0 +1,72 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate documents 10 %}
+<div class="main"> 
+	{% include "oa/document_url_menu.html" %} 
+    <div class="column">
+        <div> 
+        <form class="form-inline" method="GET" id="search-form-box"> 
+            <div id="slimp-seatch" class="pull_left w_175">
+                <input type="text" name="q" id="keyW" class="input-medium"  value="{{query}}" placeholder="标题">
+            </div>
+            <div id="adv-search" class="hide">
+                <input type="text" placeholder="开始时间" id="from" name="st" class="shijainduan w_80" value="{{st}}" />
+                &nbsp;&nbsp;至&nbsp;&nbsp;
+                <input type="text" placeholder="结束时间" name="et" value="{{et}}" id="to" class="shijainduan w_80" />&nbsp;&nbsp;
+            </div>
+            <button type="submit" class="searchB btn" id="searchB" />{% trans "Search" %}</button>
+            <a href="javascript:;" id="adv-search-btn" class="show">高级搜索</a>
+            
+        </form>
+        </div>
+        <div class="list"> 
+            <table>
+                <tr align="center">
+                    <th scope="col">级别</th>
+                    <th scope="col">操作</th> 
+                    <th scope="col">标题</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">公文类型</th> 
+                    <th scope="col">浏览人数</th>
+                    <th scope="col">发布时间</th>
+                    <th scope="col">发布者</th>
+                </tr>
+                {% if not documents|is_empty_list %}
+                <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                    <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                        <h4 class="not_date"> 暂无数据</h4>
+                    </td>
+                </tr>
+                {% else %}
+                {% for a in documents %}
+                <tr>
+                    <td>{{a.level|document_level}}</td>
+                    <td><a rel="delDate" data-href="{% url oa_delete_document a.id %}" href="javascript:;">删除</a></td>
+                    <td><a target="_balnk" href="{% url oa_document_detail a.id %}" title="{{a.title}}">{{a.title|truncatestr:":12"}}</a></td>
+                    <td>已作废</td>
+                    <td>{{a.category}}</td> 
+                    <td>{{a|get_read_num:"read"}}/{{a|get_read_num:"total"}}</td>
+                    <td title="{{a.ctime|date:"Y-m-d H:i"}}">{{a.ctime|date:"Y-m-d"}}</td>
+                    <td>{{a.sender.profile.realname}}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </table>
+            <div class="pagination" style="text-align:center;">
+                {% paginate %}
+            </div>
+       </div>
+    </div>
+</div>
+<script type="text/javascript">
+ $("[rel= delDate]").click(function(){ 
+    var href = $(this).data("href");
+    if(confirm('确认删除吗?')){ 
+        window.location = href;
+    }
+ });
+   
+</script>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% load i18n %}
+<div class="modal" id="import-teacher-modal" style="display:none;">
+    <form enctype="multipart/form-data" action="{% url manage_teacher_import %}" 
+        method="POST" class="form-horizontal " accept-charset="utf-8">
+        {% csrf_token %}
+        <div class="modal-header">
+            <button class="close" data-dismiss="modal">×</button>
+            <h3>{% trans "Import teachers" %}</h3>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">{% trans "Template" %}</label>
+                    <div class="controls">
+                        <a href="{% url manage_teacher_template %}">teachers-template.xls</a>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{% trans "Upload" %}</label>
+                    <div class="controls">
+                        <input type="file" name="teachers" value="" id="teachers">
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <input type="submit" class="btn btn-success" value="{% trans "Submit" %}">
+            <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+</div>

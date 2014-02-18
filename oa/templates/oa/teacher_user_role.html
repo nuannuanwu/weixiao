@@ -1,0 +1,65 @@
+
+{% load i18n kinger_tags oa_tags %}
+
+<div id="role_box">
+    <div class="title">
+        <a class="clear_role" href="javascript:;">清除</a> <div>已选角色</div> 
+    </div>
+    <div class="delAll  name-list" style=" margin-left: 0px; ">
+       <ul>
+       {% for r in user_roles %}
+       <li><label style="margin-bottom:0;">{{r.name}}</label><a style="*margin-bottom: 3px;" name='role_{{r.id}}' rel='{{r.id}}' class='role_{{r.id}} delRole close-btn' href="javascript:;"></a></li>
+        {% endfor %}
+       </ul>
+    </div>
+    <p style="overflow: hidden;">
+        <select class="span2" name="s" value="{{s}}" style=" font-size:14px;  margin: 0 0px; *float: left; *margin-right: 10px;">
+        <option {% if not s %} selected="selected" {% endif %} value="0">-- 所有机构 --</option>
+         {% for school in schools %}
+         <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">		
+         	{{school.name}}
+         </option>
+         {% endfor %}
+     </select>
+          <input type="text" name="q" id="keyW" class="input-medium search-query" style="*float: left;" value="{{query}}" placeholder="角色名称">
+          <a id="search_roles" class="btn"  style="*float: left;">{% trans "Search" %}</a>
+
+    </p>
+    <div class="list" style="height:300px; width:625px; margin:0;">
+        <table style="width:100%;">
+            <tr>
+                <th width="80">角色名称</th>
+                <th width="80">创建机构</th>
+                <th width="180">角色描述</th>
+                <th width="60">访问模块</th>
+                <th width="60">添加角色</th>
+            </tr>
+            {% if not roles|is_empty_list %}
+            <tr>
+                <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                    <h4 class="no_date"> 暂无数据</h4>
+                </td>
+            </tr>
+          {% else %}
+            {% for r in roles %}
+            <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}"> 
+                <td><a href="{% url oa_permission_update_role r.id %}">{{r.name}}</a></td>
+                <td>{{r.school}}</td>
+                <td>{{r.description}}</td>
+                <td rel="role_detail"><a class="look" href="javascript:;" data-show="0" rel="{{r.id}}">查看</a></td>
+                <td rel="add_role"><a id="add_id_{{r.id}}" class="addRole" href="javascript:;"  name="{{r.name}}" rel="{{r.id}}">添加</a></td>
+            </tr>
+            <tr class="info_{{r.id}} info_text " rel="info_{{r.id}}" style=" background-color: #F0EFEF;">
+               <td  class="" colspan="5">
+                   <div id="info_{{r.id}}"  class="role_info" style=" width:590px; ">  
+                   </div>
+               </td>
+            </tr>
+           {% endfor %}
+            {% endif %}  
+        </table>
+       
+    </div>
+    
+</div>
+

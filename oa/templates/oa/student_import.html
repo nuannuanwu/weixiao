@@ -1,0 +1,162 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<div class="main">
+	<div class="tab">
+        <span>学生批量导入</span>
+         <a href="{% url oa_student_list %}">返回</a>  
+     </div>
+     <div class="column">
+          <div class="user-info">
+                <div class="title"><span>步骤1：</span>下载模版</div>
+                <a href="{% url oa_student_template %}" style=" line-height:30px; text-decoration:underline;">
+                    下载模版
+                    <img src="{{ STATIC_URL }}oa/images/moban.png" />
+                </a>
+          </div>
+
+          <div class="user-info">
+                <div class="title" style="margin:40px 0;"><span>步骤2：</span>选择导入机构</div> 
+                   <select style="margin:0;" id="school_id" datatype="*"  errormsg=""  nullmsg="请选择导入机构" value="{{school.id}}" name="school_id">
+                      <option selected="selected" value="0">-- 请选择导入学园 --</option>
+                      {% for s in schools %}
+                          <option value="{{s.id}}" {% if s.id == school.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                      {% endfor %}
+                   </select> &nbsp;&nbsp;<span id="selectVal" style="display: none;" class="Validform_checktip Validform_wrong">请选择导入学园</span>
+            </div>
+           
+          <div class="login-info">
+                <div class="title" style="margin:40px 0;"><span>步骤3：</span>上传数据</div> 
+                      <form id="import_form" enctype="multipart/form-data" action="{% url oa_student_import %}" method="POST" class="form-inline form-horizontal " accept-charset="utf-8">
+                        {% csrf_token %} 
+                        <div class="modal-body" style="padding-left:0;">
+                            <fieldset>
+                                <div class="control-group"> 
+                                    <!--<div class="controls">
+                                        <input type="file" name="teachers" value="{{roles_xls}}" id="teachers"> <a href="javascript:;" class="btn" id="check_form">上传</a>
+                                    </div>-->
+                                    <div class="controls" id="upload-controls" style="height: 35px; padding-left: 0;">
+                                        <input type="file" name="students" value="" id="students" datatype="flieExl"  errormsg="文件格式错误"  nullmsg="请选择上传文件" onchange="document.getElementById('students-file').value=this.value">
+                                        <input type="text" style="margin-bottom: 0px;" id="students-file" value="" placeholder="请双击选择文件,然后点击上传" />
+                                        <a href="javascript:;" class="btn" id="check_form">上传</a>
+                                        <span id="form_R" style="margin-left: 85px;" class="Validform_checktip"></span>
+                                        <span id="check_file" style="display: none;" class="Validform_wrong" >点击上传按钮才能导入</span>
+                                    </div> 
+                                </div>
+                            </fieldset>
+                            <input type="hidden" name="check" value="1" id="check_xls">
+                            <input type="hidden" name="school" value="{{school.id}}" id="school">
+                        </div> 
+                   </form>
+           </div>
+           {% if checked %}
+           <p>已上传文件<span style="color: #97d08b;">< {{filename}} ></span>，文件扫描结果如下：</p>
+            <div class="file_info" style=" margin-bottom:20px;" >
+               <p>总记录行数：{{num}}行</p>
+               <p>报错行数：{{error_num}}行</p>
+               <p>错误数据：</p>
+               <div class="list_error">
+                   {% if errors %}
+                      <table width="100%" border="0">
+                          <tr>
+                            <th scope="col">序号</th>
+                            <th scope="col">班级</th>
+                            <th scope="col">姓名</th>
+                            <th scope="col">手机</th>
+                            <th scope="col">错误信息</th>
+                          </tr> 
+                         {% for e in errors %}
+                            <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                                <td>{{ e.row }}</td>
+                                <td>{{e.group}}</td>
+                                <td>{{e.name}}</td>
+                                <td>{{ e.mobile }}</td>
+                                <td>{{ e.msg }}</td>
+                            </tr>
+                           {% endfor %}
+                          </table>
+                     {% endif %}    
+                 </div> 
+            </div>
+            {% endif %}    
+            <div class="user-info">
+                <div class="title" style="margin:40px 0;"><span>步骤4：</span>确认导入</div> 
+                    <input class="btn inline " id="commit_form"  type="button" value="确认导入"/>
+                    <!--<a class="btn inline " href="javascript:;" id="commit_form">确认导入</a>-->
+                    <span id="onLoad_inport" style="display: none; color:#616161; margin-left: 30px;"><img src="{{ STATIC_URL }}oa/images/import.gif" />正在导入请稍等...</span>
+            </div> 
+      </div>
+</div>
+
+<script>
+ $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$("#import_form").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ; 
+                "flieExl": /^.*([.][x][l][s])$/ 
+             } 
+	});
+}); 
+$("#school_id").change(function(){
+    $("#school").attr("value",$(this).val()); 
+});
+
+$("#check_form").click(function(){
+  url = "{% url oa_student_check_import %}";
+  $("#import_form").attr("action",url); 
+  //alert($("#school_id").val());
+  if($("#school_id").val()=="0"){
+         $("#selectVal").show(); 
+   }else{
+        $("#selectVal").hide();
+        $("#import_form").submit(); 
+   }
+})
+$("#commit_form").click(function(){
+  url = "{% url oa_student_import %}";
+  $("#import_form").attr("action",url); 
+    is_check = "{{checked|default:''}}";
+    is_errors ="{{errors|is_empty_list}}";
+    if(is_check == "True"){
+        $("#students").attr("ignore","ignore"); 
+    }
+    if($("#school_id").val()=="0"){
+            $("#selectVal").show(); 
+    }
+     if($("#school_id").val()=="0" ){
+        $("#selectVal").show(); 
+    }
+    if(is_errors == "False"){
+        if($("#students").val()== ""){
+            $("#import_form").submit(); 
+        }else{
+            $("#check_file").show();
+            $("#form_R").text("");
+            $("#form_R").removeClass("Validform_wrong");
+        }
+    }
+    //alert(is_errors);
+    if(is_check == "True" ){ 
+         if(is_errors == "False"){
+              $("#import_form").submit();
+              $("#onLoad_inport").show();
+              $(this).attr("disabled","disabled");
+        }else{
+            alert("请确认错误后，重新上传");
+            //$("#import_form").submit();
+        }
+    } 
+    
+});
+$("#school_id").click(function(){
+    if($("#school_id").val()=="0"){
+         $("#selectVal").show(); 
+    }else{
+        $("#selectVal").hide();
+    }
+}); 
+
+</script>
+{% endblock %}

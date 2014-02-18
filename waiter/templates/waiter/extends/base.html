@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <title>{% block meta_title %}{% endblock %}{% if settings.SITE_TITLE %} | {{ settings.SITE_TITLE }}{% endif %}</title>
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.ico">
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome.css">
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}aq/css/common.css">    
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="{{ STATIC_URL }}font-awesome/css/font-awesome-ie7.css">
+    <![endif]-->
+    <style type="text/css">
+    body
+    {
+        padding-top: 60px;
+    }
+    </style>
+    <script>
+    	var waiter_save_message = '{% url waiter_save_message %}';    
+        var waiter_update_unread_message = '{% url waiter_update_unread_message %}';
+        var waiter_update_unread_message = '{% url waiter_update_unread_message %}';
+    </script>
+    {% block extra_css %}{% endblock %}
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+    <script src="{{ STATIC_URL }}aq/js/django_csrf.js"></script>
+    <script src="{{ STATIC_URL }}kinger/js/jquery.query-2.1.7.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery.imagesloaded.min.js"></script>
+
+    {% block extra_js %}{% endblock %}
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    {% block extra_head %}{% endblock %}
+</head>
+<body id="{% block body_id %}body{% endblock %}">
+    <!--[if IE 6]>
+	<style type="text/css">
+        /*ie6提示*/
+		#ie6-warning{width:100%;position:absolute;display:none;top:40px;left:0;background:#ffffe1;padding:5px 0;font-size:12px}
+		#ie6-warning p{width:960px;margin:0 auto;text-align:center;}
+		#ie6-close{margin-top:-25px;}
+    </style>
+    <script>    
+    $(document).ready(function(){	
+    	$("#ie6-warning").slideToggle("slow");	
+		$("#ie6-close").click(function(){
+    		$("#ie6-warning").hide("slow");
+  		});
+  	});
+    </script>
+	<div id="ie6-warning">
+		<p>您正在使用 Internet Explorer 6，由于本页面不兼容Internet Explorer 6，在本页面的显示效果可能有差异。<br/>建议您升级到 <a href="http://www.microsoft.com/china/windows/internet-explorer/" target="_blank">Internet Explorer 8</a> 或以下浏览器：
+		<a href="http://www.mozillaonline.com/">Firefox</a> / <a href="http://www.google.com/chrome/?hl=zh-CN">Chrome</a> / <a href="http://www.apple.com.cn/safari/">Safari</a> / <a href="http://www.operachina.com/">Opera</a> 诚心为给您带了的不便致歉！
+		<a id="ie6-close" class="close" data-dismiss="alert" href="#">×</a>
+		</p>
+	</div>
+    <![endif]-->
+    {% include "waiter/includes/nav.html" %}
+    <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" data-alert="alert">
+            <a class="close" href="#" onclick="$(this).parent().fadeOut('fast'); return false;">×</a>{{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="container">        
+        {% block content %}{% endblock %}       
+    </div>
+    <footer></footer>
+</body>
+</html>

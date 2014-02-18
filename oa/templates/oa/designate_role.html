@@ -1,0 +1,234 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate teachers 10 %}
+<div class="main">
+     <div class="tab"><span>指派角色</span></div>
+     <div class="column">
+          <form class="form-inline" action="" method="GET">
+                <select class="" style="min-width:90px;" name="s" value="{{s}}">
+                    <option {% if not s %} selected="selected" {% endif %} value="0">-- 所有机构 --</option>
+                    {% for school in schools %}
+                        <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">{{school.name}}</option>
+                    {% endfor %}
+                </select>
+                <select class="span2" name="t" value="{{t}}">
+                    <option {% if not t %}selected="selected"{% endif %} value="-1">-- 所有状态 --</option>
+                    {% for status in states %}
+                        <option {% if status.0 == t %} selected="selected" {% endif %} value="{{status.0}}">{{status.1}}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="n" id="keyW" class=" span2 input-medium "  value="{{n}}" placeholder="姓名">
+                <input type="text" style="display:none;" name="m" id="keyW_1" class=" span2 input-medium "  value="{{m}}" placeholder="登陆帐号">
+                <button type="submit" class="btn" id="searchB" >{% trans "Search" %}</button> 
+                <a class="search_more" id="search_more" href="javascript:;">高级搜索</a>
+          </form> 
+         <div class="list"> 
+            <table>
+                <tr>
+                    <th>姓名</th>
+                    <th>机构</th>
+                    <th>部门</th>
+                    <th>职务</th>
+                    <th>登录帐号</th>
+                    <th>状态</th>
+                    <th>角色</th>
+                    <th>角色设置</th>
+                </tr>
+                {% if not teachers|is_empty_list %}
+                    <tr>
+                        <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                            <h4 style="padding:50px 0;"> 暂无数据</h4>
+                        </td>
+                    </tr>
+                {% else %}
+                {% for t in teachers %}
+                    <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td>{{t.name}}</td>
+                        <td>{{t.school}}</td>
+                        <td>{{t.postjob.department|default:''}}</td>
+                        <td>{{t.postjob.position|default:''}}</td>
+                        <td>{{t.user.username}}</td>
+                        <td>{{t.postjob.state}}</td>
+                        <td id="roles_{{t.user.id}}">
+                            {% for r in t.user.roles.all %}
+                            	<a id="role_r_{{r.id}}" class="role_type" href="javascript:;" name="{{t.user.id}}" rel="{{r.id}}">
+                            		{{r.name}}&nbsp;&nbsp; 
+                               </a>
+                            {% endfor %}
+                        </td>
+                        <td rel="user_role"><a id="toggle_{{t.user.id}}" href="javascript:;" rel="{{t.user.id}}">编辑</a></td>
+                    </tr> 
+                {% endfor %}
+                {% endif %}
+            </table>
+            <div class="pagination" style="text-align:center;">
+                {% paginate %}
+           </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="user_role_pks" value="{{user_role_pks}}">
+<div class="modal" id="myModal" style="display:none; width:660px; margin-left:-330px;">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h4>角色配置面板</h4>
+    </div>
+    <div class="modal-body" id="content_role" style="padding:10px; overflow-x: hidden;"> 
+    </div>
+    <div class="modal-footer"> 
+        <p style="text-align:center; padding:0; margin:0;" > 
+            <input type="hidden" id="user_id" value="{{user.id}}"> 
+            <a id="server_role" class="btn btn-success" data-dismiss="modal" href="javascript:;">{% trans "Save" %}</a>
+            <a class="btn " data-dismiss="modal" href="javascript:;">取消</a> 
+       </p> 
+    </div>
+</div>
+<div id="pointer_nav" style="position:absolute; z-index: 10; display:none; padding:5px; background:url('{{ STATIC_URL }}oa/images/role_nav.png') no-repeat top;"></div>
+<div id="infos" style="display:none; width: 680px;" class=" info_text role_info box_toggle ">
+</div>
+<script>
+$("#search_more").live('click',function(){ 
+	$("[name=p]").toggle();
+	$("[name=a]").toggle(); 
+	$(this).toggleClass('nav_br');
+});
+var intStr , stringRole=',';
+
+$(document).ready(function(){
+   $(".list tr:even").addClass("bg_color");
+   $(".list tr").hover(
+	   function(){ 
+                $(this).toggleClass("atr");
+	   },
+	   function(){ 
+                $(this).toggleClass("atr");
+	   }); 
+});
+
+$("#search_more").live('click',function(e){ 
+        e.preventDefault();
+	$("[name=m]").toggle();
+});
+
+$("[rel=user_role] a").click(function(){ 
+    var tyId=$("#tyId").val(), 
+    uid = $(this).attr('rel'),
+	findRel=",",
+    url = "{% url oa_permission_user_role %}" ;
+	$.post(url,{user_id:uid},function(result){
+		data = $.parseJSON(result); 
+		$("#content_role").html(data.con);
+	}); 
+	$('#myModal').modal('toggle'); //弹框
+	var roleIdBox=$("#roles_"+uid);
+	roleIdBox.find('a').each(function(k,v){
+		id = v.getAttribute('id'); 
+		$mm=$('#'+id); 
+	    findRel +=$mm.attr('rel')+',';  
+	});
+	 stringRole=findRel; 
+	 
+});
+
+var relValue;
+$(".role_type").live('click',function(){
+	var linId=$(this).attr('name'),
+	Y=$("#toggle_"+linId).offset().top,
+        X =$("#toggle_"+linId).offset().left,
+        Z =$(this).offset().left;
+    rid = $(this).attr("rel");
+    url = "{% url oa_permission_role_detail %}"
+    $.post(url,{role_id:rid},function(result){
+        data = $.parseJSON(result);  
+		$("#infos").html(data.con);
+    }); 
+     $(".box_toggle").css({"top": Y+25+"px", "left": X-646+"px" });
+     $("#pointer_nav").css({"top": Y+20+"px", "left": Z+10+"px" });
+	 if(rid==relValue){
+		  $(".box_toggle").hide();
+		  $("#pointer_nav").hide();
+		  relValue='';
+	 }else{
+		  $(".box_toggle").show();
+		  $("#pointer_nav").show();
+		   relValue=rid
+		 } 
+});
+
+$(".close").live('click',function(){
+	 $(".box_toggle").hide();
+	 $("#pointer_nav").hide();
+}); 
+
+//查看角色详情
+$("a.look").live('click',function(){ 
+    var rid = $(this).attr("rel"),
+    shownum =$(this).data("show"),
+    url = "{% url oa_permission_role_detail %}";
+    if($(".role_info_"+rid).is(':visible')){ 
+          $(".role_info_"+rid).hide();
+    }else{
+         if(shownum==0){
+            $.post(url,{role_id:rid},function(result){
+                data = $.parseJSON(result);  
+                $("#infos_"+rid).html(data.con);
+            });  
+        }
+        $(".role_info_text").hide();
+        $(".role_info_"+rid).show(); 
+    } 
+}); 
+//搜索
+$("#searchB").live('click',function(){  
+    uid = $("#user_id").attr("value");
+    school_id = $("[name=s]").attr("value");
+    name = $("[name=q]").attr("value");
+    if(name=="角色名称"){
+        name=""; 
+    }
+    url = "{% url oa_permission_user_role %}"
+    $.post(url,{user_id:uid,s:school_id,q:name},function(result){
+        data = $.parseJSON(result);
+        $("#content_role").html('');
+        $("#content_role").html(data.con); 
+    });     
+});
+//添加删除角色
+$("[rel=add_role]").live('click',function(){  
+	   var roleRel=$(this).find('a').attr("rel"),
+	    strBbs=$("#user_role_pks").val(),
+	    roleName=$(this).find('a').attr("name"), 
+	    roleList='<li> '+roleName+' <a id="role_'+roleRel+'" class="role_'+roleRel+' delRole" rel='+roleRel+' href="javascript:;">X</a></li>'; 
+		if(stringRole.indexOf(','+roleRel+',')>-1){ 
+			 $('.role_'+roleRel).parent().remove();
+			 stringRole = stringRole.replace(','+roleRel+',' , ','); 
+			 $("#checked_"+roleRel).removeAttr("checked");
+			 $(this).find('a').text("添加"); 
+		}else {
+			 $(".delAll ul").append(roleList);
+			 stringRole += roleRel+',';
+			 $("#checked_"+roleRel).attr('checked','checked'); 
+			 $(this).find('a').text("删除");
+	   }  
+  });
+//删除角色
+$(".delRole").live('click',function(){ 
+	  var delRelstr =$(this).attr("rel"); 
+	  $(this).parent().remove(); 
+	  stringRole = stringRole.replace(','+delRelstr+',' , ',');
+	  $("#checked_"+delRelstr).removeAttr("checked"); 
+  });
+//清空角色
+$(".clear_role").live('click',function(){
+	  $(".delAll ul li").remove();
+	  $("#input_checkde").find("input").removeAttr("checked");
+	  stringRole=","; 
+  });
+//保存提交
+$("#server_role").live('click',function(){
+	   $('#role_form').submit();
+  });
+  
+</script>
+{% endblock %}

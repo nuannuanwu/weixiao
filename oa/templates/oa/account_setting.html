@@ -1,0 +1,120 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<style>
+ .lSelect { width: 95px; }
+</style>
+<div class="main">
+        <div class="tab"><span>个人信息</span></div>
+        <div class="column">
+            <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %} 
+                <div class="login-info">
+                      <div class="title">登录信息</div> 
+                      <p>
+                          <label> 登录帐号* </label>  
+                          {{form1.username|attr:"class:input-medium"|attr:"datatype:user"|attr:"errormsg:输入3-24位字符(汉字和特殊字符除外）"|attr:"nullmsg:请输入登录帐号"}}
+                          <a href="{% url oa_account_password_change request.user.id %}" target="_blank"> 修改密码 </a> 
+                          &nbsp; <span class="erro-tips">{{form1.username.errors|striptags}}</span>
+                           <span id="id_usernameTip" class="Validform_checktip "></span>
+                      </p>
+                </div>
+                <div class="uers-info">
+                    <div class="title">个人资料</div>
+                     <p style="margin-bottom:15px;position:relative; height:100px; width:708px;"> 
+                         <img  src="{% media_path request.user.get_profile.get_avatar 'normal' %}" style="height:100px; width:100px;" id="upuerpic" /> 
+                         <input id="id_mugshot" name="mugshot" type="file" value="{{ form2.mugshot.value }}" onchange="filename.value=this.value;previewImage(this,'upuerpic');" />
+                         <input type="text" id="filename" value="{{request.user.get_profile.get_avatar}}" />
+                         <input type="button" class="btn" id="upfilebtn" value="修改头像" /> 
+                     </p>
+                     <p>
+                         <label> 姓 名* </label>
+                         {{ form2.realname|attr:"class:input-medium"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入姓名" }}
+                         &nbsp; <span id="id_realnameTip" class="erro-tips">{{form1.realname.errors|striptags}}</span>
+                     <p>
+                         <label> 性 别* </label>
+                         {{form2.gender|attr:"style:width:90px;"|attr:"class:Validform_error"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请选择性别" }}
+                          <span id="id_genderTip" class="erro-tips">{{form1.gender.errors|striptags}}</span>&nbsp;                 </p>
+                     <p><label> 出生日期* </label>
+                          <!--<input  id="id_birth_date" name="birth_date" type="hidden" class="gg" sel="" />-->
+                          {{form2.birth_date|attr:"class:gg input-medium"|attr:"style:cursor:pointer; display:none;"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请选择日期"}}
+                          <span class="erro-tips">{{form1.birth_date.errors|striptags}}</span>
+                          <span id="id_birth_remind" class="Validform_checktip "></span>
+                    </p>
+                     <p>
+                         <label> 身份证号* </label> 
+                         {{form2.id_number|attr:"class:input-xlarge"|attr:"datatype:id-18 "|attr:"errormsg:身份证号不正确"|attr:"nullmsg:请输入您的身份证号"}}
+                         &nbsp; <span id="id_id_numberTip" class="erro-tips">{{form1.number.errors|striptags}}</span>
+                     </p>
+                  </div>
+                  <div class="uers-info" >
+                    <div class="title">联系方式</div> 
+                     <p>
+                         <label> 手 机* </label>
+                         {{ form2.mobile|attr:"class:input-medium"|attr:"datatype:m "|attr:"errormsg:手机号不正确"|attr:"nullmsg:请输入手机号"}}{{form2.mobile.errors}}
+                         <span style="color:#999;">此手机号用于接收信息</span> 
+                         &nbsp; <span id="id_mobileTip" class="erro-tips">{{form1.mobile.errors|striptags}}</span>    
+                      </p>
+                     <p>
+                         <label> 电 话 </label>  
+                         {{form2.office_phone|attr:"placeholder:办公电话"|attr:"class:input-medium"|attr:"ignore:ignore"|attr:"datatype:m "|attr:"errormsg:手机号或电话号码不正确"|attr:"nullmsg:"}}
+                         {{form2.other_phone|attr:"placeholder:其他电话"|attr:"class:input-medium"|attr:"ignore:ignore"|attr:"datatype:m "|attr:"errormsg:手机号或电话号码不正确"|attr:"nullmsg:"}}
+                          &nbsp;<span id="id_office_phoneTip" class="erro-tips">{{form1.office_phone.errors|striptags}}</span>    
+                          <span id="id_other_phoneTip" class="erro-tips">{{form1.other_phone.errors|striptags}}</span> 
+                     </p> 
+                     <p>
+                          <label> 电 邮 </label> 
+                      	 {{form2.office_email|attr:"placeholder:办公电邮"|attr:"class:input-medium"|attr:"ignore:ignore"|attr:"datatype:e"|attr:"errormsg:电邮格式不正确"|attr:"nullmsg:"}}
+                         {{form2.other_email|attr:"placeholder:其他电邮"|attr:"class:input-medium"|attr:"ignore:ignore"|attr:"datatype:e"|attr:"errormsg:电邮格式不正确"|attr:"nullmsg:"}} &nbsp; 
+                          <span id="id_office_emailTip" class="erro-tips">{{form1.office_email.errors|striptags}}</span>    
+                          <span id="id_other_emailTip" class="erro-tips">{{form1.other_email.errors|striptags}}</span> 
+                      </p>
+                      <p>
+                          <label> 住 址* </label> 
+                          <input name="address" id="id_address" style="width: 450px;" class="input-xxlarge" type="text" value="{{form2.address.value }}" datatype="*" errormsg="" nullmsg="请输入您的居住地址" /> 
+                          &nbsp;<span id="id_addressTip" class="erro-tips">{{form1.other_email.errors|striptags}}</span>
+                      </p>
+                 </div>
+                 <div class="uers-info">
+                      {% if postjob %}
+                      <div class="title">岗位信息</div>  
+                      <p>
+                           <label>所属机构</label>
+                           <input type="text" readonly="readonly" value="{{postjob.school.name}}">   
+                      </p>
+                      <p>
+                           <label>所属部门</label>
+                           <input type="text" readonly="readonly" value="{{postjob.department.name}}"> 
+                      </p>
+                      <p>
+                           <label> 职 务 </label>
+                           <input type="text" readonly="readonly" value="{{postjob.position.name}}">  
+                      </p>
+                      {% endif %}
+                 </div>
+                 <p><label>&nbsp;</label><input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" ></p>
+                 </form>
+ 	</div> 
+ </div> 
+                 
+<script> 
+ //表单验证 
+  $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2, 
+            datatype:{//传入自定义datatype类型 ;
+                "user" : /^[a-z0-9_-]{3,16}$/,
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             }
+	});
+}); 
+//日期选择
+ 
+$(".gg").sjSelect(); 
+$(".lSelect").click(function(){
+    $("#id_birth_date").blur();
+}); 
+</script>
+{% endblock %}

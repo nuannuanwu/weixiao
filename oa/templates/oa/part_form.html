@@ -1,0 +1,68 @@
+{% extends 'oa/admin/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %} 
+<style>
+
+#item-tab li { float: left; width:90px; }
+#item-tab li a { line-height: 19px; }
+.main .tab li a { float:left; }
+</style>
+<div class="main">
+    <div class="tab" style="border: none;">
+          {% if category.id == 4 %}<a href="{% url oa_part_teache site.id %}" class="come-back pull-right" style=" float:right;">返回</a>{% endif %}
+         <ul class="nav nav-tabs" id="item-tab" style=" margin-rigth:100px; padding:0;">
+            {% for c in categorys %}
+            <li rel="{{c.id}}" {% if c.id == category.id %}class="active"{% endif %}><a href="{% url oa_part_nav_grove site.id %}?cid={{c.id}}">{{c.name}}</a>{% endfor %}
+            {% if not categorys %}
+            <li rel="{{category.id}}" class="active"><a href="javascript:;">{{category.name}}</a></li>{% endif %} 
+        </ul> 
+    </div>  
+     <div class="column"> 
+        <div class="form-horizontal form-kPicCon"> 
+            <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                {{form.media}}
+                {% if category.id == 4 %}		
+                <div class="form-div">
+                    <label>标题文字*</label>
+                    {{form.title|attr:"datatype:*"|attr:"errormsg:"|attr:"nullmsg:请填写标题"}}
+                    &nbsp;<span id="id_titleTip" class="erro-tips">{{form.title.errors|striptags}}</span>
+<!--                <span id="id_creatorTip" class="erro-tips">{{form.creator.errors|striptags}}</span>
+                    {{form.creator|attr:"class:span2 pull-right"}}
+                    <span class="pull-right">作者*&nbsp;&nbsp;&nbsp;&nbsp;</span>-->
+                </div>
+                
+                {% endif %}
+                <div class="cbox">
+                	<!--label>内容*</label-->
+                	{{form.content}}
+                </div>
+                <p><span id="id_contentTip" class="erro-tips">{{form.content.errors|striptags}}</span></p>
+                <div style="display:none;">{{form.attachment}}</div>
+                <div class="form-div" {% if category.id != 4 %}style="display:none"{% endif %}>{{form.type|attr:"class:span2"}}</div>
+                {{form.video_type|attr:"class:hide"}}
+                <input type="hidden" name="cid" value="{% if category %}{{category.id}}{% else %}{{categorys.0.id}}{% endif %}">
+                <div class="website-form-actions">
+                    <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+                </div>
+            </form>
+         </div>
+	</div>
+</div>
+<script type="text/javascript">
+    //表单验证 
+ //表单验证 
+  $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true
+	});
+}); 
+
+//$("#item-tab li").eq(0).addClass("active");
+$("#item-tab li a").click(function(){ 
+        $(this).parent('li').siblings().removeClass("active")
+        $(this).parent('li').addClass("active");
+});
+</script>
+{% endblock %}

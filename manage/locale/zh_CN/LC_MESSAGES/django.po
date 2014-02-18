@@ -1,0 +1,380 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-08-02 16:52+0800\n"
+"PO-Revision-Date: 2012-07-26 15:25+0700\n"
+"Last-Translator: zhanxd <zxd.saint@qq.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: plural-Forms: nplurals=2; plural=(n!=1);\\n\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: CHINA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: decorators.py:26 templates/manage/login.html:49
+msgid "Log in"
+msgstr "登录"
+
+#: forms.py:25 forms.py:82
+msgid "validate mobile number required."
+msgstr "手机号码是必须的"
+
+#: forms.py:143
+msgid "Username"
+msgstr "用户名"
+
+#: forms.py:144
+msgid "Username must contain only letters, numbers and underscores."
+msgstr "用户名只允许包含字母，数字，或是下划线"
+
+#: forms.py:158
+msgid "This username is already taken."
+msgstr "这个用户名已经存在。"
+
+#: forms.py:160
+msgid "This username is not allowed."
+msgstr "这个用户名不合法。"
+
+#: helpers.py:66
+msgid "Files Missing"
+msgstr "找不到文件"
+
+#: helpers.py:74
+msgid "Unsupported format, or corrupt file"
+msgstr "不支持的格式 或是 文件损坏"
+
+#: templates/manage_base.html:88 templates/manage/class_index.html:13
+#: templates/manage/school_send_student_account.html:7
+#: templates/manage/student_index.html:12
+#: templates/manage/teacher_create.html:9
+#: templates/manage/teacher_index.html:11
+msgid "Management"
+msgstr "管理"
+
+#: templates/manage_base.html:91 templates/manage/class_create.html:9
+#: templates/manage/class_index.html:13 templates/manage/class_update.html:9
+#: views/student.py:113 views/teacher.py:112
+msgid "Class"
+msgstr "班级"
+
+#: templates/manage_base.html:94 templates/manage/student_create.html:11
+#: templates/manage/student_index.html:12
+#: templates/manage/student_update.html:9
+msgid "Student"
+msgstr "学生"
+
+#: templates/manage_base.html:97 templates/manage/teacher_create.html:9
+#: templates/manage/teacher_index.html:11
+msgid "Teacher"
+msgstr "教师"
+
+#: templates/manage/admin_change_username.html:4
+#, python-format
+msgid "Account &raquo; %(username)s"
+msgstr "账号 %(username)s"
+
+#: templates/manage/admin_change_username.html:12
+msgid "Change username"
+msgstr "更改用户名"
+
+#: templates/manage/class_create.html:7 templates/manage/class_update.html:7
+#: templates/manage/class_view.html:8 templates/manage/student_create.html:9
+#: templates/manage/student_update.html:7 templates/manage/student_view.html:9
+#: templates/manage/teacher_create.html:7
+#: templates/manage/teacher_update.html:7
+#: templates/manage/teacher_view.html:10
+msgid "Back"
+msgstr "返回"
+
+#: templates/manage/class_create.html:9 templates/manage/class_index.html:11
+#: templates/manage/student_create.html:11
+#: templates/manage/student_index.html:10
+#: templates/manage/teacher_index.html:9
+msgid "Create"
+msgstr "创建"
+
+#: templates/manage/class_index.html:19
+msgid "Class name"
+msgstr "班级名字"
+
+#: templates/manage/class_index.html:20 templates/manage/student_index.html:23
+#: templates/manage/teacher_index.html:16
+msgid "Search"
+msgstr "搜索"
+
+#: templates/manage/class_update.html:9 templates/manage/student_update.html:9
+msgid "Update"
+msgstr "更新"
+
+#: templates/manage/class_view.html:11 templates/manage/student_view.html:12
+#: templates/manage/teacher_view.html:7
+msgid "Edit"
+msgstr "编辑"
+
+#: templates/manage/class_view.html:36
+msgid "Student list"
+msgstr "学生列表"
+
+#: templates/manage/class_view.html:37
+msgid "Teacher list"
+msgstr "教师列表"
+
+#: templates/manage/class_view.html:52
+msgid "Choose student"
+msgstr "选择学生"
+
+#: templates/manage/class_view.html:55
+msgid "Choose teacher"
+msgstr "选择教师"
+
+#: templates/manage/class_view.html:63
+msgid "Add"
+msgstr "添加"
+
+#: templates/manage/login.html:18
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "请更正下边的错误"
+msgstr[1] "请更正下边的错误"
+
+#: templates/manage/login.html:34
+msgid "Username:"
+msgstr "用户名："
+
+#: templates/manage/login.html:38
+msgid "Password:"
+msgstr "密码："
+
+#: templates/manage/login.html:45
+msgid "Forgotten your password or username?"
+msgstr "忘记用户名或密码？"
+
+#: templates/manage/school_send_student_account.html:7
+msgid "Send Student Account"
+msgstr "发送学生账号"
+
+#: templates/manage/school_send_student_account.html:13
+#: templates/manage/teacher_view.html:52
+msgid "choose class"
+msgstr "选择班级"
+
+#: templates/manage/school_send_student_account.html:26
+#: templates/manage/student_view.html:48
+msgid "Send"
+msgstr "发送"
+
+#: templates/manage/school_send_student_account.html:27
+#: templates/manage/includes/class_form.html:30
+#: templates/manage/includes/student_form.html:58
+#: templates/manage/includes/student_import.html:28
+#: templates/manage/includes/teacher_form.html:47
+#: templates/manage/includes/teacher_import.html:28
+msgid "Cancel"
+msgstr "取消"
+
+#: templates/manage/student_index.html:9 templates/manage/teacher_index.html:8
+msgid "Import"
+msgstr "导入"
+
+#: templates/manage/student_index.html:22
+msgid "Student name"
+msgstr "学生名字"
+
+#: templates/manage/student_view.html:14
+msgid "Details"
+msgstr "详情"
+
+#: templates/manage/student_view.html:35
+msgid "Age"
+msgstr "年龄"
+
+#: templates/manage/student_view.html:39
+msgid "Gender"
+msgstr "性别"
+
+#: templates/manage/student_view.html:48
+msgid "Account"
+msgstr "账号"
+
+#: templates/manage/teacher_index.html:15
+msgid "Teahcer name"
+msgstr "教师名字"
+
+#: templates/manage/teacher_view.html:41
+msgid "Working class"
+msgstr "所在班级"
+
+#: templates/manage/teacher_view.html:58
+msgid "Join class"
+msgstr "加入班级"
+
+#: templates/manage/includes/class_form.html:29
+#: templates/manage/includes/student_form.html:57
+#: templates/manage/includes/teacher_form.html:46
+msgid "Save"
+msgstr "保存"
+
+#: templates/manage/includes/class_form.html:35
+#: templates/manage/includes/student_form.html:64
+#: templates/manage/includes/teacher_form.html:53
+msgid "Delete"
+msgstr "删除"
+
+#: templates/manage/includes/class_view_users.html:21
+msgid "Remove"
+msgstr "移除"
+
+#: templates/manage/includes/student_import.html:8
+msgid "Import students"
+msgstr "导入学生"
+
+#: templates/manage/includes/student_import.html:13
+#: templates/manage/includes/teacher_import.html:13
+msgid "Template"
+msgstr "模版"
+
+#: templates/manage/includes/student_import.html:19
+#: templates/manage/includes/teacher_import.html:19
+msgid "Upload"
+msgstr "上传"
+
+#: templates/manage/includes/student_import.html:27
+#: templates/manage/includes/teacher_import.html:27
+msgid "Submit"
+msgstr "提交"
+
+#: templates/manage/includes/teacher_import.html:8
+msgid "Import teachers"
+msgstr "导入教师"
+
+#: views/admin.py:80
+msgid " Username was changed successfuly"
+msgstr "用户名修改成功"
+
+#: views/class.py:111
+msgid "Student does not exist"
+msgstr "这位学生不存在"
+
+#: views/class.py:121 views/class.py:148
+msgid "Group does not exist"
+msgstr "这个班级不存在"
+
+#: views/class.py:138
+msgid "Teacher does not exist"
+msgstr "这位教师不存在"
+
+#: views/school.py:46 views/student.py:134
+msgid "resend user account successfully"
+msgstr "重发用户账号成功"
+
+#: views/student.py:111
+msgid "Student List"
+msgstr "学生列表"
+
+#: views/student.py:113 views/teacher.py:112
+msgid "School"
+msgstr "学校"
+
+#: views/student.py:113 views/teacher.py:112
+msgid "Name"
+msgstr "名字"
+
+#: views/student.py:113 views/teacher.py:112
+msgid "Mobile"
+msgstr "手机"
+
+#: views/teacher.py:62
+msgid "Teacher deleted"
+msgstr "这位教师已删除"
+
+#: views/teacher.py:110
+msgid "Teacher List"
+msgstr "教师列表"
+
+#~ msgid "Your don't have that right to import %(role)s into %(school_name)s."
+#~ msgstr "你没有权限导入 %(role)s 进 %(school_name)s。"
+
+#~ msgid ""
+#~ "System error, class's name '%s' can't be the same, Please Contact Manager "
+#~ "to solve this problem"
+#~ msgstr "系统错误，班级名称 '%s' 不能相同，请联系管理员来解决这个问题。"
+
+#~ msgid ""
+#~ "System error, Duplicate %(role)s: %(name)s, Please Contact Manager to "
+#~ "solve this problem"
+#~ msgstr "系统错误，重复的 %(role)s: %(name)s，请联系管理员来解决这个问题。"
+
+#~ msgid " %s has already exist"
+#~ msgstr "%s 已经存在。"
+
+#~ msgid " %s does not exist"
+#~ msgstr "%s 不存在"
+
+#~ msgid " %s was created successfully"
+#~ msgstr " %s 创建成功"
+
+#, fuzzy
+#~ msgid "%(group_name)s was deleted successfully"
+#~ msgstr "%(gourp_name)s 删除成功"
+
+#~ msgid " %s was updated successfully"
+#~ msgstr "%s 更新成功"
+
+#~ msgid "create teacher %s successfully"
+#~ msgstr "添加教师 %s 成功"
+
+#~ msgid "update teacher %s successfully"
+#~ msgstr "更新教师 %s 成功"
+
+#, fuzzy
+#~ msgid " %(student_name)s deleted"
+#~ msgstr "%(student_name)s 已删除"
+
+#, fuzzy
+#~ msgid "create user %(a)s successfully"
+#~ msgstr "创建用户 %(a)s 成功"
+
+#~ msgid "update student %s successfully"
+#~ msgstr "更新学生 %s 成功"
+
+#~ msgid "%(t)s yes a"
+#~ msgstr "%(t)s 真的来"
+
+#~ msgid "%(t)s yes a "
+#~ msgstr "%(t)s 夹到来"
+
+#~ msgid "%(tt)s t2 show"
+#~ msgstr "%(tt)s t2 展示"
+
+#, fuzzy
+#~ msgid "%(gg)s t3 show"
+#~ msgstr "%(gg)s t3 展示 啊"
+
+#~ msgid "t4 show"
+#~ msgstr "t4 展示啊"
+
+#~ msgid "t5 %(t)s"
+#~ msgstr "t5 %(t)s 来啊来啊"
+
+#, fuzzy
+#~ msgid "%(name)s grouu show"
+#~ msgstr "%(name)s 几号啊"
+
+#~ msgid "haoa"
+#~ msgstr "好啊"
+
+#, fuzzy
+#~ msgid " %s was deleted successfully"
+#~ msgstr " %s 创建成功"
+
+#~ msgid "Imported %d "
+#~ msgstr "导入 %d "

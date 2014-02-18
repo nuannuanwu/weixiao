@@ -1,0 +1,40 @@
+{% load i18n kinger_tags oa_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    {% get_moudle_name as moudle_name %}
+    <title>{{moudle_name}}学园站点管理</title>
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon-weixiao.ico">
+    <link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/base.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}oa/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css"/>
+    {% block extra_css %}{% endblock %}
+
+   
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery-1.7.2.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/plugins/jquery.hope12580.plugins.min.js"></script>
+    <script src="{{ STATIC_URL }}kinger/js/base.js"></script>
+    <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}oa/js/jquery.placeholder.js" type="text/javascript" charset="UTF-8"></script>
+    <script src="{{ STATIC_URL }}oa/js/base.js"></script>
+    <script src="{{ STATIC_URL }}oa/js/Validform_v5.3.2_min.js" type="text/javascript" charset="UTF-8"></script>
+    <script src="{{ STATIC_URL }}oa/js/uploadify/jquery.uploadify.js" type="text/javascript" charset="UTF-8"></script> 
+    {% block extra_js %}{% endblock %}
+    {% block extra_head %}{% endblock %}
+     
+</head>
+<body> 
+    {% for message in messages %}
+        <script>jNotify("{{ message }}");</script>
+    {% endfor %}
+    {% include "oa/admin/header.html" %}
+    {% include "oa/admin/sidebar.html" %}
+    {% block content %}{% endblock %}
+    {% include "oa_footer.html" %}
+    <script src="{{ STATIC_URL }}oa/js/site_backstage.js"></script>
+</body>
+</html>

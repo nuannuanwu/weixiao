@@ -1,0 +1,256 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<!--<style>
+ 
+ .captcha { position: absolute; left: 100px; }
+    
+</style>-->
+<div class="active-content">
+	<div class="act-c-title" id="maibox-c-title">
+    	<h3><img src="{{ STATIC_URL }}oa/site/images/title_7.jpg" /></a></h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content">
+        	<div class="top-bg"></div>
+            <div class="m-c-bg">
+            	<div class="registration">
+                	<form id="regist_form" class="registerform" action="" method="post">{% csrf_token %}
+                    	<table>
+                            <thead><tr ><th style="background-color: #B5D664;" colspan="10">在线报名表</th></tr></thead>
+                            <tbody>
+                            	<tr> 
+<!--                                <td>班级</td>
+                                    <td>
+                                    input type="text" class="input_60" /		
+                                    {{form1.group|attr:"class:input_60"}}
+                                    <span class="erro-tips">*</span>
+                                    </td>-->
+                                    <td>姓 名</td>
+                                    <td class="align-left" >
+                                    <!--input type="text" class="input_60" /-->
+                                    {{form1.name|attr:"class:input_60"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg: "}}
+                                    <span style=" display: none;" class="Validform_checktip "></span>
+                                    <span class="erro-tips">*</span>
+                                    </td>
+                                    <td>性 别</td>
+                                    <td>
+                                    {{form1.gender|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:"}}
+                                    <span style=" display: none;" class="Validform_checktip "></span>
+                                    <span class="erro-tips">*</span>
+                                    </td>
+                                    <td>籍 贯</td>
+                                    <td colspan="2">
+                                    {{form1.hometown|attr:"class:input_60"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:"}}
+                                    <span style=" display: none;" class="Validform_checktip "></span>
+                                    <span class="erro-tips">*</span>
+                                    </td>
+                                    <td>民 族</td>
+                                    <td colspan="2"  class="align-left">
+                                    {{form1.nation|attr:"class:input_60"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:"}}
+                                    <span style=" display: none;" class="Validform_checktip "></span>
+                                    <span class="erro-tips">*</span>
+                                    </td> 
+                                </tr>
+                                <tr>
+                                    <td>地 址</td>
+                                    <td colspan="6" class="align-left">
+                                    {{form1.address|attr:"class:input_410"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:"}}
+                                    <span style=" display: none;" class="Validform_checktip "></span>
+                                    <span class="erro-tips">*</span>
+                                    </td>
+                                    <td>出生日期</td>
+                                    <td colspan="2" class="align-left">
+                                    {{form1.birth_date|attr:"readonly:true"|attr:"class:selectdata1 input_140"|attr:"datatype:* "|attr:"errormsg:"|attr:"nullmsg:"|attr:"idData:2012-01-01"}}
+                                    <span style=" display: none;" class="Validform_checktip "></span>
+                                    <span class="erro-tips">*</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="5">家庭成员</td>
+                                    <td>成 员</td>
+                                    <td>姓 名</td>
+                                    <td colspan="4">单 位</td>
+                                    <td colspan="3">联系电话</td>
+                                </tr>
+                                {{ form2.management_form }}
+                                {% for form in form2 %}
+                                <tr>
+                                    <td class="align-left">
+                                     {% if forloop.counter == 1 %}
+                                        {{form.relation|attr:"class:input_60"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:"}}
+                                        <span style=" display: none;" class="Validform_checktip "></span>
+                                        <span class="erro-tips"> *</span>
+                                     {% else %}
+                                        {{form.relation|attr:"class:input_60"}} &nbsp;
+                                     {% endif %} 
+                                    </td>
+                                    <td class="align-left">
+                                    {% if forloop.counter == 1 %}
+                                        {{form.name|attr:"class:input_60"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:"}} 
+                                        <span style=" display: none;" class="Validform_checktip "></span>
+                                        <span class="erro-tips"> *</span>
+                                    {% else %}
+                                        {{form.name|attr:"class:input_60"}} &nbsp;
+                                    {% endif %} 
+                                    </td>
+                                    <td colspan="4" class="align-left"> 
+                                    {% if forloop.counter == 1 %}
+                                        {{form.unit|attr:"class:input_200"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:"}}
+                                        <span style=" display: none;" class="Validform_checktip "></span>
+                                        <span class="erro-tips"> *</span>
+                                    {% else %}
+                                        {{form.unit|attr:"class:input_200"}} &nbsp;
+                                    {% endif %}
+                                    </td>
+                                    <td colspan="3"> 
+                                    {% if forloop.counter == 1 %}
+                                        {{form.mobile|attr:"class:input_140"|attr:"datatype:m "|attr:"errormsg: "|attr:"nullmsg:"}}  
+                                        <span class="erro-tips"> *</span>
+                                    {% else %}
+                                        {{form.mobile|attr:"class:input_140"|attr:"ignore:ignore"|attr:"datatype:m "|attr:"errormsg: "|attr:"nullmsg:"}} &nbsp;
+                                    {% endif %}
+                                    <span style=" display: none;" class="Validform_checktip "></span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                	<td colspan="2">所交证件名称</td>
+                                    <td colspan="5" class="align-left">{{form1.credential|attr:"class:input_285"}}</td>
+                                    <td>药物过敏史</td>
+                                    <td colspan="2" class="align-left">{{form1.drug_allergy|attr:"class:input_140"}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">入托时间</td>
+                                    <td colspan="2" class="align-left">{{form1.nursery_time|attr:"class:selectdata input_140"}}</td>
+                                    <td>体检情况</td>
+                                    <td colspan="2" class="align-left">{{form1.examination|attr:"class:input_60"}}</td>
+                                    <td>患病史</td>
+                                    <td colspan="2" class="align-left">{{form1.disease_history}}</td>
+                                </tr>
+                                <tr>
+                                	<td colspan="2">经办人</td>
+                                    <td colspan="2" class="align-left">
+<!--                                        {{form1.charger|attr:"class:input_140"}}-->
+                                        <input type="text" value="" name="charger"  class="input_140" />
+                                    </td>
+                                    <td>备 注</td>
+                                    <td colspan="5" class="align-left"><!--input type="text" class="input_360" /-->{{form1.description}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="10" class="align-left">
+                                        确认以上所填资料准确无误。家长签字 &nbsp; 
+                                        {{form1.signature|attr:"class:input_140"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:"}} 
+                                        <span class="erro-tips">*</span>
+                                        <span style=" display: none;" class="Validform_checktip "></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                	<td colspan="10" class="align-left">
+                                    	<div class="captchawrap">
+                                            <span style="color:#353535; margin-right:5pxp;">
+                                            	验证码 <font color="#f30"> *&nbsp;</font>
+                                            </span> 
+                                            <span style=" position: relative;">
+                                                <input type="hidden" name="captcha_0" value="" id="id_captcha_0"> 
+                                                <input style=" margin-right:10px;" type="text" name="captcha_1" id="id_captcha_1" datatype="*" errormsg="" nullmsg="输入验证信息" >
+                                                <img src="" alt="captcha" class="captcha">  
+                                                <span style=" display: none; margin-left: 10px;" class="Validform_checktip "></span>
+                                                
+                                            </span>
+                                            <span class="erro-tips">{{form1.captcha.errors}}</span>
+                                            
+                                            <!--input type="text" class="input_140" /-->
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="sub-btn e-form">
+                            <input type="submit" class="btn bc-btn" value="保&nbsp;&nbsp;存" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="bottom-bg"></div>
+        </div>  
+    </div>
+</div>
+<script>
+ //表单验证 
+ $(function(){
+    	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype: 2,
+            showAllError: true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "user"  : /^[a-zA-Z][a-zA-Z0-9_-]{2,14}[a-zA-Z0-9]$/,
+                "pow"  : /^[0-9a-zA-Z!$#%]{6,24}$/,
+                "date" : /^(?:(?:1[6-9]|[2-9][0-9])[0-9]{2}([-/.]?)(?:(?:0?[1-9]|1[0-2])\1(?:0?[1-9]|1[0-9]|2[0-8])|(?:0?[13-9]|1[0-2])\1(?:29|30)|(?:0?[13578]|1[02])\1(?:31))|(?:(?:1[6-9]|[2-9][0-9])(?:0[48]|[2468][048]|[13579][26])|(?:16|[2468][048]|[3579][26])00)([-/.]?)0?2\2(?:29))$/
+             } 
+	});
+}); 
+//日期选择 
+var date = new Date(); 
+var m = date.getMonth(), d = date.getDate(), y = date.getFullYear();
+if(m<10){
+   m = "0"+m; 
+}
+if(d<10){
+    d = "0"+d; 
+}
+$(".selectdata1").datepicker({
+    dateFormat: 'yy-mm-dd',
+    changeYear: true,
+    maxDate: new Date(y, m, d), 
+    onSelect:function(date){  
+        this.focus();  
+        this.blur();  
+    }
+});
+$(".selectdata").datepicker({
+    dateFormat: 'yy-mm-dd',
+    changeYear: true, 
+    onSelect:function(date){  
+        this.focus();  
+        this.blur();  
+    }
+});
+var url = window.location.href;
+$("#regist_form").attr("action",url);
+
+    $('[alt=captcha]').click(function(){
+        $.get("?newsn=1", function(result){ 
+            $('[alt=captcha]').attr("src",result);
+            $('#id_captcha_0').attr("value",result.replace("http://", "").split('/')[3]); 
+        });
+        return false;
+    });
+
+    $(function() {
+        $('[alt=captcha]').trigger("click");
+    });
+    //日期插件中文样式
+jQuery(function($){
+	$.datepicker.regional['zh-CN'] = {
+		closeText: '关闭',
+		prevText: '<上月',
+		nextText: '下月>',
+		currentText: '今天',
+		monthNames: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+		monthNamesShort: ['一','二','三','四','五','六','七','八','九','十','十一','十二'],
+		dayNames: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+		dayNamesShort: ['周日','周一','周二','周三','周四','周五','周六'],
+		dayNamesMin: ['日','一','二','三','四','五','六'],
+		weekHeader: '周',
+		dateFormat: 'yy-mm-dd',
+		firstDay: 1,
+		isRTL: false,
+		showMonthAfterYear: true,
+		yearSuffix: '年'};
+	$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+});
+</script>
+{% endblock %}

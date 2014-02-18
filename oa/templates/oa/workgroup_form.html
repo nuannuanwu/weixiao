@@ -1,0 +1,209 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<script src="{{ STATIC_URL }}oa/js/jquery-1.9.1.js"></script>
+ <!--<script src="{{ STATIC_URL }}oa/js/jquery-migrate-1.2.1.js"></script>-->
+ <script type="text/javascript">
+    var jQ19 = $.noConflict(true); // JQ19
+</script> 
+<script src="{{ STATIC_URL }}oa/js/checkbox_mian.js"></script> 
+<div class="main">
+     <div class="tab">
+     	<span>
+     		{% if workgroup %}
+     			{% if ty == 1 %}虚拟组 {% else %}集团虚拟组{% endif %} {{workgroup.name}} 修改
+     		{% else %}
+     			{% if ty == 1 %}添加虚拟组 {% else %}添加集团虚拟组{% endif %}
+     		{% endif %}
+     	</span>
+     	<a class="btn" href="{% if ty == 1 %}{% url oa_workgroup_personal %}?ty={{ty}}{% else %}{% url oa_workgroup_list %}?ty={{ty}}{% endif %}">返回</a>
+     </div>
+     <div class="column">
+     	<div class="chat-form">
+            <form id="form_post" class="registerform send-wrap" action="" method="post">{% csrf_token %} 
+                <p><label>组 名*</label> {{ form.name|attr:"datatype:*"|attr:"errormsg: "|attr:"nullmsg:请填写组名"}}&nbsp;&nbsp;<span class="Validform_checktip "></span>
+                     &nbsp;<span id="id_nameTip" class="erro-tips">{{form.name.errors|striptags}}</span></p>
+                 <p><label>描 述</label> {{ form.description|attr:"class:span3" }}</p>
+                 <p> <label>已选成员</label>
+                 <div class="selected-box"> 
+                        <div id="class_hide" class="hide">
+                            {% for s in schools %}
+                                <input id="school_cache_{{s.id}}" sname="school_cache" rel="school_cache" type="hidden" alt="{{s.id}}" value="{% if workgroup %}{{s|get_workgroup_user:workgroup}}{% endif %}">
+                            {% endfor %} 
+                        </div>
+                        <div id="server_name" class="name-list" style="margin-left:80px; padding:10px 5px;">
+                            <ul style="width: 460px;">
+                           {% for t in workgroup.members.all %}
+                                <li>
+                                     <input data-id="{{t.id}}" type="checkbox" name="to" value="{{t.id}}" checked="checked" style="display:none;">
+                                     {{t.teacher.name}}（{% if t.teacher.school.type == 2 %}集团{% else %}学园{% endif %}&nbsp;{{t.teacher.postjob.position}}）
+                                     <span class="rm_user" data-id="{{t.id}}">&nbsp;</span>
+                                 </li>
+                            {% endfor %} 
+                            </ul>
+                        </div>
+                  </div>
+                  </p>
+                   <div class="selectp" style="margin-left:80px;">
+                    <a href="javascript:;" class="select-btn" id="add_member"><span>添加成员</span></a>
+                    <a href="javascript:;" style="float:right;" id="clear" class="rem-btn">清空</a> 
+                  </div>
+                  <p>
+                      <label>&nbsp;</label>
+                     <!-- <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >-->
+                      <a id="sub_post" style="color:#fff;" class="btn btn-success"  href="javascript:;"> 保 存 </a>
+                      <!--<input class="btn" style=" margin-left:25px;" type="reset" value="取 消" />-->
+                      <a class="btn" href="{% if ty == 1 %}{% url oa_workgroup_personal %}?ty={{ty}}{% else %}{% url oa_workgroup_list %}?ty={{ty}}{% endif %}" style=" margin-left:28px;">取 消</a>
+                  </p>
+                  <div  style="display:none">
+                     {% for t in teachers %}
+                       <input  type="checkbox" name="members" value="{{t.id}}">
+                     {% endfor %}
+                 </div>
+                    <input type="hidden" name="ty" value="{{ty}}"> 
+               </form>
+	      </div>
+	 </div>
+</div>
+<div class="modal" id="myModal" style="display:none;">
+    <div class="modal-header">
+        <!--<a class="close" data-dismiss="modal">×</a>-->
+        <input class="btn" style="vertical-align: auto; float: right;" data-dismiss="modal" type="button" value=" 取 消 "/> 
+        <input id="server_role" style="vertical-align: auto;float: right; margin-right: 30px;"  type="button" class="btn btn-success" data-dismiss="modal" value="{% trans 'Save' %}" />
+        <h4 style="margin-right: 200px;">添加成员</h4>
+    </div> 
+    <div id="content" style="padding:10px;">
+        <div class="member">
+            <p class="slt-title"><span>已选成员</span><a href="javascript:;" class="rem-btn">清空</a></p>
+            <div id="data_panel" class="name-list"> 
+                <ul style="width: 500px;">
+                </ul> 
+            </div>
+        </div>
+        <div id="data-up"> 
+            <span style="color:#616161; margin-left: 30px;"><img src="{{ STATIC_URL }}oa/images/import.gif" />正在加载请稍等...</span>
+        </div>
+    </div>
+    <div class="modal-footer"> 
+        <p style="text-align:center; padding:0; margin:0;" > 
+            <input type="hidden" id="user_id" value="{{user.id}}"> 
+            <!--<a id="server_role" class="btn btn-success" data-dismiss="modal" href="javascript:;">{% trans "Save" %}</a>-->
+            <!--<a class="btn " data-dismiss="modal" href="javascript:;">取 消</a>--> 
+        </p> 
+    </div>
+</div>
+<div id="cheak_dis" style="display:none;">
+   <ul>
+   {% for t in workgroup.members.all %}
+     <li>
+         <input data-id="{{t.id}}" type="checkbox" name="to" value="{{t.id}}" checked="checked" style="display:none;">
+         {{t.teacher.name}}（{% if t.teacher.school.type == 2 %}集团{% else %}学园{% endif %}&nbsp;{{t.teacher.postjob.position}}）
+         <span class="rm_user" data-id="{{t.id}}">&nbsp;</span>
+     </li> 
+    {% endfor %} 
+   </ul>
+</div> 
+ <input id="box_type" type="hidden" value="0" />
+ <input id="box_server" type="hidden" value="1" />
+ 
+<script>
+ //表单验证 
+ jQ19(function(){  
+    //$(".registerform").Validform(); //就这一行代码！; 
+    $(".registerform").Validform({
+        tiptype:2,
+        showAllError:true
+    }); 
+    
+    $("#sub_post").click(function(){
+        if($("#box_server").val()==0){ 
+        }else{
+            $("#class_hide").find('input').val( );
+        } 
+        $("#form_post").submit();
+    });
+    
+   jQ19("#add_member").click(function(){ //弹框选人
+        type = $("[name=ty]").attr("value");
+        wid = "{{workgroup.id|default:0}}";
+        url = "{% url oa_workgroup_set %}";
+        $('#myModal').modal('toggle'); //弹框 
+        if($("#box_type").val() == 0){
+            $.post(url,{workgroup_id:wid,ty:type},function(result){
+                data = $.parseJSON(result);
+                $("#data-up").empty();
+                $("#data-up").html(data.con);
+                $("#box_type").val('1');
+            });
+        }    
+    });
+     
+    var  schoolUserList = " ";
+    var  userid = [] ;
+    jQ19(document).on('change', "#school_choice" ,function(){// 选着学园 
+      $('.message_add_remind').show();
+       var school_id = $(this).val(),	
+       type = $("[name=ty]").attr("value"),
+       cache = $("#school_cache_" + school_id).val(),
+      // alert(userid);
+       userid = cache.split(','),
+       cacheuserid =userid.toString();
+       wid = "{{workgroup.id|default:0 }}", 
+       url = "{% url oa_workgroup_set %}"; 
+       $.post(url,{workgroup_id:wid,ty:type,s:school_id,data:cacheuserid},function(result){
+           data = $.parseJSON(result); 
+           $("#data-up").empty();
+           $("#data-up").html(data.con);
+       });
+       schoolUserList = " ";
+       var boxAdd = $("#cheak_dis ul input");
+       jQ19.each(boxAdd, function(k,v){  
+           boxId = v.getAttribute("schoolid");
+           dataId = parseInt(v.getAttribute('data-id')); 
+           var index = $.inArray(dataId,userid);
+           if(boxId == school_id){ 
+              schoolUserList +="<li>"+ $(this).parent('li').html()+"</li>";
+              if(index < 0){
+                  userid.push(dataId);
+              } 
+              jQ19(this).parent('li').remove();
+           }
+       });
+        
+      //alert(schoolUserList + "schoolUserList")
+       var addUserHtml=$("#data_panel ul").html();  
+       $("#cheak_dis ul").append(addUserHtml);
+       $("#data_panel ul").empty();
+       $("#data_panel ul").append(schoolUserList); 
+       $("#school_cache_"+school_id).val(userid);
+       //pr(userid); 
+   });
+
+    $('#myModal').on('hide', function (e) {//获取校园 id
+       schoolId=$("#school_id").val();
+       //userIdAdd=$("#school_cache_"+schoolId).val(); 
+       $("#box_server").val(0);
+    })
+
+    //按 部门、 职务、姓名分类显示
+    $("[name=judgment]").live('click',function(){  
+            var csName = $(this).attr('class');
+            if($(this).attr("checked")){
+                    $(".box_"+csName).show();
+                    $(".box_"+csName).siblings().hide();
+            }  
+    });
+ 
+    $(".rem-btn").on('click',function(){ //删除全部已选成员 
+        $(".name-list ul").html("");
+        $('[type="checkbox"]:checked').prop('checked', false);
+     });
+    $("#server_role").on('click',function(){//保存选中 
+        $("#server_name ul").html(''); 
+        var serverChecked =$("#data_panel ul").html(); 
+        var cacheChecked = $("#cheak_dis ul").html();
+        $("#server_name ul").append(serverChecked+cacheChecked); 
+    }); 
+});
+</script>
+{% endblock %}

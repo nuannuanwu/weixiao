@@ -1,0 +1,107 @@
+/************************************************************************
+*
+*    description         : manage 公用样式文件，为避免跟其它css框架冲突，采用k为前缀
+*    use                 : 用途:为king中manage一些公用组件控件作样式定义   
+*    dependents          : 关联模块    [kinger manage]
+*    create              : 2012-6-29  saint
+*
+*
+*************************************************************************/
+/* `bootstrap - 扩展
+----------------------------------------------------------------------------------------------------*/
+	/* `form-horizatal
+	   ============================================================ */
+	.imghide{ width:0px; height:0px; overflow:hidden; visibility:hidden;}
+	.form-horizontal .control-group{zoom: normal;}
+	.form-horizontal .form-actions{padding-left: 210px;}
+	.form-horizontal .controls_rank select,.form-horizontal .controls_rank textarea,.form-horizontal .controls_rank input[type=text]{ margin-bottom: 10px}
+
+	/* 带分割线提示框 */
+	.form-horizontal .control_separate,.form-horizontal .control_separate_short{margin-top: 100px; padding-top: 15px; border-top: 1px dashed #999}
+	.form-horizontal .control_separate_short{ margin-top: 45px}
+	/* 带提示控件框 */	
+	.form-horizontal .controls-tipInput input{ display: inline-block !important; vertical-align: baseline; padding-right: 50px;}
+	.form-horizontal .tipInput-tip{ display: inline-block; *display: block; width: 50px; color: #999; margin-left:-20px; line-height: 18px; *float:left;}
+	.form-horizontal .tipInput-tip2{ display: inline-block; *display: inline-block;width: 50px; color: #999; margin:-25px 20px 0 -80px; line-height: 18px; text-align: right; *float:left;}
+
+	/* 头像展示模块 */
+	.form-kPicCon .thumbnail {width: 160px !important; height: 160px !important;}
+	.form-kPicCon .control-group .controls{margin-left: 210px;}
+	.form-horizontal .controls:first-child {*padding-left: 210px;}
+	.form-kPicCon .control-group .control-label input{margin: 5px 0 0 20px; width: 150px; overflow: hidden;font-size:8pt;}
+	.form-kPicCon .control-group .control-label span{text-align:left;}
+    .form-kPicCon .control-group .control-label input#id_logo ,.form-kPicCon .control-group .control-label input#id_avatar{ width:140px; font-size:14px;filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=image);}
+
+	/* 内容展示 */
+	.form-kPicCon-show h2,.form-kPicCon-show p{ margin-bottom: 15px !important;}
+	.form-kPicCon-show p{ font-size: 16px; color: #444;}
+	.form-kPicCon-show span{ display: inline-block; width: 95px;}
+/* `manage - base compontent,以kc前缀
+----------------------------------------------------------------------------------------------------*/
+.kc-t-a-c{ text-align: center;color: #999;}
+#change_img{ position:relative; top:10px; left:-20px;}
+/* 文字提示 */
+#tip-Tip{ position:relative; top:-100px; *top:0px;}
+.kc-tipText{ padding-left: 5px; color: #999}
+#kc-tipText{ margin-left:-235px; padding-left:0px;}
+.page-header h1{font-size:16px;color:#0086CC;font-weight:normal;}
+.page-header h1 i{color:#666;margin:0 5px;}
+/* `manage - index
+----------------------------------------------------------------------------------------------------*/
+	.w50{width:50%}
+	.h50{height: 50px;}
+	.h80{height:80px;}
+	.gray{background:whiteSmoke;}
+	.kManageTitle{padding:15px;font-size:18px;}
+	.kBorder{border-top: 1px solid #DDD;border-bottom: 1px solid #DDD;}
+	.kBorderIn{border-top: 1px solid #DDD;border-left: 1px solid #DDD;margin:-1px 0 0 -1px;overflow: hidden;}
+	.kImgClass, .kImgTeacher, .kImgStudent, .kImgCookbook, .kImgSendAcc{margin:15px 0 0 30px;width:50px;height:50px;}
+	.kImgClass{background:url(../img/manageIndex.png) 0 0 no-repeat;}
+	.kImgTeacher{background:url(../img/manageIndex.png) -50px -50px no-repeat;}
+	.kImgStudent{background:url(../img/manageIndex.png) 0 -50px no-repeat;}
+	.kImgCookbook{background:url(../img/manageIndex.png) -50px 0 no-repeat;}
+	.kImgSendAcc{background:url(../img/manageIndex.png) -100px 0 no-repeat;}
+	.kBorderIn dl{margin:15px 0 0 30px;}
+	.kBorderIn dt{font-size:16px;font-weight:normal;}
+	.kBorderIn dd{margin:10px 0 0 0;color:#666;}
+.margin{ position:relative; background:whiteSmoke; width:25px; height:79px;border-top: 1px solid #DDD;border-bottom: 1px solid #DDD; top:79px; left:98%;}
+/* `manage - sidebar
+----------------------------------------------------------------------------------------------------*/
+.kManageBar{padding:0}
+.kManageBar .nav-list li .kManageBar-title{ line-height: 36px}
+.kManageBar .nav-list li {line-height: 22px}
+
+/* `manage - kPicList
+----------------------------------------------------------------------------------------------------*/
+.kPicList .thumbnail{ padding: 6px; text-align: center; }
+
+	/* `kPicList-normal
+	   ============================================================ */
+	.tab-content{overflow: visible;}
+	.kPicList-normal li{ width: 180px; }
+	.kPicList-normal li .kClassPic{width:170px;float: right;}
+	.kPicList-normal li img{max-height: 115px;max-width: 166px;vertical-align: middle;}
+	.kPicList-normal li a{display: inline-block;line-height: 120px;width: auto;}
+	.kPicList-normal li .close{line-height:18px;}
+	.kPicList-normal .kListLink{ display:block;width: 148px;line-height:18px; height: 18px;font-size:16px; overflow: hidden;font-weight:normal;color: #444;}
+
+
+	/* `kPicList-mini
+	   ============================================================ */
+	.kPicList-mini li{ width: 80px; }
+	.kPicList-mini li img{ width: 64px; height: 64px}
+	.kPicList-mini li .kListLink{ display:block;margin:0 auto;line-height:18px; height: 18px; overflow: hidden; text-align:center;font-weight:normal;color: #444;}
+	.kPicList-mini .thumbnail .caption{padding:9px 0;overflow: hidden;}
+	
+/* `tabbable
+	============================================================ */
+	#add_user{ float:right; }
+	#add_user .chzn-container,#add_user select{ float: left;margin: 4px;}
+	#add_user button{ float: left;margin: 2px;}
+	
+/* `form
+	============================================================ */
+	.errorlist{margin:0;}
+	.errorlist li{list-style: none;line-height:12px;}
+#set-tip{ display:none; position:fixed; bottom:30px; right:100px; background-color:#f3fbff; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; border:#B9E3FF solid 1px; width:190px; overflow:hidden; padding:1em 2em;}
+#set-tip p{ margin:0px; background:url(../img/verification-ui6.gif) -10px -2px no-repeat; line-height:20px; padding-left:25px;}

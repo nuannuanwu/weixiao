@@ -1,0 +1,58 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<div class="main">
+      <div class="tab"><span>{% if school %}修改学园{% else %}添加学园{% endif %}</span><a class="tbbtn" href="{% url oa_school_list %}">返回</a></div>
+      <div class="column">
+          <div class="form-horizontal form-kPicCon">  
+		       <form id="post_form" class="registerform" action="{% if school %}{% url oa_school_update school.id %}{% else %}{% url oa_school_create %}{% endif %}" method="post">
+                     {% csrf_token %}
+                      <div class="uers-info"> 
+                         <p>
+                             <label>学园名称* </label>
+                             {{form.name|attr:"class:input-large"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入学园名称"}}&nbsp;<span id="id_nameTip" class="erro-tips">{{form.name.errors|striptags}}</span>
+                         </p>
+                         <p>
+                              <label>学园简称</label>
+                              {{form.short_name|attr:"class:input-medium"}}
+                              </p>  
+                         <p>
+                            <label>类别*</label>  
+                            <select id="id_type" name="type" class="span2"> 
+                              {% if school and  not school.parent %}
+                                <option selected="selected" value="2">集团</option>
+                              {% else %}
+                                <option selected="selected" value="1">幼儿园</option>
+                              {% endif %} 
+                            </select>
+                            <span id="id_typeTip" class="erro-tips">{{form.type.errors|striptags}}</span>
+                         </p> 
+                         <p>
+                            <label>所在地</label>
+                            {{form.city|attr:"class:input-medium"}}{{form.area|attr:"class:input-medium"}}
+                          </p>  
+                     </div> 
+                    <p> 
+                       <label> &nbsp; </label> 
+                        <input class="btn btn-success" type="submit" name="" value=" 保 存 " >
+                        <!--<input class="btn" style=" margin-left:15px;" type="reset"  value="取 消"/>-->
+                        <a class="btn" href="{% url oa_school_list %}" style=" margin-left:28px;">取 消</a>
+                    </p> 
+               </form>
+          </div>
+      </div>
+</div>
+<script>
+ $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             } 
+	});
+});  
+</script>
+{% endblock %}

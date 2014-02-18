@@ -1,0 +1,57 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate schools 10 %}
+<div class="main">
+     <div class="tab"><span>学园管理</span><a class="btn" href="{% url oa_school_create %}"><i class="add_btn">&nbsp;</i>添加</a></div>
+     <div class="column">
+          <div >
+              <form style="margin-bottom:10px;" class="form-inline" method="GET"> 
+                    <input type="text" name="q" id="keyW" class="input-medium"  value="{{query}}" placeholder="学园名称">
+                    <button type="submit" class="btn" id="searchB" />{% trans "Search" %}</button>
+              </form>
+          </div>
+          <div class="list"> 
+                <table>
+                     <tr align="center">
+                         <th width="220" scope="col">学园名称</th>
+                         <th width="150" scope="col">简称</th>
+                         <th width="80" scope="col">类型</th> 
+                         <th width="60" scope="col">操作</th>
+                     </tr>
+                     {% if not schools|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="7" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                      {% else %}
+                    {% for s in schools %}
+                     <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                         <td><a href="{% url oa_school_update s.id %}">{{s.name|truncatestr:":18"|default:'修改名称'}}</a></td>
+                         <td>{{s.short_name}}</td>
+                         <td>{% if s.parent %}幼儿园{% else %}集团{% endif %}</td>
+                         <td>{% if s.parent %}<a rel="del_event" href="javascript:;" data-href="{% url oa_school_delete s.id %}">删除</a>{% endif %}</td>
+                	 </tr>
+            	    {% endfor %}
+                    {% endif %}
+                </table>
+                <div class="pagination" style="text-align:center;">
+                	{% paginate %}
+               </div>
+           </div>
+     </div>
+</div>
+<script> 
+//        $("#keyW").blur(function(){
+//            dissearch();
+//        });
+$("a[rel=del_event]").click(function(){ //删除操作
+      var f = confirm('确认删除吗?');
+      if(f){
+        var href = $(this).data("href"); 
+        window.location = href;
+      } 
+  });       
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="active-content">
+	<div class="act-c-title recruit-title">
+    	<h3><img src="{{ STATIC_URL }}oa/site/images/title_16.jpg" /></h3>
+    </div>
+    <div class="c-wrap">
+    	<div class="main-content recruit-content">
+        	<div class="top-bg"></div>
+            <div class="m-c-bg">
+            	<div class="m-c">
+                    <!--h4 class="teaching-title">办学特色</h4-->
+                    <!--p class="words-info">
+                    	发布者：张老师&nbsp;&nbsp;&nbsp;&nbsp;发布时间：2013-05-16 15:53
+                    </p-->
+                    <div class="intro-words">
+                        <p>{{recruits.0.content|safe}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-bg"></div>
+        </div>  
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css">
+<body>
+<table class="table">
+	<tr><td>家长登录名</td><td>评论</td><td>班级</td><td>家长id</td><td>学校</td><td>学生</td><td>访问首页数</td><td>上次登录</td><td>登录数</td><td>最后一次访问时间</td></tr>
+	{% for d in info %}
+	<tr>
+		{% for key,value in d.items %}
+			{% if key == 'login' or key == 'access' %}
+				{% if value %}
+					<td><a target="_blank" href="{% url cron_parent_access_info d.uid %}?ty={{key}}">{{value}}</a></td>
+				{% else %}
+					<td>{{value}}</td>
+				{% endif %}
+			{% else %}
+				<td>{{value}}</td>
+			{% endif %}
+		{% endfor %}	
+	</tr>
+	{% endfor %}	
+</table>
+</body>

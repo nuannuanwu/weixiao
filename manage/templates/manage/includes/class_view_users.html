@@ -1,0 +1,31 @@
+{% load pagination_tags kinger_tags i18n %}
+{% autopaginate users 16 %}
+    <ul class="thumbnails kPicList kPicList-mini">
+        {% for u in users %}
+
+        {% if role == 0 %}
+            {% url manage_student_view u.id as view_url %}
+            {% url manage_class_remove_student class.id u.id as remove_url %}
+        {% else %}
+            {% url manage_teacher_view u.id as view_url %}
+            {% url manage_class_remove_teacher class.id u.id as remove_url %}
+        {% endif %}
+
+        <li>
+            <div class="thumbnail">
+                <a class="a_confirm_link close" data-dismiss="alert" href="{{remove_url}}">×</a>
+                <a href="{{view_url}}" title="{{u.description}}">
+                    <img src="{% media_path u.user.get_profile.get_avatar "avatar" %}" alt="">
+                </a>
+                <div class="caption">
+                    <a style="display:none;" class="a_confirm_link btn btn-danger btn-mini pull-right" data-dismiss="alert" href="{{ remove_url }}">{% trans "Remove" %}</a>
+                    <a class="kListLink" href="{{view_url}}" title="{{ u.name }}">{{u.name}}</a>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
+<div class="pagination">
+    {% paginate %}
+</div>

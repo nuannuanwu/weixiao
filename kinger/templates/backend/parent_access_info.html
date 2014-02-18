@@ -1,0 +1,9 @@
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css">
+<body>
+<table class="table">
+	<tr><td>家长登录名</td><td>{% if ty == 'login' %}登录时间{% else %}访问首页时间{% endif %}</td><td>访问ur</td></tr>
+	{% for d in access %}
+	<tr><td>{{d.user}}</td><td>{{d.send_time|date:"Y-m-d H:i:s"}}</td><td>{{d.url}}</td></tr>
+	{% endfor %}	
+</table>
+</body>

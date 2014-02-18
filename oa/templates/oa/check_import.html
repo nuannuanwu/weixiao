@@ -1,0 +1,23 @@
+{% load i18n kinger_tags oa_tags %}
+<p>总记录行数：{{num}}行</p>
+<p>报错行数：2行</p>
+<p>错误数据：</p>
+<div class="list_error">
+   {% if error_list %}
+      <table width="100%" border="0">
+          <tr>
+            <th scope="col">序号</th>
+            <th scope="col">表头</th>
+            <th scope="col">错误数据</th>
+          </tr> 
+         {% for e in error_list %}
+            <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                <td>{{ e.row }}</td>
+                <td>手机</td>
+                <td>{{ e.mobile }}</td>
+            </tr>
+           {% endfor %}
+          </table>
+     {% endif %}    
+ </div> 
+            

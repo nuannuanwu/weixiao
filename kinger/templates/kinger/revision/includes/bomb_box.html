@@ -1,0 +1,58 @@
+<style>
+   .axis_loading {
+    text-align: center;
+    z-index: 100;
+    position: fixed;
+    left: 42%;
+    _left: 50%;
+    bottom: 50%;
+    width: 200px;
+    padding: 10px;
+    background: #000;
+    opacity: 0.8;
+    color: #FFF;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    z-index: 10001;
+} 
+</style>
+<!--瓦片弹框-->
+<div id="box_tile_view" class="box_frame" style=""> 
+    <div id="tile_view_conent" class="box_content clearfix"> 
+    </div>
+</div>
+<!--/瓦片弹框-->
+<!--生活记录-->
+<div id="box_record_view" class="box_frame"> 
+    <div id="box_record" class="box_content clearfix"></div>
+</div>
+<!--/生活记录-->
+<!--学习活动-->
+<div id="box_active" class="box_frame" > 
+    <div id="active_view_conent" class="box_content clearfix" ></div>
+</div>
+<!--学习活动-->
+<!--明日食谱-->
+<div id="box_cookbook_view" class="box_frame" > 
+    <div id="box_cookbook" class="box_content clearfix" style="padding-bottom: 20px; margin-top: 40px;" ></div>
+</div>
+<!--/明日食谱-->
+<!--关闭按钮-->
+<div id="colse" style="">
+    <a href="javascript:;"></a>
+</div>
+<!--/关闭按钮-->
+<!--loading-->
+<div class="axis_loading" style="display: none; ">
+    <img alt="Loading..." src="{{ STATIC_URL }}kinger/img/6RMhx.gif">
+    <div>
+        <em>正在加载...</em>
+    </div>
+</div>
+<!--/loading-->
+<!--主题弹框-->
+<div id="box_theme_view" class="box_frame"> 
+    <div id="theme_view_conent" class="box_content" ></div>
+</div>
+<!--/主题弹框-->

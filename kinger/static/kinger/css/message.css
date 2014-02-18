@@ -1,0 +1,335 @@
+/************************************************************************
+*
+*    description         : message 公用样式文件，为避免跟其它css框架冲突，采用k为前缀
+*    use                 : 用途:为king中message一些公用组件控件作样式定义
+*    dependents          : 关联模块    [kinger.kinger.templates.umessage]
+*    create              : 2012-7-17  renzhe
+*
+*
+*************************************************************************/
+/* `bootstrap - 扩展
+----------------------------------------------------------------------------------------------------*/
+	/* `base_message
+	   ============================================================ */
+	h2{
+		font-size: 20px;
+		font-weight:normal;
+		color:#525252;
+	}
+	h3{
+		font-size:16px;
+		font-weight:normal;
+		color:#333;
+	}
+	.kpage-header {
+  		margin: 18px 0 0;
+	}
+	.kthumbnail {
+		display: block;
+		padding: 0;
+		line-height: 1;
+		background-color:#FFF;
+		border: 1px solid #ddd;
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+        	 border-radius: 4px;
+		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+    	-moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+         	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+	}
+	.kspan8{
+		width: 685px;
+		padding-bottom:10px;
+		_float:left;
+		_margin-left:10px;
+		
+	}
+	.kMsgBar ul{ _margin-left:-40px;}
+	#container{ _width:940px; _margin-left:auto; _margin-right:auto;}
+	
+	.kBox_r{
+		position: relative;
+		padding:5px 0 20px;
+		background-color:#FFF;
+		border: 3px solid #808489;
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+        	 border-radius: 4px;
+		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+    	-moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+         	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+	}
+	.kBox_r .clock{
+		position: absolute;
+		top: -12px;
+		left: -12px;
+		height:26px;
+		width: 26px;
+		background: url(../img/message.png) -27px 0 no-repeat;
+	}
+	.kBox_r h3{
+		margin: 0 0 5px;
+		border-bottom: 1px dashed #ddd;
+	}
+	.kBox_r p{
+		color:#999;
+		font-size:13px;
+		margin-bottom:20px;
+	}
+	
+	.knoList{padding:10px;}
+	
+	/* `message_history
+	   ============================================================ */
+	.kmessage{
+		width: 371px;
+		height: 70px;
+		margin: 0px;
+		*margin-left: -180px;
+		padding: 4px;
+		border: 0px none black;
+		font-size: 14px;
+		word-wrap: break-word;
+		line-height: 18px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		outline: none;
+		resize: none;
+	}
+	.kSend{
+		height: 30px;
+		line-height:30px;
+		background-color: #EDEDED;
+	}
+	.kSend span{
+		font-size:16px;
+		color:#999;
+	}
+	.kDialog{
+		 padding-top: 14px;
+	}
+	.kDialog small{
+		color:#666;
+	}
+	.kclose{
+		display:none;
+		width: 11px;
+		height: 11px;
+		background: url(../img/message.png) 0 -12px no-repeat;
+	}
+	.kclose:hover{
+		background: url(../img/message.png) 0 0 no-repeat;
+	}
+	.kHeadborder{
+		display: inline;
+		padding: 0;
+		line-height: 1;
+		background-color:#FFF;
+		border: 1px solid #ddd;
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+         	border-radius: 4px;
+		-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+    	-moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+         	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+	}
+	.kUserhead_right{
+		float: right;
+		width:50px;
+		height:50px;
+		margin:0 25px;
+	}
+	.kDialog p{
+		margin-bottom:7px;
+		width:100%;
+		font-size: 11pt;
+		line-height: 20px;
+		font-weight: 200;
+	}
+	.kChat_left,.kChat_right{
+		position: relative;
+		min-height:42px;
+		max-width: 220px;
+	}
+	.kChat_right{
+		float: right;
+		text-align:left;
+		padding: 8px 10px 5px 20px;
+		background-color: #EEF6E8;
+		border: 1px solid #AFD895;
+	}
+	.kChat_right:hover .kclose{
+		display:block;
+	}
+	.kChat_right .kclose{
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		float: none;
+	}
+	.kUserhead_left{
+		width:50px;
+		margin:0 25px;
+	}
+	.thumbnail p.kchat_p{ font-size:14px; line-height:1.6em;overflow:hidden;text-overflow: ellipsis;word-wrap: break-word; word-break:break-all;}
+	.kChat_left{
+		padding: 8px 20px 5px 10px;
+		background-color: #F6F1E8;
+		border: 1px solid #D8C095;
+	}
+	.kChat_left:hover .kclose{
+		display:block;
+	}
+	.kChat_left .kclose{
+		float:none;
+		position: absolute;
+		top: 3px;
+		right: 3px;
+	}
+	.kUserhead_left .kListName{
+		width:50px;
+	}
+	.ktrian_out,.ktrian_in{
+		position: absolute;
+		width: 0;
+		height: 0;
+		font-size: 0;
+		overflow: hidden;
+		border-width: 8px 10px;
+	}
+	.kChat_left .ktrian_out{
+		border-color: transparent #D8C095 transparent transparent;
+		border-style: dashed solid dashed dashed;
+		left: -20px;
+		top: 16px;
+	}
+	.kChat_left .ktrian_in{
+		border-color: transparent #F6F1E8 transparent transparent;
+		border-style: dashed solid dashed dashed;
+		left: -18px;
+		top: 16px;
+	}
+	.kChat_right .ktrian_out{
+		border-color: transparent transparent transparent #AFD895;
+		border-style: dashed dashed dashed solid;
+		right: -20px;
+		top: 16px;
+	}
+	.kChat_right .ktrian_in{
+		border-color: transparent transparent transparent #EEF6E8;
+		border-style: dashed dashed dashed solid;
+		right: -18px;
+		top: 16px;
+	}
+	.kchat_trian{
+		position:relative;
+	}
+	.kchat_trian .ktrian_out{
+		border-color: transparent transparent transparent #DDD;
+		border-style: dashed dashed dashed solid;
+		right: -20px;
+		top: 16px;
+	}
+	.kchat_trian .ktrian_in{
+		border-color: transparent transparent transparent #FFF;
+		border-style: dashed dashed dashed solid;
+		right: -18px;
+		top: 16px;
+	}
+	/* `message_contact
+	   ============================================================ */
+	.kDialoglist{
+		border-bottom: 1px solid #ddd;
+	}
+	.kDialoglist .close{
+		display:none;
+	}
+	.kDialoglist:hover{
+		cursor: pointer;
+		background-color:#FBFBFB;
+	}
+	.kDialoglist:hover .close{
+		display:block;
+	}
+	.kspan7{
+		margin-left:0;
+		width:550px;
+	}
+	.kspan7 p{
+		margin:0;
+	}
+	.kspan7 .badge{
+		margin:3px 0 0 5px;
+	}
+	.info .date{
+		color:#999;
+	}
+	.kspan8 dl,.kspan8 .private_shresults{
+		margin: 0 10px 0;
+		padding: 10px 0;
+	}
+	.kFont1{
+		margin-bottom: 0;
+		font-size: 14px;
+		font-weight: 300;
+		line-height: 22.5px;
+	}
+	.kFont2{
+		margin-bottom: 0;
+		font-size: 14px;
+		font-weight: 300;
+		line-height: 22.5px;
+		color: #666;
+	}
+	.kFont3{
+		display:block;
+		margin-bottom: 0;
+		overflow:hidden;
+		text-overflow:ellipsis;
+		font-size: 14px;
+		font-weight: 300;
+		line-height: 22.5px;
+	}
+	.kFont4{
+		color:#FF8002;
+	}
+	.kFont5{
+		margin-left:30px;
+		color:#DB0F0F;
+	}
+	/* `message_quick_contact
+	   ============================================================ */
+
+	.kMsgBar{
+		
+		padding: 0 20px;
+	}
+	.kListType{
+		margin:10px 0;
+	}
+	.kListItem{
+		width:42px;
+		margin-bottom:15px !important;
+	}
+	.thumbnails li{
+		_float:left;
+		_margin-left:20px;
+	}
+	.kListName{		
+		height: 27px;
+		margin: 0 -6px;
+		overflow: hidden;
+		display: block;
+		font-size: 13px;
+		color:#555;
+		line-height: 27px;
+		font-weight: 400;
+		text-align:center;
+		word-wrap:break-word;
+		word-break:break-all;
+	}
+	.kBackCol{
+		background-color:#F9F9F9;
+		border-top: solid 1px #DDD;
+		border-bottom: solid 1px #DDD;
+	}

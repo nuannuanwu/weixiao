@@ -1,0 +1,71 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+{% autopaginate groups 10 %}
+<div class="main">
+     <div class="tab"><span>班级管理</span><a class="btn" href="{% url oa_class_create %}?sid={{school.id}}"><i class="add_btn">&nbsp;</i>添加</a><a class="btn" href="{% url oa_class_batch_import %}">批量导入</a></div>
+     <div class="column">
+         <div style=" display: inline-block; float: left; max-width: 200px; margin-right: 20px;" class="form-inline">
+            <select id="school_id" class=" span2 classSelect" style="font-size: 14px; width: auto; " value="{{school.id}}">
+                <option value=""> --所有学园-- </option>
+                {% for s in schools %}
+                <option  value="{{s.id}}" {% if school.id == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
+                {% endfor %}
+            </select>
+          </div>
+          <form  class="form-inline" style=" display: inline-block; margin:0px 0 5px 0px; *padding-top: 2px; "   action="{% url oa_class_list %}" method="GET">
+                <input style="margin-bottom:2px;" type="hidden" name="sid" value="{{school.id}}">
+                <input style="margin-bottom:2px;" type="text" name="q" id="keyW" class="input-medium " value="{{query}}" placeholder="班级名称">
+                <button style="margin-bottom:3px; margin-left:8px;" type="submit" class="btn" id="searchB"  >{% trans "Search" %}</button>
+            </form>
+        
+         <div class="list"> 
+                <table>
+                     <tr align="center">
+                         <th scope="col">名称</th>
+                         <th scope="col">学园</th>
+                         <th scope="col">班主任</th> 
+                         <th scope="col">所在年级</th>
+                         <th scope="col">操作</th>
+                      </tr>
+                      {% if not groups|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="7" style=" font-size: 18px; color: #cecece;">
+                                <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                      {% else %}
+                     {% for g in groups %}
+                    <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                        <td><a href="{% url oa_class_update g.id %}">{{g.name}}</a></td>
+                        <td>{{g.school}}</td>
+                        <td>{{g.headteacher|default:""}}</td>
+                        <td>{{g.grade}}</td>
+                        <td><a rel="del_event" href="javascript:;" data-href="{% url oa_class_delete g.id %}?sid={{school.id}}">删除</a></td>
+                    </tr>
+                 {% endfor %}
+                 {% endif %}
+                </table>
+               <div class="pagination" style="text-align:center;">
+               		{% paginate %}
+               </div>
+           </div>
+     </div>
+</div>
+<script> 
+    $("#school_id").change(function(){
+        var school_id = $(this).val();
+        javascript:location.href = '{% url oa_class_list %}?sid=' + school_id;
+    })
+//    $("#keyW").blur(function(){
+//        dissearch()
+//    })
+ $("a[rel=del_event]").click(function(){ //删除操作
+      var f = confirm('确认删除吗?');
+      if(f){
+        var href = $(this).data("href"); 
+        window.location = href;
+      } 
+  });    
+</script>
+{% endblock %}

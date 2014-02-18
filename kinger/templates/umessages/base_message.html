@@ -1,0 +1,14 @@
+{% extends 'kinger/base.html' %}
+{% load i18n kinger_tags umessages_tags %}
+{% block extra_css %}<link rel="stylesheet" href="{{ STATIC_URL }}kinger/css/message.css">{% endblock %}
+{% block page-header %}
+<div class="kpage-header">
+    {% block message_right_link %}
+    <div class="pull-right" style="margin-right:5px; margin-top:-5px;">
+        {% block message_return_link %}<a href="{% url userena_umessages_list %}" class="btn">{% trans "Back" %}</a>{% endblock %}
+        <a class="btn btn-primary" data-toggle="modal" href="{% url userena_umessages_quick_contact %}" >联系人</a>
+    </div>
+    {% endblock %}
+    {% block content_title %} 我的消息 {% endblock %}
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<div class="main">
+      <div class="tab"><span>{% if department %}编辑部门{% else %}添加部门{% endif %}</span><a class="tbbtn" href="{% url oa_department_list %}?sid={{school.id}}">返回</a></div>
+      <div class="column">
+          <div class="form-horizontal form-kPicCon"> 
+              <form id="post_form" class="registerform" action="{% if department %}{% url oa_department_update department.id %}{% else %}{% url oa_department_create %}{% endif %}" method="post">{% csrf_token %}
+                    <input type="hidden" value="{{school.id}}" name="school">
+                    <div class="uers-info"> 
+                         <p>
+                             <label> 部门名称* </label>
+                             {{form.name|attr:"class:span2"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入部门名称"}}
+                             &nbsp;<span class="erro-tips">{{form.name.errors|striptags}}</span>
+                          </p>
+                         <p> 
+                            <label>所属机构*</label> 
+                            <select id="id_school" style=" width: auto;" name="school" class="span2" datatype="*" errormsg="" nullmsg="请选择机构">  
+                                {% for s in schools %}
+                                <option value="{{s.id}}">{{s.name}}</option>
+                                {% endfor %}
+                            </select><span id="id_schoolTip" class="erro-tips">{{form.school.errors|striptags}}</span>
+                         </p>
+                         <p>
+                              <label>负责人</label>
+                                {{ form.charger|attr:"class:span2"}} <span class="erro-tips">{{form.charger.errors|striptags}}</span>
+                          </p>
+                         <p>
+                             <label> 电话号码1</label>
+                             {{ form.telephone_one|attr:"class:span3"|attr:"placeholder:手机号码"|attr:"ignore:ignore"|attr:"datatype:m "|attr:"errormsg:手机号不正确 "|attr:"nullmsg:"}}
+                             &nbsp;<span id="id_telephone_oneTip"  class="erro-tips">{{form.telephone_one.errors|striptags}}</span>
+                         </p>
+                         <p>
+                            <label> 电话号码2</label>
+                            {{ form.telephone_two|attr:"class:span3"|attr:"placeholder:办公电话\其他电话"|attr:"ignore:ignore"|attr:"datatype:tel-3|m "|attr:"errormsg:手机号或电话号码不正确 "|attr:"nullmsg:"}}
+                            &nbsp;<span id="id_telephone_twoTip" class="erro-tips">{{form.telephone_two.errors|striptags}}</span>
+                         </p>
+                         <p>
+                            <label> 传 真</label>
+                            {{form.fax|attr:"class:span3"|attr:"placeholder:传真"|attr:"ignore:ignore"|attr:"datatype:tel-3"|attr:"errormsg:传真号格式不正确 "|attr:"nullmsg:"}}&nbsp;<span id="id_faxTip" class="erro-tips">{{form.telephone_two.errors|striptags}}</span>
+                         </p> 
+                         <!--<p>
+                            <label> 描 述 </label> 
+                             {{ form.description  }}
+                         </p> -->
+                     </div> 
+                    <p>
+                        <label>&nbsp;</label>
+                        <input class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" >
+                        <!--<input class="btn" style=" margin-left:15px;" type="reset"  value="取 消"/>-->
+                         <a class="btn" href="{% url oa_department_list %}?sid={{school.id}}" style=" margin-left:28px;">取 消</a>
+                    </p>
+                </form>
+          </div>
+	</div>
+</div>
+<script> 
+   //表单验证 
+   $(function(){
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/
+             } 
+	});
+}); 
+  
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+﻿{% extends 'oa/site/base.html' %}
+{% load i18n kinger_tags oa_tags pagination_tags %}
+{% block content %}
+<div class="active-content album-photos">
+    <div class="act-c-title">
+        <p><a href="{% url_site oa_site_album %}?cty={{album.category_id}}">{% if album.category_id == 17 %}学园活动{% else %}幼儿作品{% endif %}</a>&nbsp;&gt;&gt;&nbsp;{{album.name}}</p>
+    </div>
+    <div class="c-wrap">
+        <div class="main-content">
+            <div class="img-show-box">
+                <div id="dPicListBody" class="dBigList">
+                        <span id="sLeftBtnA" class="sLeftBtnABan"></span>
+                        <span id="sRightBtnA" class="sRightBtnA"></span>
+                        <div class="dSmallPicBox">
+                        <div class="dSmallPic">
+                            <ul class="ulSmallPic" >
+                               {% if not photos|is_empty_list %}
+                                <li>
+                                    <img rel="" src="{{ STATIC_URL }}oa/site/images/default_min.png "  class="selected">
+                                </li>
+                                {% else %}
+                                {% for p in photos %}
+                                <li class="slideshowItem" rel="{{p.id}}">
+                                    <img rel="{{p.id}}" src="{% media_path p.img "album_tiny" %}" {% if photo %}{% if p.id == photo.id %}class="selected"{% endif %}{% else %}{% if forloop.counter == 1 %}class="selected"{% endif %}{% endif %}>
+                                </li>
+                                {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <span id="sLeftBtnB" class="sLeftBtnBBan"></span>
+                        <span id="sRightBtnB" class="sRightBtnB"></span>
+                    </div>
+                    <ul class="ulBigPic">
+                        {% if not photos|is_empty_list %}
+                                <li>
+                                     <a href="javascript:;"><img rel="" src="{{ STATIC_URL }}oa/site/images/default_max.png"  class="selected"></a>
+                                     <span>还没有图片，快去上传图片吧</span>
+                                </li>
+                                {% else %}
+                        {% for p in photos %}
+                        <li>
+                            <a href="javascript:;"><img alt="" src="{% media_path p.img "album_large" %}"></a>
+                            <span>{{p.description}}</span>
+                        </li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div> 
+{% endblock %}

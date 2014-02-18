@@ -1,0 +1,171 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags umessages_tags pagination_tags %}
+{% block content %}
+{% autopaginate message_list 10 %}
+<div class="main">
+   
+    <div class="tab">{% if recipient.get_profile.chinese_name_or_username %}
+    	<span>与<em style="color:#7CA075; font-style:normal;">{{ recipient.get_profile.chinese_name_or_username}}{% else %}{{ recipient }}{% endif %}</em>的消息记录</span>
+    <a href="{% url oa_message_list %}">返回</a></div>
+    <div class="column">
+         <div class="chat-form">
+               <form action="" method="post" id="post_form" style="letter-spacing:1px;">
+          		{% csrf_token %}
+                    <div style="display:none">
+                        {{ form.to }}
+                    </div>
+                    <div class="control-group {% if form.body.errors %} error {% endif %}" {% ifequal form.body.name "honeypot" %} style="display:none;"{% endifequal %}>
+                         {% if recipient.id != request.user.id %}
+                         <div class="kthumbnail kchat_trian" style="height:170px;">
+                            <!--<span class="ktrian_out"></span>
+                            <span class="ktrian_in"></span>-->
+                            <!--<textarea id="id_body" name="body" class="kmessage"></textarea>
+                            <div class="kSend">
+                                <input id="send_button" class="btn btn-info pull-right disabled" style="margin-left: 7px" type="submit" name="send" value="{% trans "Send" %}" />
+                                <div class="pull-left wordstip">您还可以输入<span id="wordNum">140</span>字</div>
+                            </div>-->
+                            <textarea id="Memo" class="m-content-ta" value='' name="body" placeholder="请在这里输入内容" onKeyDown="gbcount(this.form.Memo,this.form.totals,this.form.useds,this.form.remains);" onKeyUp="gbcount(this.form.Memo,this.form.totals,this.form.useds,this.form.remains);" style="width:402px; height:120px; resize:none;"></textarea>
+                             <p class="set-msg">
+                                <input type="hidden" maxLength="4" id="totals" size="3" value="140" class="inputtext" /> 
+                                <input type="hidden" maxLength="4" id="useds" size="3" value="0" class="inputtext" /> 
+                                您还可以输入<input readonly type="text" maxLength="4" id="remains" value="140" />字
+                             </p>
+                            <input id="post_bnt" disabled="disabled" type="submit" value="发&nbsp;送" class="btn btn-success pull-right" style="margin-right:68px;" />
+                        </div>
+                        {% endif %}
+                        <!--<a href="javascript:void(0)" class="kUserhead_right">
+                            <img alt="" src="{% media_path request.user.get_profile.get_avatar "avatar" %}" class="kHeadborder" style="width:40px;height:40px;">
+                        </a>-->
+                    </div>
+                </form>
+                <div node-type="messageList" pagenumber="1" class="private_shresults">
+                    {% for message in message_list %}
+                    <div class="msg-wrap" id="msg-area-{{message.id}}">
+                    <!--本人发送的消息-->
+                    {% if message.sender_id == user.id %}
+                        <a href="javascript:void(0)" class="kUserhead_right pull-right" rel="namecard" data-uid="{{ message.sender.pk }}">
+                            <img alt="" src="{% media_path message.sender.get_profile.get_avatar "avatar" %}" class="kHeadborder" style="width:40px;height:40px;">
+                        </a>
+                        <div class="thumbnail kChat_right">
+                            <p class="kchat_p">{{ message.body|code_to_img|safe }}</p>
+
+                                <small class="date" rel="tooltip" data-title="{{ message.sent_at|date:"具体时间: Y-m-d G:i"}}" style="width:auto;">
+                                    {{ message.sent_at|natural_time}}</small>
+                            <a class="closebtn close" data-mid="{{message.id}}" data-is_send="1" rel="delMessage" data-dismiss="alert" href="#">×</a>
+                            <div class="outj triangle-border"></div>
+                            <div class="inj triangle-border"></div>
+                        </div>
+                    {% else %}
+                    <!--对话者发送的消息-->
+                        <div class="kUserhead_left pull-left">
+                            <a href="javascript:void(0)" rel="namecard" data-uid="{{ message.sender.pk }}">
+                                <img alt="" src="{% media_path message.sender.get_profile.get_avatar "avatar" %}" class="kHeadborder" style="width:40px;height:40px;">
+                            </a>
+                        </div>
+                        <div class="thumbnail kChat_left">
+                            <p class="kchat_p"><span class="kchat_name">{{message.sender|get_name}}（{{message.sender|get_school}}）：</span>{{ message.body|code_to_img|safe }}</p>
+                                <small class="date" rel="tooltip" data-title="{{ message.sent_at|date:"具体时间: Y-m-d G:i"}}" style="width:auto;">
+                                {{ message.sent_at|natural_time}}</small>
+                            <a class="closebtn close" data-mid="{{message.id}}" data-is_send="0" rel="delMessage" data-dismiss="alert" href="#">×</a>
+                            <div class="outj triangle-border"></div>
+                            <div class="inj triangle-border"></div>
+                        </div>
+                    {% endif %}
+                    </div>
+                    {% endfor %}
+                    <div class="pagination pagination-centered">
+                    {% paginate %}
+                    </div>
+                </div> 
+          </div>
+    </div>        
+</div>
+        
+<script type="text/javascript">
+
+$("#Memo").keyup(function(){
+	var len = $("#Memo").val();
+	if(len==""){
+		$("#post_bnt").attr('disabled',true);
+	}else{
+		$("#post_bnt").attr('disabled',false);
+	}
+})
+//textarea长度验证
+function checktext(text) {
+    allValid = true;
+    for (i = 0; i < text.length; i++) {
+        if (text.charAt(i) != " ") {
+            allValid = false;
+            break;
+        }
+    }
+    return allValid;
+}
+
+function gbcount(messages, totals, useds, remains) {
+    var max;
+    max = totals.value;
+    if (messages.value.length > max) {
+        messages.value = messages.value.substring(0, max);
+        useds.value = max;
+        remains.value = 0;
+        alert("您的对话消息不能超过 140 个字!");
+    } else {
+		useds.value = messages.value.length;
+        remains.value = max - useds.value;
+	}
+}
+
+    //发布窗口、按钮状态
+    function textareaStatus(type){
+        var obj = $('#send_button');
+        if(type=='on'){
+            obj.removeAttr('disabled').attr('class','btn btn-info pull-right');
+            //}else if( type=='sending'){
+            //	obj.attr('disabled','true').attr('class','btn_big_disable hand');
+        }else{
+            obj.attr('disabled','true').attr('class','btn btn-info pull-right disabled');
+        }
+    }
+
+
+    //确认操作
+    $('[rel=delMessage]').bind('click', function(){
+        $self = $(this);
+        mid = $self.attr('data-mid');
+        is_send = $self.attr('data-is_send');
+        recipient = {{recipient.id}};
+
+        message = $self.data('title');
+        data = { message_pks: mid,is_send:is_send,recipient:recipient };
+
+        url = '{% url userena_umessages_remove %}';
+        Bconfirm({
+            message: '确认删除该消息吗？',
+            handler: function(){
+                $.post(url, data, function(result){
+                var type = result.type;
+                if (type == 'ok') {
+                    Notice.success(result.message)
+                    //$("#msg-area-"+mid).hide(100);
+					$("#msg-area-"+mid).slideUp();
+                    setTimeout(function(){AutoFoot()},200);
+                }
+                else {
+                    Balert(result.message + '失败');
+                }
+                },"json");
+            }
+        });		
+        return false;
+    });
+	$(".thumbnail").hover(function(){
+		$(this).children(".closebtn").show();
+	},function(){
+		$(this).children(".closebtn").hide();
+	})
+</script>
+{% endblock %}
+
+

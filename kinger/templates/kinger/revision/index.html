@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load kinger_tags %}
+{% block content %}
+<ul class="thumbnails" style="padding-bottom: 20px;">
+    {% for tile in tiles %}
+        <li class="span2">
+        <div class="thumbnail">
+            <img src="{% media_path tile.img %}" alt="">
+            <div class="caption">
+                <h5>{{ tile.title }}</h5>
+                <p>{{ tile.description }}</p>
+            </div>
+        </div>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}

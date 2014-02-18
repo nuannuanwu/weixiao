@@ -1,0 +1,525 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags %}
+{% block content %}
+<script src="{{ STATIC_URL }}oa/js/jquery-1.9.1.js"></script>
+ <!--<script src="{{ STATIC_URL }}oa/js/jquery-migrate-1.2.1.js"></script>-->
+ <script type="text/javascript">
+    var jQ19 = $.noConflict(true); // JQ19
+</script> 
+<script src="{{ STATIC_URL }}oa/js/checkbox_mian.js"></script>
+<div class="main">
+    <div class="tab"><span>已发回公文</span><a href="{% url oa_reback_document %}">返回</a></div>
+    <div class="column">
+        <div class="file_info">
+            <p>撰文人： &nbsp;&nbsp;{{doc.sender.profile.realname}}</p>
+            <p>公文类型：{{doc.category}}</p>
+            <p>公文级别：{{doc.level|document_level}}</p>
+            <div style="margin-bottom:10px;"> 
+                <div style="float:left;" >发送对象：</div> 
+                <div style="margin-left:75px;"> {% for r in receivers %}<span style="margin-right:20px;">{{r.user.teacher.name}}({{r.user.teacher.school}})</span>{% endfor %}&nbsp;</div>
+            </div> 
+            <p>发布时间：{{doc.ctime|date:"Y-m-d G:i"}}</p>
+            <div>公文附件：{% if files.count %}
+                <a href="{% url oa_download_zip_document doc.id %}">全部下载({{files.count}})</a>
+                {% else %}<span style="color:#999;">全部下载({{files.count}})</span> {% endif %}
+                <div class="file"> {% for f in files %} <a class="pic_file" href="{% url oa_download_document f.id %}">{{f.name}}</a>{% endfor %} </div>
+            </div> 
+        </div> 
+        <div class="list">
+            <table>
+                <tr align="center">
+                    <th width="10" scope="col">序号</th>
+                    <th width="40" scope="col">时间</th>
+                    <th width="30" scope="col">审批人</th> 
+                    <th width="50" scope="col">审批备注</th>
+                    <th width="80" scope="col">公文状态</th> 
+                </tr> 
+                {% for h in history %}
+                <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}">
+                    <td width="30">{{forloop.counter}}</td>
+                    <td width="30">{{h.send_time|date:"Y-m-d G:i"}}</td>
+                    <td width="30">{{h.sender.profile.realname}}</td>
+                    <td width="40">{{h.remark}}</td>
+                    <td width="60">{{h|approval_status|safe}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="line" style="text-align:center;"><div class="text" >以下为公文正文</div></div>         
+        <div class="form-horizontal form-kPicCon">  
+            <form id="post_form" class="registerform" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                {{form.media}}
+                <div id="class_hide" class="hide">
+                    {% for s in schools %}
+                    <input id="school_cache_{{s.id}}" sname="school_cache" rel="school_cache" type="hidden" alt="{{s.id}}" value="{% if doc %}{{s|get_document_user:doc}}{% endif %}">
+                    {% endfor %} 
+                </div>
+                <p>
+                    <label>公文标题*</label>{{form.title|attr:"class:input-xlarge"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入公文标题"}}&nbsp;
+                    <span id="id_titleTip" class="erro-tips">{{form.title.errors|striptags}}</span>
+                </p>
+                <p><label>公文类*</label>
+                    <select id="id_category" name="category" class="span2 Validform_error" datatype="*" errormsg="" nullmsg="请选择公文类型">
+                        <option value="">--选择公文类型--</option>
+                        {% for p in category_group %}
+                        <option value="{{p.parent.id}}" {% if doc.category.id == p.parent.id %}selected="selected"{% endif %} class="optgroup">{{p.parent.name}}</option>
+                        {% for s in p.member %}
+                        <option value="{{s.id}}" {% if doc.category.id == s.id %}selected="selected"{% endif %}>&nbsp;&nbsp;&nbsp;{{s.name}}</option>
+                        {% endfor %}
+                        {% endfor %}
+                    </select><span id="id_categoryTip" class="erro-tips">{{form.category.errors|striptags}}</span>
+                </p>
+                <p><label>公文级别*</label>{{form.level|attr:"class:span2 Validform_error"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请选择公文级别"}}&nbsp;</p>
+                <div style="display: block; margin-bottom: 10px;">
+                        <label>公文内容* &nbsp; <input id="content_value" type="hidden"  value="" datatype="*" errormsg="" nullmsg="内容不能为空" ></label>
+                        <span id="id_contentTip" class="erro-tips">{{form.content.errors|striptags}}</span>
+                        <div></div>
+                        {{form.content}}
+                        <div style=" margin-bottom:0px; width: 100%;  height: 1px;"></div>
+                </div>
+                <div id="ie_uplocad" style=" margin:0 0 15px 0; " class="hidden">
+                    <span id="ie-uploadfiles">添加附件</span> <span style="margin-left: 10px;">(文件大可压缩后上传,文件大小不能超过8MB)</span>
+                    {% for f in files %}
+                        <p style=" padding:3px 0; margin: 0;">{{f.name}} <a class="delectfile" rel="doc_file" alt="{{f.id}}">删除</a></p>
+                    {% endfor %}
+                    </div>
+                <div id="containeruplocad"  class="hidden" style=" margin: 10px 0px;">
+                    <span id="my-uploadfiles" >上传附件</span> <span style="margin-left: 10px;">(文件大可压缩后上传,文件大小不能超过8MB)</span>
+                    <div id="quoteRequest" style="">
+                        {% for f in files %}
+                        <p class="addinput" style=""><span class="filesname">{{f.name}}</span><a class="delectfile" rel="doc_file" alt="{{f.id}}">删除</a></p>
+                        {% endfor %}
+                    </div> 
+                </div> 
+                <div>
+                    <label style="float:left;" style=" font-size: 13px;">发布对象*</label>
+                    <div id="server_name" class="add_user name-list" >
+                        <ul>
+                            {% for r in receivers %}
+                            <li>
+                                <input type="checkbox" name="receiver_pks" schoolid="{{r.user.teacher.school.id}}" value="{{r.user.id}}"  checked="checked" style="display:none;">
+                                <label class="user_names" for="all_depatrment_{{r.user.id}}">{{r.user|get_name}}<span class="close-btn"></span></label></li>
+                            {% endfor %}
+                        </ul> 
+                    </div> 
+                </div>
+                <p>
+                    <label>&nbsp;</label>
+                    <a style=" float:right;" href="javascript:;">清空</a> 
+                    <!--<a class="btn" id="add_member" href="javascript:;"><i class="icon-plus"></i> 添加对象</a>-->
+                    <button id="add_member_btn" class="btn" style="color:#353535;"><i class="icon-plus"></i> 添加对象</button>
+                    <input id="user_numbe" style=" display: none" type="text" value="" datatype="nun" errormsg="请选择发送对象" nullmsg="请选择发送对象" />&nbsp; 
+                </p>
+                <p><label>落款*</label>{{form.inscribed|attr:"datatype:*"|attr:"errormsg: "|attr:"nullmsg:请输入落款"}}&nbsp;<span id="id_inscribedTip" class="erro-tips">{{form.inscribed.errors|striptags}}</span></p>
+                <p><label>公文时间*</label>
+                    {{form.send_time|attr:"readonly:readonly"|attr:"class:selectdata input-medium"|attr:"style:cursor:pointer; background-color:#ffffff;"|attr:"datatype:* "|attr:"errormsg: "|attr:"nullmsg:请输入时间"}}&nbsp;
+                    <span id="id_send_timeTip" class="erro-tips">{{form.send_time.errors|striptags}}</span>
+                </p> 
+                <div class="line" style="text-align:center;"><div class="text" >以上为公文正文</div></div>
+                <div style="display:none;">
+                    <div class="m_right" style="overflow:hidden;">
+                        {{form.send_msg|attr:"class:pull_left"}} 
+                        <label for="id_send_msg" style="float:left; margin-left:5px;">  使用短信通知（字数限制70,通知发送给发布对象）</label>
+                             <div id="send_remind" style="float:right; display: none; margin-right:20px;">您还可以输入<div style=" display: inline" id="remains_text">70</div>字</div>
+                             <input class="input_remind"  type="hidden" maxLength="4" id="remains" style="width:20px; background-color:#fff;" value="70" /> 
+                    </div>         
+                    <p id="note_text" style=" display:none;">
+                        <label>&nbsp;</label>
+                        <textarea id="Memo" style="width:610px; height:150px;" class="m-content-ta" value='' name="msg_body" placeholder="请输入内容" onKeyDown="gbcount(this.form.Memo, this.form.totals, this.form.useds, this.form.remains);" onKeyUp="gbcount(this.form.Memo, this.form.totals, this.form.useds, this.form.remains);"></textarea>
+                        <input type="hidden" maxLength="4" id="totals" size="3" value="70" class="inputtext" /> 
+                        <input type="hidden" maxLength="4" id="useds" size="3" value="0" class="inputtext" />  
+                        <!--{{form.msg_body|attr:"style:width:610px;"}}-->
+                        <span class="erro-tips">{{form.msg_body.errors|striptags}}</span>
+                    </p> 
+                    <div class="m_right" style="height:30px; line-height:30px;"> 
+                        <label for="id_is_submit" style="float:left; margin-top:5px;">
+                            {{form.is_submit|attr:"style:vertical-align:-2px"}}&nbsp;&nbsp;我要送审
+                        </label>
+                        <label class="sub_info" style="float:left; display:none; margin-left:10px; margin-top:5px;">审批人：</label>
+                        <sapn class="sub_info" style=" display: none;">
+                            <input id="sub_user_name" errormsg="" nullmsg="请选择审批人" type="text" readonly="true" style=" background-color: white; width: 70px; " value="{{approvaler|get_name}}" />
+                            <input id="sub_user_id" type="hidden" name="approvaler" value="{{approvaler.id}}" />
+                            <span  id="sub_user_nameTip"  class="erro-tips Validform_checktip "> </span>
+                        </sapn>
+                    </div>
+                    <p></p> 
+                    <div id="sub_user" style="  border-top:1px solid #ddd; background-color:#f0efef; display:none; margin-left:80px;"> </div> 
+                    <p><label>审批备注：</label>{{form.remark|attr:"class:input-xxlarge"}}</p> 
+                    <p style="display:none">{{form.status|attr:"class:"}}</p>
+                </div>
+
+                <p>
+                    <label>&nbsp;</label>
+                    <a class="btn" href="{% url oa_invalid_user_document doc.id %}">作废</a> 
+                    <a id="draft" class="btn" href="{% url oa_resave_document doc.id %}">另存到个人文档</a>
+                    <span id="onLoad_inport" style="display: none; color:#616161; margin-left: 30px;"><img src="{{ STATIC_URL }}oa/images/import.gif" />正在保存请稍等...</span>
+                </p>
+                <p><label>&nbsp;</label> <input style="display:none;" class="btn btn-success" type="submit" name="" value="{% trans "Save" %}" > </p> 
+
+                <input type="hidden" name="ty" value="{{ty}}">
+            </form> 
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="myModal" style="display:none;">
+    <div class="modal-header">
+        <!--<a class="close" data-dismiss="modal">×</a>-->
+        <input class="btn" style="float: right; vertical-align: auto;" data-dismiss="modal" type="button" value=" 取 消 "/>
+        <input id="server_role" style="color:#fff; float: right; vertical-align: auto; margin-right: 30px;" type="button" class="btn btn-success" data-dismiss="modal" value="{% trans 'Save' %}"> 
+        <h4  style="margin-right: 200px;" >选择发布对象</h4>
+    </div>
+    <div id="content" style="padding:10px;">
+        <div class="member">
+            <p class="slt-title"><span>已选发布对象</span><a href="javascript:;" class="rem-btn">清空</a></p>
+            <div id="data_panel" class="name-list"> 
+                <ul>
+                {% for u in member_list %} 
+                    {% if u.teacher.school == school %}
+                        <li>
+                            <input data-id="{{u.id}}" type="checkbox" name="to" value="{{u.id}}" checked="checked" style="display:none;">
+                            {{u|get_name}}
+                            <span class="rm_user" data-id="{{t.id}}">&nbsp;</span>
+                        </li> 
+                     {% endif %}  
+                 {% endfor %}
+                </ul> 
+            </div>
+        </div>
+        <div id="data-up"> 
+        </div>
+    </div>
+    <div class="modal-footer"> 
+        <p style="text-align:center; padding:0; margin:0; height: 5px;" > 
+            <input type="hidden" id="user_id" value="{{user.id}}"> 
+            <!--<a id="server_role" style="color:#fff;" class="btn btn-success" data-dismiss="modal" href="javascript:;">{% trans "Save" %}</a>-->
+            <!--<a class="btn " data-dismiss="modal" href="javascript:;">取消</a>--> 
+        </p> 
+    </div>
+</div>
+<div id="cheak_dis" style="display:none;">
+    <ul>
+    </ul>
+</div> 
+<input id="box_type1" type="hidden" value="0" /> 
+<input id="box_type" type="hidden" value="0" />
+<input id="box_server" type="hidden" value="1" /> 
+
+<script type="text/javascript">
+$(document).ready(function(){
+    if ($.browser.msie){ //ie 上传附件
+        $("#ie_uplocad").removeClass("hidden")
+        $("#containeruplocad").addClass("hidden");  
+    }else{
+        $("#containeruplocad").removeClass("hidden")
+        $("#ie_uplocad").addClass("hidden");
+     }
+ })
+ //添加input-file
+$("#ie-uploadfiles").live('click',function(){  
+    var filestar = '<p style=" padding:3px 0; margin: 0;"><span style="margin:0 5px;">附件</span><input type="file" name="files"/> <span style="margin:0 10px;"></span><a href="javascript:;" class="delectiefile">删除</a></p>';
+    $("#ie_uplocad").append(filestar); 
+});
+//删除input-file
+$('.delectiefile').live('click',function(){ 
+    $(this).parent().remove();
+})
+jQ19(function(){ 
+	//$(".registerform").Validform();  //就这一行代码！; 
+	$(".registerform").Validform({
+            tiptype:2,
+            showAllError:true,
+            datatype:{//传入自定义datatype类型 ;
+                "id-18" : /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4}$/,
+                "tel-3" : /^(\d{3,4}-)?\d{7,8}$/,
+                "nun" : /^[0-9]*[1-9][0-9]*$/
+             },
+              beforeSubmit:function(curform){
+		//在验证成功后，表单提交前执行的函数，curform参数是当前表单对象。
+		//这里明确return false的话表单将不会提交;
+                 $("#post_date").attr("disabled","disabled");
+                 $("#onLoad_inport").show();
+            } 
+	});
+//        $(".selectdata").datepicker({//日期插件
+//            dateFormat: 'yy-mm-dd',
+//            changeYear: true,
+//            onSelect:function(date){  
+//                this.focus();  
+//                this.blur();  
+//            }
+//       });
+        $("#doc_send").click(function(){//
+            var contentVal= tinyMCE.get('id_content').getContent();
+            $("#content_value").val(contentVal);
+            var serverName = $("#server_name ul"); 
+            var len = serverName.find('li').length;
+            $("#user_numbe").attr("value", len);
+            $("[name=commit_type]").val(1); 
+            //alert( $("[name=status]").val())
+            $("#post_form").submit()
+        })
+        $("#doc_approval").click(function(){
+            var contentVal= tinyMCE.get('id_content').getContent();
+            $("#content_value").val(contentVal);
+            var serverName = $("#server_name ul"); 
+            var len = serverName.find('li').length;
+            $("#user_numbe").attr("value", len);
+            $("[name=commit_type]").val(3); 
+            //alert( $("[name=status]").val())
+            $("#post_form").submit()
+        })
+        $("#doc_reback").click(function(){
+            var serverName = $("#server_name ul"); 
+            var len = serverName.find('li').length;
+            $("#user_numbe").attr("value", len);
+            $("[name=commit_type]").val(2);
+            //alert( $("[name=status]").val()) 
+            $("#post_form").submit()
+        });
+  
+//        $("#post_date").click(function(){//提交 数据
+//                var serverName = $("#server_name ul"); 
+//                var len=serverName.find('li').length;
+//                $("#user_numbe").attr("value",len); 
+//                $("[name=status]").val(0); //保存发送
+//                $("#post_form").submit();  
+//        });
+//        
+//        $('#draft').click(function(){ //
+//            $("[name=status]").val(1);//草稿 
+//            $("#post_form").submit();
+//        }); 
+        
+        var boxCheck= $("#userName");//已选box 对象
+        //strVal= ",";
+         boxCheck.find("input").each(function(k,v){  //存储以选对象id 到strVar
+                id = v.getAttribute('id');
+                $mms = $("#"+id);
+                strVal +=$mms.val()+',';
+        });
+	
+ 
+
+    $(document).on('click' , "#add_member_btn" , function(){ //添加成员面板数据、显示 
+       var box=$("#server_name ul"),  
+       url = "{% url oa_document_set_receiver %}",
+       did = {{ doc.id|default:0 }};  
+           if($("#box_type").val()==0){
+               $.post(url,{doc_id:did},function(result){
+                   data = $.parseJSON(result);  
+                   $("#data-up").empty();
+                   $("#data-up").html(data.con);
+                   $("#box_type").val('1');
+               });
+           }
+           type = $("[name=ty]").attr("value");
+           $('#myModal').modal('toggle'); //弹框   
+           boxAdd=$("#cheak_dis ul"); 
+           boxAdd.find('input').each(function(k,v){
+               boxId = v.getAttribute('schoolid'); 
+                if(boxId==$("#school_id").val()){  
+                   $(this).parent('li').remove(); 
+                }
+           });  
+   });
+
+    //选择学园
+    var  schoolUserList = " "; 
+    $(document).on('click' , "[alt=school_item]" ,function(){
+        $('.message_add_remind').show();
+            url = "{% url oa_document_set_receiver %}"
+            did = {{doc.id|default:0}};
+            var school_id = $(this).attr('rel'); 
+            $.post(url,{sid:school_id,doc_id:did},function(result){
+                data = $.parseJSON(result);  
+                $("#data-up").empty();
+                $("#data-up").html(data.con);
+                $("#box_type").val('1');
+            });
+            schoolUserList = " ";
+            var boxAdd = $("#cheak_dis ul input"); 
+            //pr(boxAdd) 
+            $.each(boxAdd, function(k,v){  
+                boxId = v.getAttribute("schoolid");
+                //alert(boxId);
+                if(boxId == school_id){ 
+                   schoolUserList +="<li>"+ $(this).parent('li').html()+"</li>"; 
+                   $(this).parent('li').remove(); 
+                }
+            });  
+            //alert(schoolUserList + "schoolUserList")
+            var addUserHtml=$("#data_panel ul").html(); 
+            //alert(addUserHtml);
+            //schoolUserList = $("#cheak_dis ul").html();
+            $("#cheak_dis ul").append(addUserHtml);
+            $("#data_panel ul").empty();
+             $("#data_panel ul").append(schoolUserList); 
+    });
+
+    //审批人选择学园
+    $(document).on('click' , "[alt=school_item]" , function(){
+        url = "{% url oa_document_get_approvalers %}"
+        school_id = $(this).attr('rel');
+        $.post(url,{sid:school_id},function(result){
+            data = $.parseJSON(result);  
+            $("#sub_user").empty();
+            $("#sub_user").html(data.con);
+            $("#box_type1").val('1');
+        }); 
+    }) 
+
+/*$('#myModal').on('hide', function (e) {
+   schoolId=$("#school_id").val();
+   userIdAdd=$("#school_cache_"+schoolId).val();
+   cheak_dis=$('#cheak_dis ul').html();
+   $("#box_server").val(0);
+   $("#server_name ul").append(cheak_dis);
+})
+*/
+    //发信息勾选
+     $("#id_send_msg").change(function(){
+         if($("#id_send_msg").prop('checked')){
+              $("#note_text").show();
+                $("#Memo").attr("datatype","*");
+         }else{
+             $("#note_text").hide()
+             $("#Memo").removeAttr("datatype")
+         }
+     }); 
+    // if($("#id_send_msg").prop('checked')){
+    //         $("#note_text").show();
+    //         $("#Memo").attr("datatype","*");
+    // }else{
+            
+    //}
+    // if($("#id_is_submit").prop('checked')){
+    //         url = "{% url oa_document_get_approvalers %}" 
+    //         $.post(url,{},function(result){
+    //                 data = $.parseJSON(result);  
+    //                 $("#sub_user").empty();
+    //                 $("#sub_user").html(data.con);
+    //                 $("#box_type1").val('1');
+    //         }); 
+    //         $("#sub_user").show(); 
+    //         $("#sub_user_name").attr("datatype","*");
+    // }else{
+    //         $("#sub_user").hide();
+    //         $("#sub_user_name").removeAttr("datatype")
+    // }
+
+    //送审勾选 
+    $("#id_is_submit").click(function(){
+        if($(this).prop('checked')){
+            $("#sub_user").show();
+            $(".sub_info").show();
+            $("#sub_user_name").attr("datatype","*");
+        }else{
+            $("#sub_user").hide()
+            $(".sub_info").hide();
+            $("#sub_user_name").removeAttr("datatype"); 
+        } 
+       
+        if($("#box_type1").val()==0){ 
+             url = "{% url oa_document_get_approvalers %}"
+            $.post(url,{},function(result){
+                data = $.parseJSON(result); 
+                $("#sub_user").empty();
+                $("#sub_user").html(data.con);
+                $("#box_type1").val('1');
+            }); 
+        } 
+    }); 
+    $(document).on('click' , ".rem-btn" ,function(){ //删除全部 
+            $(".name-list ul").empty();
+            $("#cheak_dis ul").empty();
+            //$("[username=type]").removeAttr("checked");
+            //strVal=","
+            userIdAdd="";
+            schoolVar=$("#school_id").val()
+            $("#school_cache_"+schoolVar).val('');
+    });
+ 
+    $(document).on('click' , "[name=judgment]" , function(){//
+            var csName = $(this).attr('class');
+            if($(this).attr("checked")){
+                    $(".box_"+csName).show();
+                    $(".box_"+csName).siblings('.box').hide();
+            }  
+    });
+    $(".user_names").click(function(){ 
+            $(this).parent('li').remove();
+    }); 
+//    $(document).on('click' ,'#teacher_all' , function(){//全部选中 
+//              var radio=$('[name=judgment]:checked').attr('class'),
+//              teacherType=$(".list_2"),
+//              inputChecked=$(this).attr('checked'); 
+//              teacherType.find('.user_name').each(function(k,v){ 
+//                 boxInput = v.getAttribute('id');
+//                     $mmInput=$("#"+boxInput); 
+//                     if(inputChecked && $mmInput.attr('checked')){
+//                 }else{
+//                             $mmInput.click();
+//                     }
+//              }); 
+//    });
+
+    //弹框初始化删除功能
+  $(document).on('click' , "[name=int_add]" , function(){
+            var nameId=$(this).attr('nameid'),
+            schoolVar=$("#school_id").val(), 
+            cheakId=$("#school_cache_"+schoolVar).val();
+            $("#all_depatrment_"+nameId).removeAttr("checked");
+            $("#all_position_"+nameId).removeAttr("checked");
+            $("#all_word"+nameId).removeAttr("checked");
+            $(this).parent('li').remove();
+            $(".lable_"+nameId).parent('li').remove();
+            cheakId = userIdAdd.replace(nameId+',' , '');
+            $("#school_cache_"+schoolVar).val(cheakId); 
+    });
+    
+    $(document).on('click' ,"#server_role" ,function(){//保存选中
+        var serverEndbox=$("#data_panel ul").html();
+            $("#server_name ul").append(serverEndbox);
+        var serverChecked =$("#cheak_dis ul").html(); 
+        $("#server_name ul").empty();
+        $("#server_name ul").append(serverChecked);
+        var serverName = $("#server_name ul"); 
+        var len=serverName.find('li').length;
+        $("#user_numbe").attr("value",len);
+        if(len > 0){
+            $("#user_tip").addClass("Validform_right");
+            $("#user_tip").removeClass("Validform_wrong");
+            $("#user_tip").text("");
+        }else {
+            $("#user_tip").addClass("Validform_wrong");
+            $("#user_tip").removeClass("Validform_right");
+            $("#user_tip").text("请选择发送对象");
+        } 
+    });
+
+//    $(".set-time").hide();
+//    $(".settime").click(function(){//填写信息显示
+//            if($(this).children("input").attr("checked")){
+//                $(".set-time").slideDown();
+//            }else{
+//                $(".set-time").slideUp();
+//            }
+//    }); 
+
+//    $(document).on('click' , ".radio_name" , function(){ //选着送审人
+//        $("#sub_user_name").val($(this).val());
+//        $("#sub_user_id").val($(this).attr("userid"));
+//    });
+
+
+    $("[rel=doc_file]").click(function(){//提交公文
+        file_id = $(this).attr('alt')
+        url = "{% url oa_delete_document_file %}";
+            $.post(url,{fid:file_id},function(result){
+            data = $.parseJSON(result);
+        }) 
+    })
+});
+</script> 
+{% endblock %}

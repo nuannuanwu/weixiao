@@ -1,0 +1,171 @@
+{% extends 'oa_base.html' %}
+{% load i18n kinger_tags oa_tags  pagination_tags %}
+{% block content %}
+{% autopaginate roles 10 %}
+<div class="main">
+     <div class="tab"><span>角色管理</span><a class="btn" href="{% url oa_permission_create_role %}"><i class="add_btn">&nbsp;</i>添加</a></div>
+     <div class="column">
+     <div>
+           <p style="padding:0 0px 0;">
+                <form action="" method="GET"> 
+                  <select style="font-size: 14px; float:left;"  class="inline span2" name="s" value="{{s}}">
+                        <option {% if not s %} selected="selected" {% endif %} value="0">-- 所有角色 --</option>
+                        {% for school in schools %}
+                            <option {% if school.id == s %} selected="selected" {% endif %} value="{{school.id}}">{{school.name}}</option>
+                        {% endfor %}
+                  </select>
+                    <input type="text" name="q" id="keyW" class="input-medium" style=" margin:0 10px;" value="{{query}}" placeholder="角色名称">
+                    <button type="submit" class="btn" id="searchB">{% trans "Search" %}</button>
+                </form>
+           </p>
+           </div>
+           <div class="list"> 
+               <form id="form_post" method="post" action="{% url oa_permission_delete_role %}" onsubmit="return check()" >{% csrf_token %}
+                    <table>
+                         <tr align="center"> 
+                             <th width="120" scope="col"><input type="checkbox"  rel="selectAll">角色名称</th>
+                             <th width="120" scope="col">创建机构</th>
+                             <th scope="col">角色描述</th> 
+                             <th width="80" scope="col">访问模块</th>
+                         </tr>
+                         {% if not roles|is_empty_list %}
+                        <tr>
+                            <td align="center" colspan="8" style=" font-size: 18px; color: #cecece;">
+                               <h4 class="not_date"> 暂无数据</h4>
+                            </td>
+                        </tr>
+                        {% else %}
+                          {% for r in roles %}
+                         <tr class="{% if forloop.counter|default:0|divisibleby:2 %}bg_color{% else %}{% endif %}"
+>                            <td><input type="checkbox" rel="role" name="roles" value="{{r.id}}"><a href="{% url oa_permission_update_role r.id %}">{{r.name}}</a></td>
+                             <td>{{r.school}}</td>
+                             <td>{{r.description}}</td>
+                             <td rel="role_detail"><a class="role_detail" href="javascript:;" uid="close_{{r.id}}" rel="{{r.id}}">查看</a></td>
+                         </tr>
+                         <tr>
+                            <td  class="role_info_{{r.id}} rel_hide" colspan="4" style=" display:none; padding:0;" >
+                                <div class="role_info" rel="{{r.id}}" id="infos_{{r.id}}" style="max-height:160px; width: auto; overflow-x:hidden;">
+                                </div>
+                            </td>
+                        </tr> 
+                        {% endfor %} 
+                        {% endif %}
+                        <tr>
+                            <td colspan="4"><input type="checkbox"  rel="selectAll"> 
+                             <input id="sub_form" class="btn btn-success" type="submit" name="" value="删除所选" ></td> 
+                        </tr>
+                      </table>
+                      <div class="pagination" style="text-align:center;"> 
+                       	 {% paginate %}
+                     </div>
+                </form>
+           </div>
+     </div>
+</div> 
+<input id="getInfo" type="hidden"  value="0" />
+<script>
+
+
+$("#sub_form").attr("disabled",true);
+
+$(':checkbox[rel=selectAll]').change(function(){
+   $(':checkbox[rel=role]').attr('checked',this.checked);
+   $(':checkbox[rel=selectAll]').attr('checked',this.checked);
+  chekck();
+})
+function chekck(){
+  var formChek = $("#form_post"),
+  checkedlen = formChek.find('input[rel=role]:checked').length;
+  if(checkedlen){
+    $("#sub_form").attr('disabled',false)
+  }else{
+    $("#sub_form").attr('disabled',true)
+  }
+}
+
+$("[name=roles]").change(function(){
+	var formChek = $("#form_post"),
+    a = formChek.find('input[name=roles]').length,
+	  b = formChek.find('input[name=roles]:checked').length; 
+	if(b==0){
+		$("#sub_form").attr("disabled",true );
+	}else{
+		$("#sub_form").attr("disabled",false);
+	} 
+	if(a==b){
+		$(':checkbox[rel=selectAll]').attr("checked","checked");
+		$("#sub_form").attr("disabled",false);
+	}else {
+		$(':checkbox[rel=selectAll]').removeAttr("checked");
+	}
+});
+// $(':checkbox[rel=selectAll]').click(function(event){
+// 	stop(event)
+// 	selectAll($(this).attr('checked'));
+// 	var formSit = $("#form_post");
+// 	a=formSit.find('input:checked').length;
+// 	if(a>1){
+// 		$("#sub_form").attr("disabled",false);
+// 	}else{
+// 		$("#sub_form").attr("disabled",true);
+// 	}
+// });
+ 
+// function selectAll(checked){ 
+// 	var allInput = document.getElementsByTagName("input");
+// 	var loopTime = allInput.length;
+// 	for(i = 0;i < loopTime;i++)
+// 	{
+// 		if(allInput[i].type == "checkbox")
+// 		{
+// 		  allInput[i].checked = checked
+// 		}
+// 	} 
+// }
+function check(){  
+    var r=confirm("是否删除所选项？");
+	if (r==true) {
+		//alert("删除成功");
+	} else { 
+		return false;//false:阻止提交表单  
+	}  
+} 
+ 
+$("#keyW").blur(function(){
+	dissearch()
+})
+
+  
+$(".close").live('click',function(){
+    roleid = $(this).attr("rel");
+    $(".role_info_"+roleid).hide(); 
+    //$(this).removeClass('nav_brss');
+    $("a[uid = close_"+roleid+"]").removeClass('nav_brss');
+     relValue='';
+}); 
+
+var relValue="";
+$(".role_detail").live('click',function(){ 
+    var getVal=$('#getInfo').val();
+    rid = $(this).attr("rel");
+    url = "{% url oa_permission_role_detail %}" 
+    $.post(url,{role_id:rid},function(result){
+            data = $.parseJSON(result);  
+            $("#infos_"+rid).html(data.con);
+    });  
+    if(rid==relValue){
+        $(".role_info_"+rid).hide();
+        relValue='';
+        $(this).removeClass('nav_brss');
+   }else{
+        $(".rel_hide").hide();
+        $(".role_info_"+rid).show();
+         relValue=rid; 
+         $(".role_detail").removeClass('nav_brss');
+         $(this).addClass('nav_brss'); 
+       }
+       
+  });  
+
+</script>
+{% endblock %}
